@@ -1,34 +1,60 @@
-# Sistema de Gestão Industrial — Tubonord & Tubocone
+# Sistema de Gestão Industrial — Tubonord
 
-Sistema single-page (HTML/JS puro, sem backend) de PCM: apontamento de produção, paradas, manutenção (OS), PCP/pedidos, RH e cadastros.
+Sistema de PCM: apontamento de produção, paradas, manutenção (OS), PCP/pedidos, RH e cadastros. Front-end estático (HTML/JS puro) + uma Netlify Function como backend compartilhado.
 
-## ⚠️ LIMITAÇÃO CRÍTICA — leia antes de usar em produção
+## Banco de dados compartilhado (Netlify Blobs)
 
-**Este sistema NÃO tem banco de dados central.** Tudo que é apontado, cadastrado ou editado na tela é salvo apenas no `localStorage` do navegador de quem está usando — não existe sincronização entre usuários.
+O sistema não depende mais só do navegador de cada um. Existe uma Netlify Function (`netlify/functions/db-store.mjs`) que guarda a base inteira num **Netlify Blob** — um key/value store embutido no próprio Netlify, incluído no plano Free, sem precisar criar conta em Supabase nem em nenhum outro serviço.
 
-Na prática:
-- Um apontamento lançado no computador do chão de fábrica **não aparece** para quem abre o sistema em outro computador/celular.
-- Publicar uma atualização de código no Netlify **não** move os dados de ninguém — cada navegador continua com sua própria cópia isolada.
-- Não existe hoje um botão para importar planilhas (F-23/PCP) atualizadas dentro do app; os dados de `data.js` foram carregados manualmente uma vez, como carga inicial.
+Como funciona na prática:
+- Ao abrir o app, ele busca a base mais recente no servidor (`GET /api/db`).
+- A cada alteração salva (apontamento, pedido, cadastro etc.), o app manda a base inteira pro servidor (`POST /api/db`) — a versão mais recente sempre vence (last-write-wins).
+- A cada 25 segundos, o app confere se alguém mais salvou algo novo e atualiza a tela sozinho.
+- Se o servidor não responder (por exemplo, se você abrir o `index.html` direto do computador, fora do Netlify), o sistema cai de volta pro modo local (`localStorage`) sem travar — só não fica mais sincronizado até reconectar. O rodapé da barra lateral e a tela de login mostram esse status ("🔄 Sincronizado" ou "⚠ Sem servidor").
 
-**Uso recomendado enquanto essa limitação existir:** um único usuário/dispositivo de cada vez alimentando o sistema (ex.: sempre o mesmo computador do PCP), para não gerar dados divergentes entre pessoas. Para virar multiusuário de verdade (todo mundo vendo os mesmos dados ao vivo), o sistema precisa migrar para um backend real (ex.: Supabase) — isso ainda não foi feito.
+**Isso só funciona depois do deploy no Netlify** (precisa das Functions rodando) — não funciona abrindo o arquivo local no navegador nem em outro host de arquivo estático genérico.
+
+### O que isso NÃO resolve (limitações que continuam)
+- **Concorrência simples**: se duas pessoas salvarem ao mesmo tempo, quem salvar por último sobrescreve o que o outro salvou (não há mesclagem/lock). Para o tamanho de equipe atual isso tende a ser raro, mas é bom saber.
+- **Sem histórico/versionamento**: só existe a versão mais recente salva. Não dá pra "desfazer" uma sobrescrita.
+- **Banda**: a base inteira (alguns MB) trafega a cada salvamento e a cada sincronização periódica. Para o volume de dados e de usuários de hoje isso cabe tranquilo no plano Free do Netlify, mas é algo a observar se a base crescer muito mais.
+
+### Deploy
+1. Publique a pasta raiz no Netlify (contém `index.html`, `data.js`, `support.js`, `assets/`, `netlify.toml`, `package.json`, `netlify/functions/`).
+2. O Netlify detecta o `netlify.toml`, instala `@netlify/blobs` (via `package.json`) e publica a function automaticamente — não precisa configurar nada manualmente no painel.
+3. Depois do primeiro deploy, teste abrindo o site e checando o rodapé da barra lateral: deve aparecer "🔄 Sincronizado".
 
 ## Dados
 `data.js` foi alimentado com dados **reais** extraídos de:
-- `F-23_Controle_de_Produção_Diária.xlsx` (abas "F-23" e "F-23 (2)") — 4.172 apontamentos, ago/2025 a hoje
-- `PCP_Tubonord_2025.xlsx` (abas Tub3/Tub7/Tub8/Cone) — 1.650 produtos/pedidos, cruzados com o F-23 pela chave NRO CONTROLE PEDIDO
+- `F-23_Controle_de_Produção_Diária.xlsx` (abas "F-23" e "F-23 (2)") — apontamentos de produção e paradas, ago/2025 até hoje
+- `PCP_Tubonord_2025.xlsx` (abas Tub3/Tub7/Tub8/Cone) — produtos/pedidos, cruzados com o F-23 pela chave composta **máquina + NRO CONTROLE PEDIDO** (o mesmo código de pedido se repete entre as abas Tub7 e Tub8 na planilha original, então a chave precisa incluir a máquina para não misturar pedidos diferentes)
 - `Metas_abr_2026_-_Tubonord_.xlsx` — scorecard mensal 2026
+
+Sistema exclusivo da Tubonord — não há dados da Tubocone.
+
+O **status de cada pedido** (Em Aberto / Em Produção / Pronto e Entregue / etc.) é recalculado cruzando a produção real apontada contra a quantidade solicitada, respeitando a unidade do pedido (kg ou peças) — pedidos com ≥90% da quantidade produzida são tratados como finalizados.
 
 OS de manutenção e Ausências (RH) começam **vazias de propósito** — não havia arquivo real para essas áreas; o sistema está pronto para receber esses registros a partir de agora.
 
-## Login
-Tela de login real com dois perfis: **Administrador** (acesso a Cadastros e gestão de usuários) e **Usuário** (operacional, sem Cadastros). Contas iniciais em `data.js` (usuarios) — troque as senhas em produção pela aba Cadastros > Usuários.
+### Importar planilhas atualizadas
+Usuários Administrador podem subir uma F-23 e/ou PCP atualizadas direto pela aba **Cadastros** → "Importar planilhas reais". O processamento roda no navegador (usa a biblioteca SheetJS via CDN) e substitui produção/pedidos pelos dados do arquivo enviado.
 
-⚠️ Autenticação é 100% client-side (sem backend) — mesmo nível de proteção que o cadeado de "valores" já existente. Não é adequado para dados verdadeiramente sigilosos.
+## Login
+Tela de login com dois perfis: **Administrador** (acesso a Cadastros e gestão de usuários) e **Usuário** (operacional, sem Cadastros). Contas iniciais em `data.js` (`usuarios`) — troque as senhas em produção pela aba Cadastros → Usuários.
+
+⚠️ Autenticação é client-side (checagem de usuário/senha roda no navegador, sem sessão de servidor) — mesmo nível de proteção que o cadeado de "valores" já existente. Não é adequado para dados verdadeiramente sigilosos.
 
 ## Pendências conhecidas
-- Faltam os arquivos de logo (`assets/logo-tubonord.png`, `assets/logo-tubocone.png`) — não foram enviados nesta rodada.
-- ~176 produtos de Conicaleira não tinham "Velocidade Alvo" no PCP; foi estimada pela mediana real de produção e marcada com `velAlvoEstimado:true`.
+- ~173 produtos de Conicaleira não tinham "Velocidade Alvo" no PCP; foi estimada pela mediana real de produção e marcada com `velAlvoEstimado:true`.
+- Sem histórico/auditoria de quem alterou o quê — o backend guarda só a foto mais recente da base.
 
-## Deploy
-Publique a pasta raiz (contém `index.html`, `data.js`, `support.js`, `assets/`) direto no Netlify.
+## Estrutura de arquivos
+```
+index.html                     app inteiro (template + lógica)
+data.js                        base inicial (seed) com dados reais
+support.js                     runtime genérico do framework de template (não editar)
+assets/                        logos
+netlify.toml                   aponta o diretório de functions
+package.json                   dependência @netlify/blobs
+netlify/functions/db-store.mjs Function do backend compartilhado (GET/POST /api/db)
+```

@@ -198,6 +198,8 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 .ufdot{width:12px;height:12px;border-radius:50%;background:var(--ac);flex:none}
 .ufbar{height:10px;background:var(--ac);border-radius:3px;opacity:.85}
 .sfootwarn{margin-top:8px;font-size:10px;line-height:1.4;color:#e0a15c;opacity:.9}
+.sfootok{margin-top:8px;font-size:10px;line-height:1.4;color:#7fd68a;opacity:.9}
+.loginok{font-size:11px;line-height:1.4;color:var(--ok);background:#e9f7ec;border:1px solid #bfe6c6;border-radius:8px;padding:8px 10px;margin-bottom:18px;text-align:center}
 .loadwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px}
 .loginwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--side);padding:20px;box-sizing:border-box}
 .loginbox{background:#fff;border-radius:14px;padding:34px 30px;width:340px;max-width:100%;box-shadow:0 10px 40px rgba(0,0,0,.28);box-sizing:border-box}
@@ -250,7 +252,8 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <img class="loginlogo" src="assets/logo-tubonord.png" alt="Tubonord">
 <div class="logintit">Sistema de Gestão Industrial</div>
 <div class="loginsub">Tubonord — acesso restrito</div>
-<div class="loginwarn">⚠ Use sempre o mesmo computador/navegador para lançar dados — as informações não são sincronizadas entre dispositivos.</div>
+<sc-if value="{{syncOnline}}" hint-placeholder-val="{{false}}"><div class="loginok">🔄 Servidor conectado — dados compartilhados entre todos os usuários.</div></sc-if>
+<sc-if value="{{syncOffline}}" hint-placeholder-val="{{false}}"><div class="loginwarn">⚠ Sem conexão com o servidor agora — use sempre o mesmo computador/navegador até reconectar.</div></sc-if>
 <div class="fg" style="margin-bottom:10px"><label class="flab">Usuário</label><input class="inp" type="text" autocomplete="username" value="{{loginId}}" onChange="{{onLoginId}}" onKeyDown="{{onLoginKey}}" placeholder="login ou e-mail"></div>
 <div class="fg" style="margin-bottom:6px"><label class="flab">Senha</label><input class="inp" type="password" autocomplete="current-password" value="{{loginSenha}}" onChange="{{onLoginSenha}}" onKeyDown="{{onLoginKey}}" placeholder="senha"></div>
 <sc-if value="{{loginErr}}" hint-placeholder-val="{{false}}"><div class="loginerr">Usuário ou senha inválidos.</div></sc-if>
@@ -271,7 +274,10 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <sc-if value="{{isAdmin}}" hint-placeholder-val="{{true}}"><div class="nitem {{cCad}}" onClick="{{nav.cad}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path><rect x="2.5" y="2.5" width="19" height="19" rx="4"></rect></svg>Cadastros</div></sc-if>
 <div class="nitem {{cIa}}" onClick="{{nav.ia}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.8 4.9L19 9.7l-4.4 3.4L16 18.5 12 15.6 8 18.5l1.4-5.4L5 9.7l5.2-.8z"></path></svg>Agente IA</div>
 <div class="nitem {{cMan}}" onClick="{{nav.man}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4.5h6a2 2 0 0 1 2 2v13a1.6 1.6 0 0 0-1.6-1.6H4z"></path><path d="M20 4.5h-6a2 2 0 0 0-2 2v13a1.6 1.6 0 0 1 1.6-1.6H20z"></path></svg>Manual de Uso</div>
-<div class="sfoot"><div class="fw6" style="color:#c7d3dc;font-size:12px">{{userNome}}</div>{{userPerfil}} · v1.1<div class="sfootwarn">⚠ Dados salvos só neste navegador — não são compartilhados com outros usuários/dispositivos.</div></div>
+<div class="sfoot"><div class="fw6" style="color:#c7d3dc;font-size:12px">{{userNome}}</div>{{userPerfil}} · v1.1
+<sc-if value="{{syncOnline}}" hint-placeholder-val="{{false}}"><div class="sfootok">🔄 Sincronizado — {{syncWho}}</div></sc-if>
+<sc-if value="{{syncOffline}}" hint-placeholder-val="{{false}}"><div class="sfootwarn">⚠ Sem servidor — dados só neste navegador agora.</div></sc-if>
+</div>
 </aside>
 <main class="main">
 <div class="tbar">
@@ -794,6 +800,7 @@ class Component extends DCLogic {
     const d0=new Date(); d0.setDate(d0.getDate()-30);
     this.state = {
       ready:false, loggedIn:false, loginId:'', loginSenha:'', loginErr:false,
+      syncStatus:'checking', syncUpdatedAt:null, syncUpdatedBy:null,
       view:'dash', unidade: props.unidadePadrao || 'ALL',
       dataIni:d0.toISOString().slice(0,10), dataFim:hoje,
       fMaq:'ALL', fTurno:'ALL', fOper:'ALL', user:'U01',
@@ -867,9 +874,51 @@ class Component extends DCLogic {
         loggedIn:!!validSession,
         user: validSession ? sessionUser.id : this.state.user
       });
+      this.syncPull(true);
+      this._syncTimer = setInterval(()=>this.syncPull(false), 25000);
     };
     tryInit();
   }
+  syncPull = async (isFirst)=>{
+    try{
+      const res = await fetch('/api/db', {cache:'no-store'});
+      if(!res.ok) throw new Error('http '+res.status);
+      const data = await res.json();
+      if(data && data.db){
+        if(isFirst){
+          // ao abrir o app, o servidor é a verdade compartilhada — substitui a base local
+          try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(data.db)); }catch(e){}
+          this.setState({db:data.db, syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
+        } else {
+          // pull periódico: só aplica se alguém mais salvou algo depois do que já temos
+          if(data.updatedAt && data.updatedAt!==this.state.syncUpdatedAt){
+            try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(data.db)); }catch(e){}
+            this.setState({db:data.db, syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
+          } else {
+            this.setState({syncStatus:'online'});
+          }
+        }
+      } else if(isFirst){
+        // servidor acessível mas ainda sem dados salvos: publica a base atual como ponto de partida
+        this.setState({syncStatus:'online'});
+        this.syncPush();
+      }
+    }catch(e){
+      // sem servidor (ex.: rodando fora do Netlify) — segue só com localStorage
+      this.setState({syncStatus:'offline'});
+    }
+  };
+  syncPush = async ()=>{
+    try{
+      const u=this.curUser();
+      const res = await fetch('/api/db', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({db:this.state.db, updatedBy:u?u.nome:'desconhecido'})});
+      if(!res.ok) throw new Error('http '+res.status);
+      const data = await res.json();
+      this.setState({syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
+    }catch(e){
+      this.setState({syncStatus:'offline'});
+    }
+  };
   onLoginId = (e)=>this.setState({loginId:e.target.value,loginErr:false});
   onLoginSenha = (e)=>this.setState({loginSenha:e.target.value,loginErr:false});
   onLoginKey = (e)=>{ if(e.key==='Enter') this.doLogin(); };
@@ -1093,7 +1142,7 @@ class Component extends DCLogic {
       this.setState({importBusy:false, importMsg:'Erro ao importar: '+(err&&err.message?err.message:String(err)), importMsgErr:true});
     }
   };
-  persist(db){ try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(db)); }catch(e){} this.setState({db}); }
+  persist(db){ try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(db)); }catch(e){} this.setState({db}); this.syncPush(); }
   toast(msg){ this.setState({toast:msg}); clearTimeout(this._tt); this._tt=setTimeout(()=>this.setState({toast:null}),3000); }
   fmtD(iso){ if(!iso) return '—'; const [y,m,d]=iso.split('-'); return d+'/'+m+'/'+y.slice(2); }
   fmtN(n){ return (Math.round(n)||0).toLocaleString('pt-BR'); }
@@ -1549,7 +1598,7 @@ class Component extends DCLogic {
       else if(main) main.scrollTo({top:0,behavior:'smooth'});
     },160);
   };
-  componentWillUnmount(){ clearInterval(this._tourInt); clearTimeout(this._tt); }
+  componentWillUnmount(){ clearInterval(this._tourInt); clearTimeout(this._tt); clearInterval(this._syncTimer); }
   manualIndic(){
     const meta=this.props.metaOee??75;
     return [
@@ -1686,6 +1735,7 @@ class Component extends DCLogic {
       return {showLoading:false,showLogin:true,showApp:false,
         loginId:s.loginId||'',loginSenha:s.loginSenha||'',loginErr:!!s.loginErr,
         onLoginId:this.onLoginId,onLoginSenha:this.onLoginSenha,onLoginKey:this.onLoginKey,doLogin:this.doLogin,
+        syncOnline:s.syncStatus==='online', syncOffline:s.syncStatus==='offline',
         toastOn:!!s.toast,toastMsg:s.toast||''};
     }
     const db=s.db, metaOee=this.props.metaOee??75;
@@ -2219,6 +2269,8 @@ class Component extends DCLogic {
       toastOn:!!s.toast,toastMsg:s.toast||'',
       showLoading:false,showLogin:false,showApp:true,
       isAdmin:u.perfil==='Administrador',doLogout:this.doLogout,
+      syncOnline:s.syncStatus==='online', syncOffline:s.syncStatus==='offline',
+      syncWho:s.syncUpdatedBy?('últ. atualização: '+s.syncUpdatedBy):'',
       onImportF23File:this.onImportF23File,onImportPcpFile:this.onImportPcpFile,processImport:this.processImport,
       importBusy:s.importBusy,importMsg:s.importMsg||'',importMsgStyle:s.importMsgErr?'color:var(--bad)':'color:var(--ok)',
       importF23Name:s.importF23File?s.importF23File.name:'Nenhum arquivo selecionado',
