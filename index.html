@@ -1775,13 +1775,59 @@ class Component extends DCLogic {
   };
   onChatInput = (e)=>this.setState({chatInput:e.target.value});
   onChatKey = (e)=>{ if(e.key==='Enter') this.sendChat(); };
+  detectMonthRange(text){
+    const meses={'janeiro':1,'fevereiro':2,'março':3,'marco':3,'abril':4,'maio':5,'junho':6,'julho':7,'agosto':8,'setembro':9,'outubro':10,'novembro':11,'dezembro':12};
+    const low=(text||'').toLowerCase();
+    let mesNome=null, mes=null;
+    for(const k in meses){ if(new RegExp('\\b'+k+'\\b','i').test(low)){ mesNome=k; mes=meses[k]; break; } }
+    if(!mes) return null;
+    const anoMatch=low.match(/\b(20\d{2})\b/);
+    const ano=anoMatch?+anoMatch[1]:+this.state.dataFim.slice(0,4);
+    const ini=ano+'-'+String(mes).padStart(2,'0')+'-01';
+    const lastDay=new Date(ano,mes,0).getDate();
+    const fim=ano+'-'+String(mes).padStart(2,'0')+'-'+String(lastDay).padStart(2,'0');
+    return {ini,fim,label:mesNome+'/'+ano};
+  }
+  computeIaSummary(){
+    const s=this.state, db=s.db;
+    const aps=this.apsFiltered(), pars=this.parsFiltered(), osArr=this.osFiltered();
+    const maqs=this.maqsFiltered();
+    const g=this.calcMachine(aps,pars,osArr);
+    const maqStats=maqs.map(m=>{
+      const mAps=aps.filter(a=>a.maquina===m.id), mPars=pars.filter(p=>p.maquina===m.id), mOs=osArr.filter(o=>o.maquina===m.id);
+      const raw=this.calcMachine(mAps,mPars,mOs);
+      return m.nome+' OEE '+Math.round(raw.oee*100)+'% (Disp '+Math.round(raw.disp*100)+'/Perf '+Math.round(raw.perf*100)+'/Qual '+Math.round(raw.qual*100)+') MTTR '+raw.mttr.toFixed(1)+'h MTBF '+Math.round(raw.mtbf)+'h, produção '+this.fmtN(raw.qtd)+' pç';
+    });
+    const parMap={};
+    for(const p of pars){ const m=this.motivoDe(p.motivo); if(!m||m.tipo==='COR')continue; parMap[m.nome]=(parMap[m.nome]||0)+p.min; }
+    const corTotal=pars.reduce((x,p)=>{ const m=this.motivoDe(p.motivo); return x+(m&&m.tipo==='COR'?p.min:0); },0);
+    const tempoTotalBruto=aps.reduce((x,a)=>x+(+a.tempoTurnoMin||0),0);
+    const tempoTotalRef=Math.max(1,tempoTotalBruto-corTotal);
+    const pareto=Object.entries(parMap).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([nome,min])=>nome+' '+Math.round(min)+'min ('+(min/tempoTotalRef*100).toFixed(1)+'%)');
+    const refugoPct=(g.kg+g.ref)?(g.ref/(g.kg+g.ref)*100).toFixed(1):'0';
+    return 'Período analisado: '+this.fmtD(s.dataIni)+' a '+this.fmtD(s.dataFim)+'.\n'
+      +'OEE global: '+Math.round(g.oee*100)+'% | Disp '+Math.round(g.disp*100)+'% | Perf '+Math.round(g.perf*100)+'% | Qual '+Math.round(g.qual*100)+'%\n'
+      +'MTTR: '+g.mttr.toFixed(1)+'h | MTBF: '+Math.round(g.mtbf)+'h | Falhas corretivas: '+g.nFalhas+'\n'
+      +'Produção: '+this.fmtN(g.qtd)+' pç / '+this.fmtN(g.kg)+' kg | Refugo: '+refugoPct+'%\n'
+      +'Horas paradas: '+((g.tParNP+g.tParPR)/60).toFixed(1)+'h em '+g.nPar+' eventos\n'
+      +'Por máquina: '+maqStats.join('; ')+'\n'
+      +'Pareto de paradas (top 5): '+pareto.join('; ')+'\n';
+  }
   sendChat = async ()=>{
     const q=this.state.chatInput.trim(); if(!q||this.state.chatBusy) return;
     this.setState({chat:[...this.state.chat,{role:'user',text:q}],chatInput:'',chatBusy:true},()=>{const el=document.getElementById('chatbox');if(el)el.scrollTop=el.scrollHeight;});
+    let context=this._iaCtx||'';
+    const range=this.detectMonthRange(q);
+    if(range){
+      const origIni=this.state.dataIni, origFim=this.state.dataFim;
+      this.state.dataIni=range.ini; this.state.dataFim=range.fim;
+      context='O usuário pediu especificamente dados de '+range.label+' (de '+this.fmtD(range.ini)+' a '+this.fmtD(range.fim)+'), calculados agora com esse recorte exato:\n'+this.computeIaSummary();
+      this.state.dataIni=origIni; this.state.dataFim=origFim;
+    }
     try{
       const res=await fetch('/api/ai-chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({
-        system:'Você é o agente de análise industrial da Tubonord (fábrica de tubos e cones de papelão). Responda em português do Brasil, de forma direta e prática, com base APENAS nos dados fornecidos. Dê sugestões acionáveis de melhoria quando fizer sentido. Máximo 150 palavras.',
-        context:this._iaCtx||'', question:q
+        system:'Você é o agente de análise industrial da Tubonord (fábrica de tubos e cones de papelão). Responda em português do Brasil, de forma direta e prática, com base APENAS nos dados fornecidos. Dê sugestões acionáveis de melhoria quando fizer sentido. Seja conciso: no máximo 180 palavras ou 6 tópicos curtos, e SEMPRE termine sua resposta de forma completa dentro desse limite — nunca pare no meio de uma frase ou tópico.',
+        context, question:q
       })});
       const data=await res.json();
       if(!res.ok||!data.text) throw new Error(data&&data.message?data.message:'sem resposta');

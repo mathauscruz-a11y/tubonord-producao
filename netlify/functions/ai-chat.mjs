@@ -36,7 +36,7 @@ export default async (req, context) => {
     const body = {
       systemInstruction: { parts: [{ text: system || 'Você é um assistente de análise industrial. Responda em português do Brasil.' }] },
       contents: [{ role: 'user', parts: [{ text: 'IMPORTANTE: responda sempre em português do Brasil, nunca em inglês, independente do idioma dos dados abaixo.\n\nDADOS DO PERÍODO ATUAL:\n' + (dataContext || '') + '\n\nPERGUNTA: ' + question }] }],
-      generationConfig: { maxOutputTokens: 700 },
+      generationConfig: { maxOutputTokens: 900 },
     };
 
     let data = null, lastErr = null;
@@ -69,7 +69,10 @@ export default async (req, context) => {
       return new Response(JSON.stringify({ error: 'empty_response' }), { status: 502, headers: CORS_HEADERS });
     }
 
-    return new Response(JSON.stringify({ text }), { status: 200, headers: CORS_HEADERS });
+    const finishReason = data && data.candidates && data.candidates[0] ? data.candidates[0].finishReason : null;
+    const finalText = finishReason === 'MAX_TOKENS' ? (text + '\n\n_(resposta truncada pelo limite de tamanho — peça um resumo mais curto ou uma parte específica)_') : text;
+
+    return new Response(JSON.stringify({ text: finalText }), { status: 200, headers: CORS_HEADERS });
   } catch (err) {
     return new Response(JSON.stringify({ error: 'server_error', message: String(err && err.message || err) }), { status: 500, headers: CORS_HEADERS });
   }
