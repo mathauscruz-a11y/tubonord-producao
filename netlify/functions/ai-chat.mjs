@@ -36,7 +36,7 @@ export default async (req, context) => {
     const body = {
       systemInstruction: { parts: [{ text: system || 'Você é um assistente de análise industrial. Responda em português do Brasil.' }] },
       contents: [{ role: 'user', parts: [{ text: 'DADOS DO PERÍODO ATUAL:\n' + (dataContext || '') + '\n\nPERGUNTA: ' + question }] }],
-      generationConfig: { maxOutputTokens: 700, temperature: 0.4 },
+      generationConfig: { maxOutputTokens: 700 },
     };
 
     let data = null, lastErr = null;
@@ -50,11 +50,10 @@ export default async (req, context) => {
         });
         const json = await res.json();
         if (res.ok) { data = json; break; }
-        lastErr = json && json.error ? json.error.message : ('http ' + res.status);
-        // se o modelo não existe/não está disponível, tenta o próximo da lista; qualquer outro erro (ex.: chave inválida) já retorna
-        if (!/not found|no longer available|not supported/i.test(lastErr)) break;
+        lastErr = model + ': ' + (json && json.error ? json.error.message : ('http ' + res.status));
+        // tenta o próximo modelo da lista em qualquer erro (indisponibilidade, parâmetro não suportado, etc.) — só desiste se todos falharem
       } catch (e) {
-        lastErr = String(e && e.message || e);
+        lastErr = model + ': ' + String(e && e.message || e);
       }
     }
 
