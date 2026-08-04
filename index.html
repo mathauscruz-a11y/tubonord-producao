@@ -242,7 +242,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <div class="loginbox">
 <img class="loginlogo" src="assets/logo-tubonord.png" alt="Tubonord">
 <div class="logintit">Sistema de Gestão Industrial</div>
-<div class="loginsub">Tubonord &amp; Tubocone — acesso restrito</div>
+<div class="loginsub">Tubonord — acesso restrito</div>
 <div class="loginwarn">⚠ Use sempre o mesmo computador/navegador para lançar dados — as informações não são sincronizadas entre dispositivos.</div>
 <div class="fg" style="margin-bottom:10px"><label class="flab">Usuário</label><input class="inp" type="text" autocomplete="username" value="{{loginId}}" onChange="{{onLoginId}}" onKeyDown="{{onLoginKey}}" placeholder="login ou e-mail"></div>
 <div class="fg" style="margin-bottom:6px"><label class="flab">Senha</label><input class="inp" type="password" autocomplete="current-password" value="{{loginSenha}}" onChange="{{onLoginSenha}}" onKeyDown="{{onLoginKey}}" placeholder="senha"></div>
@@ -254,7 +254,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <sc-if value="{{showApp}}" hint-placeholder-val="{{true}}">
 <div class="app">
 <aside class="side noprint">
-<div class="logos"><img class="logoimg" src="assets/logo-tubonord.png" alt="Tubonord"><img class="logoimg2" src="assets/logo-tubocone.png" alt="Tubocone"><div class="grupo upper fw6">SISTEMA DE GESTÃO INDUSTRIAL</div></div>
+<div class="logos"><img class="logoimg" src="assets/logo-tubonord.png" alt="Tubonord"><div class="grupo upper fw6">SISTEMA DE GESTÃO INDUSTRIAL</div></div>
 <div class="nitem {{cDash}}" onClick="{{nav.dash}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>Dashboard</div>
 <div class="nitem {{cProd}}" onClick="{{nav.prod}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"></path></svg>Produção</div>
 <div class="nitem {{cPar}}" onClick="{{nav.par}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M10 8v8M14 8v8"></path></svg>Paradas</div>
@@ -269,7 +269,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <main class="main">
 <div class="tbar">
 <div class="h1">{{viewTitle}}</div>
-<div class="seg"><button class="segb {{uAll}}" onClick="{{unid.all}}">Grupo</button><button class="segb {{uNord}}" onClick="{{unid.nord}}">Tubonord</button><button class="segb {{uCone}}" onClick="{{unid.cone}}">Tubocone</button></div>
+<div class="seg"><button class="segb {{uAll}}" onClick="{{unid.all}}">Grupo</button><button class="segb {{uNord}}" onClick="{{unid.nord}}">Tubonord</button></div>
 <div class="datew"><input class="datein" type="date" value="{{dataIniV}}" onChange="{{onDataIni}}"><span class="datesep">até</span><input class="datein" type="date" value="{{dataFimV}}" onChange="{{onDataFim}}"></div>
 <select class="sel" onChange="{{onFMaq}}" value="{{fMaqV}}"><option value="ALL">Todas as máquinas</option><sc-for list="{{maqFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select>
 <select class="sel" onChange="{{onFOper}}" value="{{fOperV}}"><option value="ALL">Todos os operadores</option><sc-for list="{{operFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select>
@@ -588,7 +588,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 </div>
 <div class="panel"><div class="ptit">Pergunte ao Agente IA <span class="mini fw5">— analisa os indicadores do período filtrado</span></div>
 <div class="chatbox" id="chatbox">
-<div class="msg ma">Olá! Sou o agente de análise da Tubonord & Tubocone. Pergunte sobre OEE, paradas, manutenção, absenteísmo ou pedidos — eu analiso os dados do período selecionado.</div>
+<div class="msg ma">Olá! Sou o agente de análise da Tubonord. Pergunte sobre OEE, paradas, manutenção, absenteísmo ou pedidos — eu analiso os dados do período selecionado.</div>
 <sc-for list="{{chatMsgs}}" as="m" hint-placeholder-count="0"><div class="msg {{m.cls}}">{{m.text}}</div></sc-for>
 <sc-if value="{{chatBusy}}" hint-placeholder-val="{{false}}"><div class="msg ma mini">Analisando dados…</div></sc-if>
 </div>
@@ -1153,7 +1153,7 @@ class Component extends DCLogic {
     const db=this.state.db;
     return {
       maquinas:{label:'Máquinas',key:'maquinas',cols:['ID','Nome','Unidade','Setor','Tipo'],cells:m=>[m.id,m.nome,m.unidade==='NORD'?'Tubonord':'Tubocone',m.setor,m.tipo],
-        fields:[{name:'nome',label:'Nome',type:'text'},{name:'unidade',label:'Unidade',options:[{v:'NORD',l:'Tubonord'},{v:'CONE',l:'Tubocone'}]},{name:'setor',label:'Setor',type:'text'},{name:'tipo',label:'Tipo',options:['Tubeteira','Conicaleira','Flexográfica','Recortadeira','Acabamento'].map(v=>({v,l:v}))}],
+        fields:[{name:'nome',label:'Nome',type:'text'},{name:'unidade',label:'Unidade',options:[{v:'NORD',l:'Tubonord'}]},{name:'setor',label:'Setor',type:'text'},{name:'tipo',label:'Tipo',options:['Tubeteira','Conicaleira','Flexográfica','Recortadeira','Acabamento'].map(v=>({v,l:v}))}],
         make:f=>({nome:f.nome,unidade:f.unidade||'NORD',setor:f.setor||'Produção',tipo:f.tipo||'Tubeteira'}),idp:'MQ'},
       produtos:{label:'Produtos',key:'produtos',cols:['ID','Produto','Cliente','Ø×Comp (mm)','Parede','Peso Pad.','Mín–Máx','Vel. Alvo'],cells:p=>[p.id,p.nome,(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',(p.diamMm||0)+'×'+(p.compMm||0),(p.paredeMm||0)+' mm',(p.pesoPadrao!=null?p.pesoPadrao:p.pesoIdeal)+' kg',(p.pesoMin||0)+'–'+(p.pesoMax||0),p.velAlvo+' '+p.unid],
         fields:[{name:'nome',label:'Nome do produto',type:'text'},{name:'cliente',label:'Cliente',options:db.clientes.map(c=>({v:c.id,l:c.nome}))},{name:'maquinaTipo',label:'Tipo de máquina',options:['Tubeteira','Conicaleira','Flexográfica','Recortadeira','Acabamento'].map(v=>({v,l:v}))},{name:'diamMm',label:'Diâmetro Ø (mm)',type:'number'},{name:'compMm',label:'Comprimento (mm)',type:'number'},{name:'paredeMm',label:'Parede (mm)',type:'number'},{name:'pesoPadrao',label:'Peso padrão (kg/pç)',type:'number'},{name:'pesoMin',label:'Peso mínimo (kg)',type:'number'},{name:'pesoMax',label:'Peso máximo (kg)',type:'number'},{name:'velAlvo',label:'Velocidade alvo (pç/min)',type:'number'}],
@@ -1162,7 +1162,7 @@ class Component extends DCLogic {
         fields:[{name:'nome',label:'Nome',type:'text'},{name:'cidade',label:'Cidade - UF',type:'text'}],
         make:f=>({nome:f.nome,cidade:f.cidade||''}),idp:'C'},
       operadores:{label:'Operadores',key:'operadores',cols:['ID','Nome','Função','Turno','Unidade'],cells:o=>[o.id,o.nome,o.funcao,o.turno,o.unidade==='NORD'?'Tubonord':'Tubocone'],
-        fields:[{name:'nome',label:'Nome',type:'text'},{name:'funcao',label:'Função',options:['Operador','Líder de Produção','Técnico de Manutenção','PCP'].map(v=>({v,l:v}))},{name:'turno',label:'Turno',options:[{v:'A',l:'1º Turno'},{v:'B',l:'2º Turno'},{v:'C',l:'3º Turno'}]},{name:'unidade',label:'Unidade',options:[{v:'NORD',l:'Tubonord'},{v:'CONE',l:'Tubocone'}]}],
+        fields:[{name:'nome',label:'Nome',type:'text'},{name:'funcao',label:'Função',options:['Operador','Líder de Produção','Técnico de Manutenção','PCP'].map(v=>({v,l:v}))},{name:'turno',label:'Turno',options:[{v:'A',l:'1º Turno'},{v:'B',l:'2º Turno'},{v:'C',l:'3º Turno'}]},{name:'unidade',label:'Unidade',options:[{v:'NORD',l:'Tubonord'}]}],
         make:f=>({nome:f.nome,funcao:f.funcao||'Operador',turno:f.turno||'A',unidade:f.unidade||'NORD'}),idp:'OP'},
       turnos:{label:'Turnos',key:'turnos',cols:['ID','Nome','Início','Fim','Horas'],cells:t=>[t.id,t.nome,t.inicio,t.fim,String(t.horas)],
         fields:[{name:'nome',label:'Nome',type:'text'},{name:'inicio',label:'Início',type:'time'},{name:'fim',label:'Fim',type:'time'}],
@@ -1230,8 +1230,8 @@ class Component extends DCLogic {
   simReset = ()=>this.setState({sim:{},simOver:null});
   tourSteps(){
     return [
-      {view:'man',aba:'Manual',sel:'#tour-anchor',tit:'Bem-vindo ao Sistema de Gestão Industrial',txt:'Este tour mostra cada aba e cada indicador. O sistema cobre apontamento de produção, paradas, ordens de serviço, PCP e indicadores de OEE, MTTR, MTBF e absenteísmo das duas unidades — Tubonord e Tubocone.'},
-      {view:'dash',aba:'Dashboard',sel:'.tbar',tit:'Filtros globais',txt:'Tudo no sistema responde a estes filtros: unidade (Grupo / Tubonord / Tubocone), período por calendário (de/até), máquina, operador, turno e o usuário logado — que define as permissões.'},
+      {view:'man',aba:'Manual',sel:'#tour-anchor',tit:'Bem-vindo ao Sistema de Gestão Industrial',txt:'Este tour mostra cada aba e cada indicador. O sistema cobre apontamento de produção, paradas, ordens de serviço, PCP e indicadores de OEE, MTTR, MTBF e absenteísmo da Tubonord.'},
+      {view:'dash',aba:'Dashboard',sel:'.tbar',tit:'Filtros globais',txt:'Tudo no sistema responde a estes filtros: período por calendário (de/até), máquina, operador, turno e o usuário logado — que define as permissões.'},
       {view:'dash',aba:'Dashboard',sel:'.cards',tit:'Cartões de indicadores',txt:'Onze indicadores calculados ao vivo: OEE, Disponibilidade, MTTR, MTBF, Absenteísmo, Produção, Horas Paradas, Setup, OS Abertas, Refugo e Alterações de Programação. As fórmulas estão detalhadas na aba Manual de Uso.'},
       {view:'dash',aba:'Dashboard',sel:'#p-maquinas',tit:'Desempenho por máquina',txt:'Cada máquina com seu OEE decomposto em Disponibilidade × Performance × Qualidade, mais MTTR, MTBF, produção e horas paradas. O semáforo compara com a meta de OEE.'},
       {view:'prod',aba:'Produção',sel:'#p-prod-form',tit:'Apontamento de produção',txt:'O operador informa início e fim (data e hora), máquina, turno, produto/pedido, quantidade em peças e refugo em kg. O sistema calcula o tempo bruto, o tempo rodando, a velocidade atingida e compara com a velocidade alvo do produto.'},
@@ -1397,7 +1397,7 @@ class Component extends DCLogic {
     this.setState({chat:[...this.state.chat,{role:'user',text:q}],chatInput:'',chatBusy:true},()=>{const el=document.getElementById('chatbox');if(el)el.scrollTop=el.scrollHeight;});
     try{
       const text=await window.claude.complete({
-        system:'Você é o agente de análise industrial do grupo Tubonord & Tubocone (fábricas de tubos e cones de papelão). Responda em português do Brasil, de forma direta e prática, com base APENAS nos dados fornecidos. Dê sugestões acionáveis de melhoria quando fizer sentido. Máximo 150 palavras.',
+        system:'Você é o agente de análise industrial da Tubonord (fábrica de tubos e cones de papelão). Responda em português do Brasil, de forma direta e prática, com base APENAS nos dados fornecidos. Dê sugestões acionáveis de melhoria quando fizer sentido. Máximo 150 palavras.',
         messages:[{role:'user',content:'DADOS DO PERÍODO ATUAL:\n'+(this._iaCtx||'')+'\n\nPERGUNTA: '+q}],
         max_tokens:600
       });
@@ -1522,7 +1522,7 @@ class Component extends DCLogic {
     const solsAll=(db.solicitacoes||[]);
     const solAprovAll=solsAll.filter(x=>x.status==='Aprovada').length;
     const insights=this.buildInsights({abs:absPct},maqStats,pareto,{total:solsAll.length,aprov:solAprovAll,taxa:solsAll.length?Math.round(solAprovAll/solsAll.length*100):0});
-    this._iaCtx='Período: '+this.fmtD(s.dataIni)+' a '+this.fmtD(s.dataFim)+'. Unidade: '+(s.unidade==='ALL'?'Grupo (Tubonord+Tubocone)':s.unidade==='NORD'?'Tubonord':'Tubocone')+'.\n'
+    this._iaCtx='Período: '+this.fmtD(s.dataIni)+' a '+this.fmtD(s.dataFim)+'.\n'
       +'OEE global: '+oeeP+'% (meta '+metaOee+'%) | Disp '+kpi.disp+'% | Perf '+kpi.perf+'% | Qual '+kpi.qual+'%\n'
       +'MTTR: '+kpi.mttr+'h | MTBF: '+kpi.mtbf+'h | Falhas corretivas: '+g.nFalhas+'\n'
       +'Absenteísmo: '+kpi.abs+'% | Produção: '+kpi.prodPc+' pç / '+kpi.prodKg+' | Refugo: '+kpi.refugo+'%\n'
@@ -1832,7 +1832,7 @@ class Component extends DCLogic {
       simDragStart:this.simDragStart,simDragOver:this.simDragOver,simDragLeave:this.simDragLeave,simDrop:this.simDrop,simReset:this.simReset,
       progDateV:s.progDate,onProgDate:this.onProgDate,moveOrdem:this.moveOrdem,progMaqs,progVazio:progMaqs.length===0,
       progMaqFilterV:s.progMaqFilter,onProgMaqFilter:this.onProgMaqFilter,openProgPrint:this.openProgPrint,closeProgPrint:this.closeProgPrint,
-      progPrintOpen:s.progPrintOpen,progPrint:{empresa:s.unidade==='CONE'?'TUBOCONE':s.unidade==='NORD'?'TUBONORD':'TUBONORD & TUBOCONE',data:this.fmtD(s.progDate),emitido:this.fmtD(hoje),maqs:progMaqs,vazio:progMaqs.length===0},
+      progPrintOpen:s.progPrintOpen,progPrint:{empresa:'TUBONORD',data:this.fmtD(s.progDate),emitido:this.fmtD(hoje),maqs:progMaqs,vazio:progMaqs.length===0},
       vDash:s.view==='dash',vProd:s.view==='prod',vPar:s.view==='par',vManut:s.view==='manut',vPcp:s.view==='pcp',vRh:s.view==='rh',vCad:s.view==='cad'&&u.perfil==='Administrador',vIa:s.view==='ia',vMan:s.view==='man',
       cDash:s.view==='dash'?'nion':'',cProd:s.view==='prod'?'nion':'',cPar:s.view==='par'?'nion':'',cManut:s.view==='manut'?'nion':'',cPcp:s.view==='pcp'?'nion':'',cRh:s.view==='rh'?'nion':'',cCad:s.view==='cad'?'nion':'',cIa:s.view==='ia'?'nion':'',cMan:s.view==='man'?'nion':'',
       manIndic:this.manualIndic(),manAbas:this.manualAbas(),
