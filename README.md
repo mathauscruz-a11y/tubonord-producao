@@ -44,6 +44,22 @@ Tela de login com dois perfis: **Administrador** (acesso a Cadastros e gestão d
 
 ⚠️ Autenticação é client-side (checagem de usuário/senha roda no navegador, sem sessão de servidor) — mesmo nível de proteção que o cadeado de "valores" já existente. Não é adequado para dados verdadeiramente sigilosos.
 
+## Agente IA (Google Gemini)
+
+A aba "Agente IA" usa uma Netlify Function (`netlify/functions/ai-chat.mjs`) que chama a API do Google Gemini — a chave fica só no servidor, nunca aparece no navegador.
+
+**Para ativar, é obrigatório configurar a chave:**
+1. Crie uma chave gratuita em https://aistudio.google.com/apikey (conta Google).
+2. No Netlify: **Site configuration → Environment variables → Add a variable**.
+3. Nome: `GEMINI_API_KEY` · Valor: a chave gerada.
+4. Faça um novo deploy ("Trigger deploy") para a variável entrar em vigor.
+
+Sem essa variável configurada, o chat mostra uma mensagem de erro clara em vez de travar — o "Diagnóstico Automático" ao lado (baseado em regras, sem IA nenhuma) continua funcionando normalmente.
+
+## Ordens de Serviço geradas automaticamente (MTTR/MTBF)
+
+`osList` não começa mais vazia: 318 OS foram geradas a partir dos eventos reais de "Manutenção Mecânica/Elétrica Programada/Não Programada" já apontados no F-23 (mesma parada real, só reclassificada como OS — nada foi inventado). Essas OS ficam marcadas com `origem:'f23-auto'` e são regeneradas automaticamente sempre que uma F-23 nova é importada pela aba Cadastros, sem apagar OS lançadas manualmente pela equipe de manutenção.
+
 ## Pendências conhecidas
 - ~173 produtos de Conicaleira não tinham "Velocidade Alvo" no PCP; foi estimada pela mediana real de produção e marcada com `velAlvoEstimado:true`.
 - Sem histórico/auditoria de quem alterou o quê — o backend guarda só a foto mais recente da base.
@@ -56,5 +72,6 @@ support.js                     runtime genérico do framework de template (não 
 assets/                        logos
 netlify.toml                   aponta o diretório de functions
 package.json                   dependência @netlify/blobs
-netlify/functions/db-store.mjs Function do backend compartilhado (GET/POST /api/db)
+netlify/functions/db-store.mjs  Function do backend compartilhado (GET/POST /api/db)
+netlify/functions/ai-chat.mjs   Function do Agente IA (proxy seguro para o Gemini)
 ```

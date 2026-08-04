@@ -1156,6 +1156,24 @@ class Component extends DCLogic {
           paradasFlat.push({id:'PR'+String(pid++).padStart(5,'0'),data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador,motivo:p.motivo,min:p.min,obs:'',apId:a.id,osId:null});
         }}
         db.paradas=paradasFlat;
+        // regenera as OS automaticas a partir das paradas reais de manutencao (M08-M11), preservando OS lancadas manualmente no app
+        const opNomes={}; (db.operadores||[]).forEach(o=>opNomes[o.id]=o.nome);
+        const osTipoMap={M08:['Preventiva','Mecânico'],M09:['Corretiva','Mecânico'],M10:['Preventiva','Elétrico'],M11:['Corretiva','Elétrico']};
+        const osGeradas=[]; let osSeq=1;
+        for(const a of db.apontamentos){
+          for(const p of (a.paradas||[])){
+            const cfg=osTipoMap[p.motivo]; if(!cfg) continue;
+            const [tipo,motivoOs]=cfg;
+            osGeradas.push({ id:'OSAUTO'+String(osSeq++).padStart(4,'0'), tipo, maquina:a.maquina,
+              item:'Manutenção '+motivoOs.toLowerCase()+' (gerado do apontamento F-23)', motivo:motivoOs, parouMaquina:true,
+              solicitante:'Sistema (F-23)', responsavel:opNomes[a.operador]||'',
+              dataAbertura:a.data, horaAbertura:'', aprovacao:'Automática', inicioReparo:a.data,
+              tempoParadaMin:p.min, tempoReparoMin:p.min, status:'Fechada', dataFechamento:a.data,
+              custo:null, pecas:'', causa:'', servico:'Apontado no F-23 como parada de manutenção',
+              paradaId:null, apId:a.id, origem:'f23-auto' });
+          }
+        }
+        db.osList=[...(db.osList||[]).filter(o=>o.origem!=='f23-auto'), ...osGeradas];
       }
       if(pedidosNovos){
         db.clientes=[...cliMap.values()];
@@ -1749,14 +1767,15 @@ class Component extends DCLogic {
     const q=this.state.chatInput.trim(); if(!q||this.state.chatBusy) return;
     this.setState({chat:[...this.state.chat,{role:'user',text:q}],chatInput:'',chatBusy:true},()=>{const el=document.getElementById('chatbox');if(el)el.scrollTop=el.scrollHeight;});
     try{
-      const text=await window.claude.complete({
+      const res=await fetch('/api/ai-chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({
         system:'Você é o agente de análise industrial da Tubonord (fábrica de tubos e cones de papelão). Responda em português do Brasil, de forma direta e prática, com base APENAS nos dados fornecidos. Dê sugestões acionáveis de melhoria quando fizer sentido. Máximo 150 palavras.',
-        messages:[{role:'user',content:'DADOS DO PERÍODO ATUAL:\n'+(this._iaCtx||'')+'\n\nPERGUNTA: '+q}],
-        max_tokens:600
-      });
-      this.setState({chat:[...this.state.chat,{role:'ai',text}],chatBusy:false},()=>{const el=document.getElementById('chatbox');if(el)el.scrollTop=el.scrollHeight;});
+        context:this._iaCtx||'', question:q
+      })});
+      const data=await res.json();
+      if(!res.ok||!data.text) throw new Error(data&&data.message?data.message:'sem resposta');
+      this.setState({chat:[...this.state.chat,{role:'ai',text:data.text}],chatBusy:false},()=>{const el=document.getElementById('chatbox');if(el)el.scrollTop=el.scrollHeight;});
     }catch(err){
-      this.setState({chat:[...this.state.chat,{role:'ai',text:'Não consegui consultar a IA agora. Consulte o Diagnóstico Automático ao lado.'}],chatBusy:false});
+      this.setState({chat:[...this.state.chat,{role:'ai',text:'Não consegui consultar a IA agora ('+(err&&err.message?err.message:'erro')+'). Consulte o Diagnóstico Automático ao lado.'}],chatBusy:false});
     }
   };
   // ---------- render ----------
