@@ -38,6 +38,11 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 .content{padding:22px 24px 40px;display:flex;flex-direction:column;gap:18px}
 .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
 .card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
+.cardclick{cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.cardclick:hover{border-color:var(--ac)}
+.cardOn{border-color:var(--ac);box-shadow:0 0 0 2px rgba(232,134,45,.25)}
+.colf{width:100%;box-sizing:border-box;font-size:11px;padding:4px 6px;border:1px solid var(--bd);border-radius:6px;font-family:inherit;background:#fff}
+.filterrow th{padding:4px 8px;font-weight:400}
 .klab{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
 .kval{font-family:'Barlow Condensed';font-size:34px;font-weight:700;line-height:1.1;margin-top:4px}
 .ksub{font-size:12px;color:var(--mut);margin-top:2px}
@@ -528,19 +533,32 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 </div>
 <div class="panel"><div class="ptit">Status da Carteira <span class="mini fw5">— indicadores de produção e logística</span></div>
 <div class="cards" style="grid-template-columns:repeat(4,1fr)">
-<div class="card"><div class="klab">Em Aberto</div><div class="kval">{{stK.aberto}}</div><div class="ksub">{{stK.abertoQtd}} pç na fila</div></div>
-<div class="card"><div class="klab">Concluídos</div><div class="kval kok">{{stK.concluido}}</div><div class="ksub">{{stK.concPct}}% da carteira</div></div>
-<div class="card"><div class="klab">Não Concluídos</div><div class="kval kbad">{{stK.naoConc}}</div><div class="ksub">produção iniciada e vencida</div></div>
-<div class="card"><div class="klab">Cancelados</div><div class="kval">{{stK.cancelado}}</div><div class="ksub">{{stK.cancPct}}% da carteira</div></div>
-<div class="card"><div class="klab">Pronto e Não Entregue</div><div class="kval kwarn">{{stK.pne}}</div><div class="ksub">{{stK.pneQtd}} pç aguardando expedição</div></div>
-<div class="card"><div class="klab">Pronto e Entregue</div><div class="kval kok">{{stK.pe}}</div><div class="ksub">{{stK.peQtd}} pç faturados</div></div>
+<div class="card cardclick {{stK.cAberto}}" data-k="aberto" onClick="{{pedCardClick}}"><div class="klab">Em Aberto</div><div class="kval">{{stK.aberto}}</div><div class="ksub">{{stK.abertoQtd}} pç na fila</div></div>
+<div class="card cardclick {{stK.cConcluido}}" data-k="concluido" onClick="{{pedCardClick}}"><div class="klab">Concluídos</div><div class="kval kok">{{stK.concluido}}</div><div class="ksub">{{stK.concPct}}% da carteira</div></div>
+<div class="card cardclick {{stK.cNaoConc}}" data-k="naoConc" onClick="{{pedCardClick}}"><div class="klab">Não Concluídos</div><div class="kval kbad">{{stK.naoConc}}</div><div class="ksub">produção iniciada e vencida</div></div>
+<div class="card cardclick {{stK.cCancelado}}" data-k="cancelado" onClick="{{pedCardClick}}"><div class="klab">Cancelados</div><div class="kval">{{stK.cancelado}}</div><div class="ksub">{{stK.cancPct}}% da carteira</div></div>
+<div class="card cardclick {{stK.cPne}}" data-k="pne" onClick="{{pedCardClick}}"><div class="klab">Pronto e Não Entregue</div><div class="kval kwarn">{{stK.pne}}</div><div class="ksub">{{stK.pneQtd}} pç aguardando expedição</div></div>
+<div class="card cardclick {{stK.cPe}}" data-k="pe" onClick="{{pedCardClick}}"><div class="klab">Pronto e Entregue</div><div class="kval kok">{{stK.pe}}</div><div class="ksub">{{stK.peQtd}} pç faturados</div></div>
 <div class="card"><div class="klab">Taxa de Conclusão</div><div class="kval {{stK.taxaCls}}">{{stK.concPct}}%</div><div class="ksub">concluídos ÷ carteira ativa</div></div>
 <div class="card"><div class="klab">Taxa de Entrega</div><div class="kval {{stK.entrCls}}">{{stK.entrPct}}%</div><div class="ksub">entregues ÷ concluídos</div></div>
 </div>
 </div>
 <div class="panel" id="p-carteira"><div class="ptit">Carteira de Pedidos <span class="mini fw5">quantidade e status atualizados automaticamente pelos apontamentos de produção</span>
-<div class="pwbox" style="margin-left:auto"><sc-if value="{{valorLocked}}" hint-placeholder-val="{{true}}"><button class="btsm" onClick="{{openPw}}">🔒 Mostrar valores (senha)</button></sc-if><sc-if value="{{valorUnlocked}}" hint-placeholder-val="{{false}}"><span class="mini kok fw6">🔓 Valores visíveis</span><button class="btsm" onClick="{{lockValor}}">Ocultar</button></sc-if></div></div>
-<div class="scroll"><table class="tbl"><thead><tr><th>OP</th><th>Nº Cliente</th><th>Cliente</th><th>Produto</th><th>Máquina</th><th>Qtd</th><th>Valor (R$)</th><th>Produzido</th><th>Avanço</th><th>Entrega Prev.</th><th>Prog. Prod.</th><th>Prog. Real</th><th>Entrega Final</th><th>Replan.</th><th>Status Produção</th><th>Status Logística</th><th></th></tr></thead><tbody>
+<div class="pwbox" style="margin-left:auto;gap:8px">
+<select class="sel" onChange="{{onPedStatusFilter}}" value="{{pedCardFilter}}">
+<option value="">Todos os status</option>
+<option value="aberto">Em Aberto</option>
+<option value="concluido">Concluído</option>
+<option value="naoConc">Não Concluído</option>
+<option value="cancelado">Cancelado</option>
+<option value="pne">Pronto e Não Entregue</option>
+<option value="pe">Pronto e Entregue</option>
+</select>
+<sc-if value="{{pedFiltroAtivo}}" hint-placeholder-val="{{false}}"><button class="btsm" onClick="{{clearPedFilters}}">✕ Limpar filtros</button></sc-if>
+<sc-if value="{{valorLocked}}" hint-placeholder-val="{{true}}"><button class="btsm" onClick="{{openPw}}">🔒 Mostrar valores (senha)</button></sc-if><sc-if value="{{valorUnlocked}}" hint-placeholder-val="{{false}}"><span class="mini kok fw6">🔓 Valores visíveis</span><button class="btsm" onClick="{{lockValor}}">Ocultar</button></sc-if></div></div>
+<div class="scroll"><table class="tbl"><thead><tr><th>OP</th><th>Nº Cliente</th><th>Cliente</th><th>Produto</th><th>Máquina</th><th>Qtd</th><th>Valor (R$)</th><th>Produzido</th><th>Avanço</th><th>Entrega Prev.</th><th>Prog. Prod.</th><th>Prog. Real</th><th>Entrega Final</th><th>Replan.</th><th>Status Produção</th><th>Status Logística</th><th></th></tr>
+<tr class="filterrow"><th></th><th><input class="colf" data-col="nr" value="{{pedColFilters.nr}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="cliente" value="{{pedColFilters.cliente}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="produto" value="{{pedColFilters.produto}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="maq" value="{{pedColFilters.maq}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="qtd" value="{{pedColFilters.qtd}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th></th><th><input class="colf" data-col="prodz" value="{{pedColFilters.prodz}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th></th><th><input class="colf" data-col="entrega" value="{{pedColFilters.entrega}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="progProd" value="{{pedColFilters.progProd}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="progReal" value="{{pedColFilters.progReal}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="entregaFinal" value="{{pedColFilters.entregaFinal}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="replan" value="{{pedColFilters.replan}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="statusProd" value="{{pedColFilters.statusProd}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="statusLog" value="{{pedColFilters.statusLog}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th></th></tr>
+</thead><tbody>
 <sc-for list="{{pedRows}}" as="p" hint-placeholder-count="8"><tr><td class="fw6">{{p.id}}</td><td>{{p.nr}}</td><td class="fw6">{{p.cliente}}</td><td class="mini">{{p.produto}}</td><td>{{p.maq}}</td><td class="num">{{p.qtd}}</td><td class="num">{{p.valorShow}}</td><td class="num">{{p.prodz}}</td><td><div class="obar"><div class="ofill" style="{{p.pctStyle}}"></div></div><span class="mini">{{p.pct}}%</span></td><td>{{p.entrega}} <sc-if value="{{p.atrasado}}" hint-placeholder-val="{{false}}"><span class="chip stAtras">ATRASADO</span></sc-if></td><td>{{p.progProd}}</td><td class="fw6">{{p.progReal}}</td><td class="fw6">{{p.entregaFinal}}</td><td class="mini" title="{{p.obsReplan}}">{{p.replan}}</td><td><span class="chip {{p.spCls}}">{{p.statusProd}}</span></td><td><span class="chip {{p.slCls}}">{{p.statusLog}}</span></td><td class="fx gap8">
 <sc-if value="{{p.canEntregar}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{p.id}}" onClick="{{entregarPed}}">Entregar</button></sc-if>
 <button class="btsm" data-id="{{p.id}}" onClick="{{editPed}}">Editar</button><button class="btsm btdel" data-id="{{p.id}}" onClick="{{delPed}}">✕</button></td></tr></sc-for>
@@ -764,6 +782,7 @@ class Component extends DCLogic {
       valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false,
       sim:{}, simOver:null, solicOpen:false, tourOn:false, tourStep:0, tourPlaying:false,
       chat:[], chatInput:'', chatBusy:false, toast:null,
+      pedCardFilter:'', pedColFilters:{},
       importF23File:null, importPcpFile:null, importF23Name:'Nenhum arquivo selecionado', importPcpName:'Nenhum arquivo selecionado', importBusy:false, importMsg:'', importMsgErr:false,
       forms:{ prod:this.blankProd(), os:this.blankOs(), par:this.blankPar(),
         ped:this.blankPed(), aus:this.blankAus(),
@@ -852,6 +871,10 @@ class Component extends DCLogic {
   };
   onImportF23File = (e)=>{ const f=e.target.files&&e.target.files[0]; this.setState({importF23File:f||null, importMsg:''}); };
   onImportPcpFile = (e)=>{ const f=e.target.files&&e.target.files[0]; this.setState({importPcpFile:f||null, importMsg:''}); };
+  pedCardClick = (e)=>{ const k=e.currentTarget.dataset.k; this.setState({pedCardFilter: this.state.pedCardFilter===k?'':k}); };
+  onPedStatusFilter = (e)=>{ this.setState({pedCardFilter:e.target.value}); };
+  onPedColFilter = (e)=>{ const col=e.target.dataset.col; const v=e.target.value; this.setState({pedColFilters:{...this.state.pedColFilters,[col]:v}}); };
+  clearPedFilters = ()=>{ this.setState({pedCardFilter:'', pedColFilters:{}}); };
   processImport = async ()=>{
     if(this.state.importBusy) return;
     const {importF23File, importPcpFile} = this.state;
@@ -1849,7 +1872,19 @@ class Component extends DCLogic {
     const canPrintOs=perfilAtual==='Gestor'||perfilAtual==='Líder'||perfilAtual==='Manutenção';
     // pcp
     const hoje=new Date().toISOString().slice(0,10);
-    const pedRows=db.pedidos.filter(p=>{const mq=db.maquinas.find(m=>m.id===p.maquina);return s.unidade==='ALL'||!mq||mq.unidade===s.unidade;}).map(p=>{
+    const pedCardFilter=s.pedCardFilter||'';
+    const pedColFilters=s.pedColFilters||{};
+    const matchesCardFilter=(c)=>{
+      if(!pedCardFilter) return true;
+      if(pedCardFilter==='aberto') return c.statusProd==='Em Aberto';
+      if(pedCardFilter==='concluido') return c.statusProd==='Concluído';
+      if(pedCardFilter==='naoConc') return c.statusProd==='Não Concluído';
+      if(pedCardFilter==='cancelado') return c.statusProd==='Cancelado';
+      if(pedCardFilter==='pne') return c.statusLog==='Pronto e Não Entregue';
+      if(pedCardFilter==='pe') return c.statusLog==='Pronto e Entregue';
+      return true;
+    };
+    const pedRowsAll=db.pedidos.filter(p=>{const mq=db.maquinas.find(m=>m.id===p.maquina);return s.unidade==='ALL'||!mq||mq.unidade===s.unidade;}).map(p=>{
       const cl=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—';
       const pr=(db.produtos.find(x=>x.id===p.produto)||{});
       const mq=(db.maquinas.find(m=>m.id===p.maquina)||{}).nome||'—';
@@ -1869,7 +1904,15 @@ class Component extends DCLogic {
         statusProd:calc.statusProd,statusLog:calc.statusLog,
         spCls:calc.statusProd==='Concluído'?'stPronto':calc.statusProd==='Não Concluído'?'stAtras':calc.statusProd==='Cancelado'?'stCOR':'stFila',
         slCls:calc.statusLog==='Pronto e Entregue'?'stPronto':calc.statusLog==='Pronto e Não Entregue'?'stAprovada':'stCOR',
-        canEntregar:calc.statusLog==='Pronto e Não Entregue'};});
+        canEntregar:calc.statusLog==='Pronto e Não Entregue', _calc:calc};});
+    const colOk=(v,f)=>!f||String(v==null?'':v).toLowerCase().indexOf(String(f).toLowerCase())>=0;
+    const pedRows=pedRowsAll.filter(r=>matchesCardFilter(r._calc)
+      && colOk(r.nr,pedColFilters.nr) && colOk(r.cliente,pedColFilters.cliente) && colOk(r.produto,pedColFilters.produto)
+      && colOk(r.maq,pedColFilters.maq) && colOk(r.qtd,pedColFilters.qtd) && colOk(r.prodz,pedColFilters.prodz)
+      && colOk(r.entrega,pedColFilters.entrega) && colOk(r.progProd,pedColFilters.progProd) && colOk(r.progReal,pedColFilters.progReal)
+      && colOk(r.entregaFinal,pedColFilters.entregaFinal) && colOk(r.replan,pedColFilters.replan)
+      && colOk(r.statusProd,pedColFilters.statusProd) && colOk(r.statusLog,pedColFilters.statusLog)
+    ).map(({_calc,...r})=>r);
     // indicadores de status da carteira
     const cAll=pedsUnid.map(p=>({p,c:this.pedidoCalc(p)}));
     const cnt=f=>cAll.filter(f).length;
@@ -1884,7 +1927,9 @@ class Component extends DCLogic {
       pne:cnt(o=>o.c.statusLog==='Pronto e Não Entregue'),pneQtd:this.fmtN(sumQ(o=>o.c.statusLog==='Pronto e Não Entregue')),
       pe:nPe,peQtd:this.fmtN(sumQ(o=>o.c.statusLog==='Pronto e Entregue')),
       concPct,cancPct:Math.round(cnt(o=>o.c.statusProd==='Cancelado')/(cAll.length||1)*100),
-      entrPct:entrPctCart,taxaCls:concPct>=70?'kok':concPct>=40?'kwarn':'kbad',entrCls:entrPctCart>=80?'kok':entrPctCart>=50?'kwarn':'kbad'};
+      entrPct:entrPctCart,taxaCls:concPct>=70?'kok':concPct>=40?'kwarn':'kbad',entrCls:entrPctCart>=80?'kok':entrPctCart>=50?'kwarn':'kbad',
+      cAberto:pedCardFilter==='aberto'?'cardOn':'',cConcluido:pedCardFilter==='concluido'?'cardOn':'',cNaoConc:pedCardFilter==='naoConc'?'cardOn':'',
+      cCancelado:pedCardFilter==='cancelado'?'cardOn':'',cPne:pedCardFilter==='pne'?'cardOn':'',cPe:pedCardFilter==='pe'?'cardOn':''};
     this._iaCtx+='\nCarteira: '+stK.aberto+' em aberto, '+stK.concluido+' concluídos, '+stK.naoConc+' não concluídos, '+stK.cancelado+' cancelados; logística: '+stK.pne+' pronto e não entregue, '+stK.pe+' entregues. Conclusão '+concPct+'%, entrega '+entrPct+'%.';
     const metaRows=db.produtos.map(p=>({nome:p.nome,cliente:(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',tipo:p.maquinaTipo,
       peso:String(p.pesoIdeal),vel:p.velAlvo+' '+p.unid,cap:this.fmtN(p.velAlvo*480*0.85)}));
@@ -2119,7 +2164,8 @@ class Component extends DCLogic {
       tecOpts:db.operadores.filter(o=>o.funcao==='Técnico de Manutenção'),osRows,osK,
       fPed,pedEditing:!!fPed.editId,pedFormTit:fPed.editId?'Editar Pedido':'Novo Pedido',pedSaveLbl:fPed.editId?'Salvar alterações':'Criar pedido',
       cliOpts:db.clientes,prodCliOpts:db.produtos.filter(p=>!fPed.cliente||p.cliente===fPed.cliente).map(p=>({id:p.id,label:p.nome})),
-      pedRows,metaRows,stK,
+      pedRows,metaRows,stK,pedCardFilter,pedColFilters:{nr:'',cliente:'',produto:'',maq:'',qtd:'',prodz:'',entrega:'',progProd:'',progReal:'',entregaFinal:'',replan:'',statusProd:'',statusLog:'',...pedColFilters},pedCardClick:this.pedCardClick,onPedStatusFilter:this.onPedStatusFilter,
+      onPedColFilter:this.onPedColFilter,clearPedFilters:this.clearPedFilters,pedFiltroAtivo:!!(pedCardFilter||Object.values(pedColFilters).some(v=>v)),
       fAus,ausEditing:!!fAus.editId,ausFormTit:fAus.editId?'Editar Ausência':'Registrar Ausência',ausSaveLbl:fAus.editId?'Salvar alterações':'Registrar',
       ausRows,rhK,
       cadTabs,cadLabel:def.label,cadFields,cadCols:def.cols,cadRows,cadEditing:!!s.cadEditId,cadEditId:s.cadEditId||'',cadFormTit:s.cadEditId?'Editar registro':'Novo registro',cadSaveLbl:s.cadEditId?'Salvar alterações':'Adicionar',
