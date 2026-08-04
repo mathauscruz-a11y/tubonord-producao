@@ -218,16 +218,19 @@ select.sel[multiple]{height:80px}
 .userbadge{display:flex;align-items:center;gap:8px;font-size:12px;margin-left:auto}
 .userbadge .mini{color:var(--mut)}
 .mobLogout{display:none}
+.mobFilterBtn{display:none}
+.hamburger{display:none}
+.navbackdrop{display:none}
+.tbarFilters{display:contents}
 @media print{.side,.tbar,.noprint{display:none !important}.app{display:block}.modal{position:static;background:none;padding:0}.mbox{max-height:none;box-shadow:none}}
 @media (max-width:860px){
   .app{display:block;height:auto;min-height:100vh}
-  .side{position:fixed;left:0;right:0;bottom:0;top:auto;flex-direction:row;align-items:stretch;padding:0;z-index:20;overflow-x:auto;overflow-y:hidden;border-top:1px solid rgba(255,255,255,.12);height:64px}
-  .logos,.sfoot{display:none}
-  .grupo{display:none}
-  .nitem{flex-direction:column;justify-content:center;gap:2px;padding:8px 12px;font-size:10px;border-left:none;border-top:3px solid transparent;white-space:nowrap;flex:none}
-  .nitem.nion{border-top-color:var(--ac);border-left-color:transparent}
-  .nico{width:20px;height:20px}
-  .main{padding-bottom:64px}
+  .side{position:fixed;left:-260px;top:0;bottom:0;width:240px;flex-direction:column;z-index:50;overflow-y:auto;transition:left .22s ease;box-shadow:2px 0 24px rgba(0,0,0,.3)}
+  .side.navOpen{left:0}
+  .navbackdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40}
+  .navbackdrop.show{display:block}
+  .hamburger{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:#f2f5f7;border:1px solid var(--bd);color:var(--ink);font-size:16px;cursor:pointer;order:0;flex:none}
+  .main{padding-bottom:0}
   .tbar{position:sticky;top:0;padding:10px 12px;gap:8px}
   .h1{font-size:15px;flex:1;order:1;min-width:0}
   .seg,.datew,.sel,.userbadge{order:2}
@@ -246,7 +249,10 @@ select.sel[multiple]{height:80px}
 @media (max-width:480px){
   .cards{grid-template-columns:1fr}
   .frm{grid-template-columns:1fr}
-  .seg,.datew,.sel{display:none}
+  .tbarFilters{display:none;width:100%}
+  .tbarFilters.mobOpen{display:flex;flex-direction:column;gap:8px;order:3}
+  .tbarFilters.mobOpen .seg,.tbarFilters.mobOpen .datew,.tbarFilters.mobOpen .sel{width:100%}
+  .mobFilterBtn{display:inline-flex;align-items:center;gap:4px;background:#f2f5f7;border:1px solid var(--bd);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--mut);cursor:pointer;font-family:inherit;order:2}
   .tbar{flex-wrap:wrap}
 }
 .panel{overflow-x:auto}
@@ -271,7 +277,8 @@ select.sel[multiple]{height:80px}
 </sc-if>
 <sc-if value="{{showApp}}" hint-placeholder-val="{{true}}">
 <div class="app">
-<aside class="side noprint">
+<div class="navbackdrop {{navBackdropCls}}" onClick="{{closeMobNav}}"></div>
+<aside class="side noprint {{navOpenCls}}">
 <div class="logos"><img class="logoimg" src="assets/logo-tubonord.png" alt="Tubonord"><div class="grupo upper fw6">SISTEMA DE GESTÃO INDUSTRIAL</div></div>
 <div class="nitem {{cDash}}" onClick="{{nav.dash}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>Dashboard</div>
 <div class="nitem {{cProd}}" onClick="{{nav.prod}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"></path></svg>Produção</div>
@@ -291,13 +298,17 @@ select.sel[multiple]{height:80px}
 </aside>
 <main class="main">
 <div class="tbar">
+<button class="hamburger" onClick="{{toggleMobNav}}" title="Menu">☰</button>
 <div class="h1">{{viewTitle}}</div>
 <button class="mobLogout" onClick="{{doLogout}}" title="Sair">⏻</button>
+<button class="mobFilterBtn" onClick="{{toggleMobFilters}}" title="Filtros">🔎 Filtros</button>
+<div class="tbarFilters {{mobFiltersCls}}">
 <div class="seg"><button class="segb {{uAll}}" onClick="{{unid.all}}">Grupo</button><button class="segb {{uNord}}" onClick="{{unid.nord}}">Tubonord</button></div>
 <div class="datew"><input class="datein" type="date" value="{{dataIniV}}" onChange="{{onDataIni}}"><span class="datesep">até</span><input class="datein" type="date" value="{{dataFimV}}" onChange="{{onDataFim}}"></div>
 <select class="sel" onChange="{{onFMaq}}" value="{{fMaqV}}"><option value="ALL">Todas as máquinas</option><sc-for list="{{maqFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select>
 <select class="sel" onChange="{{onFOper}}" value="{{fOperV}}"><option value="ALL">Todos os operadores</option><sc-for list="{{operFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select>
 <select class="sel" onChange="{{onFTurno}}" value="{{fTurnoV}}"><option value="ALL">Todos os turnos</option><option value="A">1º Turno</option><option value="B">2º Turno</option><option value="C">3º Turno</option></select>
+</div>
 </div>
 <div class="content">
 
@@ -578,6 +589,7 @@ select.sel[multiple]{height:80px}
 </div></div></sc-for>
 <div class="grow" style="border:none"><div class="gmlab" style="background:none"></div><div class="gtrack" style="height:20px"><div class="gtoday" style="{{ganttToday}}"></div><div class="gtodaylab" style="{{ganttToday}}">HOJE</div></div></div>
 </div></div>
+<sc-if value="{{ganttVazio}}" hint-placeholder-val="{{false}}"><div class="empty">Nenhum pedido em aberto cruza o período selecionado ({{ganttIniLabel}} a {{ganttFimLabel}}). Amplie o intervalo de datas no topo para ver mais.</div></sc-if>
 <div class="glegend"><div class="glg"><span class="glgc gbProd"></span>Em produção</div><div class="glg"><span class="glgc gbFila"></span>Em espera / fila</div><div class="glg"><span class="glgc gbAtras"></span>Atrasado</div><div class="glg"><span class="glgc gbPronto"></span>Pronto</div></div>
 </div>
 <div class="panel"><div class="ptit">Status da Carteira <span class="mini fw5">— indicadores de produção e logística</span></div>
@@ -592,7 +604,7 @@ select.sel[multiple]{height:80px}
 <div class="card"><div class="klab">Taxa de Entrega</div><div class="kval {{stK.entrCls}}">{{stK.entrPct}}%</div><div class="ksub">entregues ÷ concluídos</div></div>
 </div>
 </div>
-<div class="panel" id="p-carteira"><div class="ptit"><button class="chevbtn" data-k="carteira" onClick="{{togglePanel}}">{{carteiraChev}}</button>Carteira de Pedidos <span class="mini fw5">quantidade e status atualizados automaticamente pelos apontamentos de produção · {{pedRows.length}} pedido(s)</span>
+<div class="panel" id="p-carteira"><div class="ptit"><button class="chevbtn" data-k="carteira" onClick="{{togglePanel}}">{{carteiraChev}}</button>Carteira de Pedidos <span class="mini fw5">quantidade e status atualizados automaticamente pelos apontamentos de produção · {{pedRowsResumo}}</span>
 <div class="pwbox" style="margin-left:auto;gap:8px">
 <select class="sel" multiple onChange="{{onPedStatusFilter}}">
 <option value="aberto">Em Aberto</option>
@@ -615,7 +627,7 @@ select.sel[multiple]{height:80px}
 </tbody></table></div>
 </sc-if>
 </div>
-<div class="panel"><div class="ptit"><button class="chevbtn" data-k="metas" onClick="{{togglePanel}}">{{metasChev}}</button>Metas de Velocidade por Produto × Cliente <span class="mini fw5">(edite em Cadastros → Produtos) · {{metaRows.length}} produto(s)</span></div>
+<div class="panel"><div class="ptit"><button class="chevbtn" data-k="metas" onClick="{{togglePanel}}">{{metasChev}}</button>Metas de Velocidade por Produto × Cliente <span class="mini fw5">(edite em Cadastros → Produtos) · {{metaRowsResumo}}</span></div>
 <sc-if value="{{metasOpen}}" hint-placeholder-val="{{true}}">
 <div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Produto</th><th>Cliente</th><th>Tipo de Máquina</th><th>Peso Ideal (kg/pç)</th><th>Velocidade Alvo</th><th>Capacidade/turno (8h)</th></tr></thead><tbody>
 <sc-for list="{{metaRows}}" as="m" hint-placeholder-count="8"><tr><td class="fw6">{{m.nome}}</td><td>{{m.cliente}}</td><td>{{m.tipo}}</td><td class="num">{{m.peso}}</td><td class="num">{{m.vel}}</td><td class="num">{{m.cap}} pç</td></tr></sc-for>
@@ -839,14 +851,15 @@ class Component extends DCLogic {
       valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, pwShow:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false,
       sim:{}, simOver:null, solicOpen:false, tourOn:false, tourStep:0, tourPlaying:false,
       chat:[], chatInput:'', chatBusy:false, toast:null,
-      panelOpen:{carteira:true, metas:true, atrasados:true},
+      panelOpen:{carteira:false, metas:false, atrasados:true},
       pedCardFilter:[], pedColFilters:{},
       importF23File:null, importPcpFile:null, importF23Name:'Nenhum arquivo selecionado', importPcpName:'Nenhum arquivo selecionado', importBusy:false, importMsg:'', importMsgErr:false,
+      mobFiltersOpen:false, mobNavOpen:false,
       forms:{ prod:this.blankProd(), os:this.blankOs(), par:this.blankPar(),
         ped:this.blankPed(), aus:this.blankAus(),
         fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:''}, osm:{}, solic:{motivo:''}, cad:{} }
     };
-    this.nav = {}; ['dash','prod','par','manut','pcp','rh','cad','ia','man'].forEach(v=>{ this.nav[v]=()=>this.setState({view:v}); });
+    this.nav = {}; ['dash','prod','par','manut','pcp','rh','cad','ia','man'].forEach(v=>{ this.nav[v]=()=>this.setState({view:v,mobNavOpen:false}); });
     this.unid = { all:()=>this.setState({unidade:'ALL'}), nord:()=>this.setState({unidade:'NORD'}), cone:()=>this.setState({unidade:'CONE'}) };
   }
   blankProd(){ const d=new Date().toISOString().slice(0,10); return {editId:null,dataInicio:d,horaInicio:'06:00',dataFim:d,horaFim:'14:00',data:d,maquina:'',turno:'A',operador:'',pedido:'',produto:'',qtdPc:'',refugoKg:'',tempoTurnoMin:480,paradas:[]}; }
@@ -977,6 +990,9 @@ class Component extends DCLogic {
   onPedColFilter = (e)=>{ const col=e.target.dataset.col; const vals=Array.from(e.target.selectedOptions).map(o=>o.value); this.setState({pedColFilters:{...this.state.pedColFilters,[col]:vals}}); };
   clearPedFilters = ()=>{ this.setState({pedCardFilter:[], pedColFilters:{}}); };
   togglePanel = (e)=>{ const k=e.currentTarget.dataset.k; this.setState({panelOpen:{...this.state.panelOpen,[k]:!this.state.panelOpen[k]}}); };
+  toggleMobFilters = ()=>this.setState({mobFiltersOpen:!this.state.mobFiltersOpen});
+  toggleMobNav = ()=>this.setState({mobNavOpen:!this.state.mobNavOpen});
+  closeMobNav = ()=>this.setState({mobNavOpen:false});
   loadXlsxLib = ()=>{
     if(typeof XLSX!=='undefined') return Promise.resolve();
     if(this._xlsxLoading) return this._xlsxLoading;
@@ -2139,13 +2155,14 @@ class Component extends DCLogic {
       entregaFinal:uniqOpts(pedRowsAll,'entregaFinal'), replan:uniqOpts(pedRowsAll,'replan'),
       statusProd:uniqOpts(pedRowsAll,'statusProd'), statusLog:uniqOpts(pedRowsAll,'statusLog')
     };
-    const pedRows=pedRowsAll.filter(r=>matchesCardFilter(r._calc)
+    const pedRowsFiltered=pedRowsAll.filter(r=>matchesCardFilter(r._calc)
       && colOk(r.nr,pedColFilters.nr) && colOk(r.cliente,pedColFilters.cliente) && colOk(r.produto,pedColFilters.produto)
       && colOk(r.maq,pedColFilters.maq) && colOk(r.qtd,pedColFilters.qtd) && colOk(r.prodz,pedColFilters.prodz)
       && colOk(r.entrega,pedColFilters.entrega) && colOk(r.progProd,pedColFilters.progProd) && colOk(r.progReal,pedColFilters.progReal)
       && colOk(r.entregaFinal,pedColFilters.entregaFinal) && colOk(r.replan,pedColFilters.replan)
       && colOk(r.statusProd,pedColFilters.statusProd) && colOk(r.statusLog,pedColFilters.statusLog)
     ).map(({_calc,...r})=>r);
+    const pedRows=pedRowsFiltered.slice(0,300);
     // indicadores de status da carteira
     const cAll=pedsUnid.map(p=>({p,c:this.pedidoCalc(p)}));
     const cnt=f=>cAll.filter(f).length;
@@ -2164,8 +2181,9 @@ class Component extends DCLogic {
       cAberto:pedCardFilter.includes('aberto')?'cardOn':'',cConcluido:pedCardFilter.includes('concluido')?'cardOn':'',cNaoConc:pedCardFilter.includes('naoConc')?'cardOn':'',
       cCancelado:pedCardFilter.includes('cancelado')?'cardOn':'',cPne:pedCardFilter.includes('pne')?'cardOn':'',cPe:pedCardFilter.includes('pe')?'cardOn':''};
     this._iaCtx+='\nCarteira: '+stK.aberto+' em aberto, '+stK.concluido+' concluídos, '+stK.naoConc+' não concluídos, '+stK.cancelado+' cancelados; logística: '+stK.pne+' pronto e não entregue, '+stK.pe+' entregues. Conclusão '+concPct+'%, entrega '+entrPct+'%.';
-    const metaRows=db.produtos.map(p=>({nome:p.nome,cliente:(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',tipo:p.maquinaTipo,
+    const metaRowsAll=db.produtos.map(p=>({nome:p.nome,cliente:(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',tipo:p.maquinaTipo,
       peso:String(p.pesoIdeal),vel:p.velAlvo+' '+p.unid,cap:this.fmtN(p.velAlvo*480*0.85)}));
+    const metaRows=metaRowsAll.slice(0,300);
     // ---- Simulador de Programação ----
     const simCanDrag=perfilAtual==='Coordenador de Produção';
     const simPeds=pedsUnid.filter(p=>!this.pedidoCalc(p).status.startsWith('PRONTO E ENTREGUE'));
@@ -2265,24 +2283,29 @@ class Component extends DCLogic {
           pesoMax:pr.pesoMax?pr.pesoMax+' kg':'—',qtd:this.fmtN(p.qtd)+' '+p.unid};});
       return{maq:mq.nome||mid,n:itens.length,tot:this.fmtN(progByMaq[mid].reduce((x,p)=>x+(+p.qtd||0),0)),itens};
     });
-    // ---- Gantt de máquinas ----
+    // ---- Gantt de máquinas — janela = filtro de data selecionado no topo ----
     const DAY=86400000;
     const gStart=(p)=>p.dataProgramada||this.pedidoCalc(p).progReal||p.dataPedido||p.dataEntrega;
     const gEnd=(p)=>{ const c=this.pedidoCalc(p); if(c.entregaFinal)return c.entregaFinal; if(p.dataEntrega&&p.dataEntrega!=='IMEDIATO')return p.dataEntrega; const st=gStart(p); const d=new Date(st+'T12:00:00'); d.setDate(d.getDate()+3); return d.toISOString().slice(0,10); };
-    const gPeds=pedsUnid.filter(p=>gStart(p)&&!this.pedidoCalc(p).status.startsWith('PRONTO E ENTREGUE'));
+    const ganttIni=new Date(s.dataIni+'T00:00:00').getTime(), ganttFim=new Date(s.dataFim+'T23:59:59').getTime();
+    const gPeds=pedsUnid.filter(p=>{
+      if(!gStart(p)||this.pedidoCalc(p).status.startsWith('PRONTO E ENTREGUE')) return false;
+      const a=new Date(gStart(p)+'T12:00:00').getTime(), b=new Date(gEnd(p)+'T12:00:00').getTime();
+      return b>=ganttIni && a<=ganttFim; // só entra se o intervalo do pedido cruza a janela filtrada
+    });
     let ganttRows=[],ganttTicks=[],ganttToday={};
     if(gPeds.length){
-      let minD=Infinity,maxD=-Infinity;
-      for(const p of gPeds){ const a=new Date(gStart(p)+'T12:00:00').getTime(); const b=new Date(gEnd(p)+'T12:00:00').getTime(); if(a<minD)minD=a; if(b>maxD)maxD=b; }
+      let minD=ganttIni, maxD=ganttFim;
       const todayT=new Date(hoje+'T12:00:00').getTime();
-      minD=Math.min(minD,todayT); maxD=Math.max(maxD,todayT);
-      minD-=2*DAY; maxD+=2*DAY;
       const span=Math.max(DAY,maxD-minD);
       const pctX=t=>((t-minD)/span*100);
-      // ticks semanais
-      const first=new Date(minD); first.setHours(12,0,0,0); first.setDate(first.getDate()-((first.getDay()+6)%7));
-      for(let t=first.getTime();t<=maxD;t+=7*DAY){ const x=pctX(t); if(x<-2||x>100)continue; ganttTicks.push({style:{left:x+'%'},labStyle:{left:x+'%'},label:this.fmtD(new Date(t).toISOString().slice(0,10))}); }
-      ganttToday={left:pctX(todayT)+'%'};
+      // ticks (diário se a janela for curta, semanal se for longa)
+      const nDays=Math.round(span/DAY);
+      const tickStep=nDays<=14?DAY:7*DAY;
+      const first=new Date(minD); first.setHours(12,0,0,0);
+      if(tickStep===7*DAY) first.setDate(first.getDate()-((first.getDay()+6)%7));
+      for(let t=first.getTime();t<=maxD;t+=tickStep){ const x=pctX(t); if(x<-2||x>100)continue; ganttTicks.push({style:{left:x+'%'},labStyle:{left:x+'%'},label:this.fmtD(new Date(t).toISOString().slice(0,10))}); }
+      ganttToday=(todayT>=minD&&todayT<=maxD)?{left:pctX(todayT)+'%',display:'block'}:{display:'none'};
       const maqList=maqs;
       ganttRows=maqList.map(m=>{
         const bars=gPeds.filter(p=>p.maquina===m.id).sort((a,b)=>gStart(a).localeCompare(gStart(b))).map(p=>{
@@ -2344,7 +2367,7 @@ class Component extends DCLogic {
       openPw:this.openPw,closePw:this.closePw,onPwInput:this.onPwInput,onPwKey:this.onPwKey,confirmPw:this.confirmPw,lockValor:this.lockValor,togglePwShow:this.togglePwShow,
       pwOpen:s.pwOpen,pwInput:s.pwInput,pwErr:s.pwErr,pwInputType:s.pwShow?'text':'password',valorUnlocked:s.valorUnlocked,valorLocked:!s.valorUnlocked,
       valorInpType:canVerValor?'number':'password',valorPh:canVerValor?'':'•••• (libere para ver)',
-      ganttRows,ganttTicks,ganttToday,
+      ganttRows,ganttTicks,ganttToday,ganttVazio:!ganttRows.length,ganttIniLabel:this.fmtD(s.dataIni),ganttFimLabel:this.fmtD(s.dataFim),
       simCols,sim,simRows,simCanDrag:true,simLocked:false,
       solK,solRows,solVazio:solRows.length===0,solAct:this.solAct,
       openSolic:this.openSolic,closeSolic:this.closeSolic,sendSolic:this.sendSolic,solicOpen:s.solicOpen,fSolic:s.forms.solic,
@@ -2399,7 +2422,10 @@ class Component extends DCLogic {
       tecOpts:db.operadores.filter(o=>o.funcao==='Técnico de Manutenção'),osRows,osK,
       fPed,pedEditing:!!fPed.editId,pedFormTit:fPed.editId?'Editar Pedido':'Novo Pedido',pedSaveLbl:fPed.editId?'Salvar alterações':'Criar pedido',
       cliOpts:db.clientes,prodCliOpts:db.produtos.filter(p=>!fPed.cliente||p.cliente===fPed.cliente).map(p=>({id:p.id,label:p.nome})),
-      pedRows,metaRows,stK,pedCardFilter,pedColOptions,pedColFilters:{nr:[],cliente:[],produto:[],maq:[],qtd:[],prodz:[],entrega:[],progProd:[],progReal:[],entregaFinal:[],replan:[],statusProd:[],statusLog:[],...pedColFilters},pedCardClick:this.pedCardClick,onPedStatusFilter:this.onPedStatusFilter,
+      pedRows,metaRows,stK,
+      pedRowsResumo:pedRowsFiltered.length>300?('mostrando 300 de '+pedRowsFiltered.length+' — refine os filtros para ver outros'):(pedRowsFiltered.length+' pedido(s)'),
+      metaRowsResumo:metaRowsAll.length>300?('mostrando 300 de '+metaRowsAll.length):(metaRowsAll.length+' produto(s)'),
+      pedCardFilter,pedColOptions,pedColFilters:{nr:[],cliente:[],produto:[],maq:[],qtd:[],prodz:[],entrega:[],progProd:[],progReal:[],entregaFinal:[],replan:[],statusProd:[],statusLog:[],...pedColFilters},pedCardClick:this.pedCardClick,onPedStatusFilter:this.onPedStatusFilter,
       onPedColFilter:this.onPedColFilter,clearPedFilters:this.clearPedFilters,pedFiltroAtivo:!!(pedCardFilter.length||Object.values(pedColFilters).some(v=>v&&v.length)),
       pedStatusResumo:pedCardFilter.length?pedCardFilter.length+' selecionado(s)':'todos',
       togglePanel:this.togglePanel,carteiraOpen:s.panelOpen.carteira!==false,metasOpen:s.panelOpen.metas!==false,
@@ -2412,6 +2438,8 @@ class Component extends DCLogic {
       toastOn:!!s.toast,toastMsg:s.toast||'',
       showLoading:false,showLogin:false,showApp:true,
       isAdmin:u.perfil==='Administrador',doLogout:this.doLogout,
+      toggleMobFilters:this.toggleMobFilters,mobFiltersCls:s.mobFiltersOpen?'mobOpen':'',
+      toggleMobNav:this.toggleMobNav,closeMobNav:this.closeMobNav,navOpenCls:s.mobNavOpen?'navOpen':'',navBackdropCls:s.mobNavOpen?'show':'',
       syncOnline:s.syncStatus==='online', syncOffline:s.syncStatus==='offline',
       syncWho:s.syncUpdatedBy?('últ. atualização: '+s.syncUpdatedBy):'',
       onImportF23File:this.onImportF23File,onImportPcpFile:this.onImportPcpFile,processImport:this.processImport,
