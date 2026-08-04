@@ -1333,8 +1333,14 @@ class Component extends DCLogic {
   }
   pedidoCalc(p){
     const db=this.state.db;
-    const aps=db.apontamentos.filter(a=>a.pedido===p.id);
-    const prodz=aps.reduce((x,a)=>x+(+a.qtdPc||0),0);
+    if(!this._apsByPedido || this._apsByPedidoRef!==db.apontamentos){
+      const map=new Map();
+      for(const a of db.apontamentos){ if(!a.pedido) continue; if(!map.has(a.pedido)) map.set(a.pedido,[]); map.get(a.pedido).push(a); }
+      this._apsByPedido=map; this._apsByPedidoRef=db.apontamentos;
+    }
+    const aps=this._apsByPedido.get(p.id)||[];
+    const unid=(p.unid||'').trim().toLowerCase();
+    const prodz=aps.reduce((x,a)=>x+(unid==='kg'?(+a.qtdKg||0):(+a.qtdPc||0)),0);
     let status=p.status;
     if(!status.startsWith('PRONTO')){
       if(p.qtd&&prodz>=p.qtd) status='PRONTO E NÃO ENTREGUE';
