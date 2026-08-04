@@ -309,6 +309,16 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 </div>
 </div>
 <div class="duo">
+<div class="panel"><div class="ptit">Pareto de Desperdício por Máquina <span class="mini fw5">(kg no período)</span></div>
+<sc-for list="{{paretoRefugo}}" as="p" hint-placeholder-count="4"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.kg}} kg</div></div></sc-for>
+</div>
+<div class="panel"><div class="ptit">Desperdício Semanal <span class="mini fw5">(% do peso produzido — tendência)</span></div>
+<div class="trend posrel">
+<sc-for list="{{trendRefugo}}" as="t" hint-placeholder-count="6"><div class="tcol"><div class="tval">{{t.val}}%</div><div class="tbarv" style="{{t.style}}"></div><div class="tlab">{{t.label}}</div></div></sc-for>
+</div>
+</div>
+</div>
+<div class="duo">
 <div class="panel"><div class="ptit">Produção Diária <span class="mini fw5">(kg)</span></div>
 <div class="dbars"><sc-for list="{{prodDia}}" as="d" hint-placeholder-count="10"><div class="dbar" style="{{d.style}}" title="{{d.tip}}"></div></sc-for></div>
 <div class="dlegend"><span>{{prodDiaIni}}</span><span>pico: {{prodDiaMax}} kg</span><span>{{prodDiaFim}}</span></div>
@@ -1661,6 +1671,12 @@ class Component extends DCLogic {
     const totPar=Object.values(parMap).reduce((a,b)=>a+b,0)||1;
     const maxPar=Math.max(1,...Object.values(parMap));
     const pareto=Object.entries(parMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([nome,min])=>({nome,min:this.fmtN(min),pct:Math.round(min/totPar*100),style:{width:Math.max(2,Math.round(min/maxPar*100))+'%'}}));
+    // pareto de desperdício (kg) por máquina
+    const refMap={};
+    for(const a of aps){ const mq=db.maquinas.find(m=>m.id===a.maquina); const nome=mq?mq.nome:a.maquina; refMap[nome]=(refMap[nome]||0)+(+a.refugoKg||0); }
+    const totRef=Object.values(refMap).reduce((a,b)=>a+b,0)||1;
+    const maxRef=Math.max(1,...Object.values(refMap));
+    const paretoRefugo=Object.entries(refMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([nome,kg])=>({nome,kg:this.fmtN(kg),pct:Math.round(kg/totRef*100),style:{width:Math.max(2,Math.round(kg/maxRef*100))+'%',background:'var(--warn)'}}));
     // trend semanal
     const trend=[];
     const fim=new Date(s.dataFim+'T12:00:00');
@@ -1672,6 +1688,16 @@ class Component extends DCLogic {
       const wp=pars.filter(p=>p.data>=i0&&p.data<i1);
       const v=Math.round(this.calcMachine(wa,wp,[]).oee*100);
       trend.push({label:this.fmtD(i0),val:v,style:{height:Math.max(3,v)+'%',background:v>=metaOee?'var(--ok)':'#31465a'}});
+    }
+    // tendência semanal de desperdício (%)
+    const trendRefugo=[];
+    for(let w=nW-1;w>=0;w--){
+      const d1=new Date(fim);d1.setDate(d1.getDate()-w*7);const d0=new Date(d1);d0.setDate(d0.getDate()-7);
+      const i0=d0.toISOString().slice(0,10),i1=d1.toISOString().slice(0,10);
+      const wa=aps.filter(a=>a.data>=i0&&a.data<i1);
+      const wKg=wa.reduce((x,a)=>x+(+a.qtdKg||0),0), wRef=wa.reduce((x,a)=>x+(+a.refugoKg||0),0);
+      const v=wKg?+((wRef/wKg)*100).toFixed(1):0;
+      trendRefugo.push({label:this.fmtD(i0),val:v,style:{height:Math.max(3,Math.min(100,v*8))+'%',background:v<=3?'var(--ok)':v<=6?'var(--warn)':'var(--bad)'}});
     }
     // produção diária
     const dayMap={},dayMapPc={};
@@ -2069,7 +2095,7 @@ class Component extends DCLogic {
       viewTitle:titles[s.view],uAll:s.unidade==='ALL'?'segon':'',uNord:s.unidade==='NORD'?'segon':'',uCone:s.unidade==='CONE'?'segon':'',
       dataIniV:s.dataIni,dataFimV:s.dataFim,fMaqV:s.fMaq,fTurnoV:s.fTurno,fOperV:s.fOper,userV:s.user,userNome:u.nome,userPerfil:u.perfil,
       maqFilterOpts:maqs,operFilterOpts:db.operadores,userOpts:db.usuarios,metaOeeV:metaOee,
-      kpi,maqRows,pareto,trend,insTop:insights.slice(0,3),insights,
+      kpi,maqRows,pareto,trend,paretoRefugo,trendRefugo,insTop:insights.slice(0,3),insights,
       prodDia,prodDiaPc,prodDiaIni:days.length?this.fmtD(days[0]):'—',prodDiaFim:days.length?this.fmtD(days[days.length-1]):'—',prodDiaMax:this.fmtN(maxDay),prodDiaMaxPc:this.fmtN(maxDayPc),
       mapaUf,mapaList,ader,aderWk,entr,
       fProd,fProdParadas:fProd.paradas.map((p,i)=>({...p,i})),prodEditing:!!fProd.editId,prodFormTit:fProd.editId?'Editar Apontamento':'Novo Apontamento de Produção',prodSaveLbl:fProd.editId?'Salvar alterações':'Salvar apontamento',
