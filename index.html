@@ -864,8 +864,8 @@ class Component extends DCLogic {
         return null;
       };
 
-      // ---------- PCP ----------
-      let pcpByKey={};
+      // ---------- PCP ---------- (chave composta: mesmo código se repete entre abas Tub7/Tub8)
+      let pcpByCKey={};
       if(importPcpFile){
         const buf=await importPcpFile.arrayBuffer();
         const wb=XLSX.read(buf,{type:'array',cellDates:true});
@@ -878,10 +878,12 @@ class Component extends DCLogic {
           const cKey=hm['NRO CONTROLE PEDIDO'], cNr=hm['Nº PEDIDO\nCLIENTE'], cCli=hm['CLIENTE'], cProd=hm['PRODUTO'],
                 cPesoI=hm['PESO \nIDEAL (Kg)'], cQtd=hm['QUANT. \nSOLICITADA'], cUnid=hm['UNID'],
                 cVel=hm['VELOCIDADE ALVO\nPRODUÇÃO'], cStatus=hm['STATUS PEDIDO'], cDPed=hm['DATA\nPEDIDO'], cDEnt=hm['DATA \nENTREGA'];
+          const mach=sheetToMach[sn];
           for(let r=hr+2;r<rows.length;r++){
             const row=rows[r]; if(!row) continue;
             const key=norm(cKey!=null?row[cKey]:null); if(!key) continue;
-            pcpByKey[key]={ maquina:sheetToMach[sn], nrCliente:norm(cNr!=null?row[cNr]:null), cliente:norm(cCli!=null?row[cCli]:null),
+            const ckey=mach+'||'+key;
+            pcpByCKey[ckey]={ maquina:mach, nrCliente:norm(cNr!=null?row[cNr]:null), cliente:norm(cCli!=null?row[cCli]:null),
               produto:norm(cProd!=null?row[cProd]:null),
               pesoIdeal: cPesoI!=null && typeof row[cPesoI]==='number'?row[cPesoI]:null,
               qtd: cQtd!=null? (typeof row[cQtd]==='number'?row[cQtd]:(parseFloat(row[cQtd])||0)) : 0,
@@ -927,7 +929,7 @@ class Component extends DCLogic {
             const paradas=[];
             motivoCols.forEach((ci,idx)=>{ if(ci==null) return; const v=row[ci]; if(typeof v==='number' && v>0) paradas.push({motivo:motivoIds[idx], min:Math.round(v*10)/10}); });
             apontamentosNovos.push({ id:'AP'+String(apid++).padStart(5,'0'), data:dataIso, maquina:mach, turno:norm(cEquipe!=null?row[cEquipe]:null)||'A',
-              operadorRaw:norm(cOper!=null?row[cOper]:null)||null, pedidoKey:key||null,
+              operadorRaw:norm(cOper!=null?row[cOper]:null)||null, pedidoCKey:key?(mach+'||'+key):null,
               qtdPc: cQtdPc!=null?(typeof row[cQtdPc]==='number'?row[cQtdPc]:(parseFloat(row[cQtdPc])||0)):0,
               qtdKg: cQtdKg!=null && typeof row[cQtdKg]==='number'?Math.round(row[cQtdKg]*100)/100:0,
               refugoKg: cDesp!=null && typeof row[cDesp]==='number'?Math.round(row[cDesp]*100)/100:0,
@@ -961,44 +963,52 @@ class Component extends DCLogic {
       const operadoresNovos=[...opMap.values()].map(o=>({ id:o.id, nome:o.nome, unidade:'NORD', funcao:'Operador',
         turno:Object.entries(o.turnoCount).sort((x,y)=>y[1]-x[1])[0]?.[0]||'A' }));
 
-      // ---------- produtos / pedidos ----------
-      const existingKeys=new Set((db.apontamentos||[]).map(a=>a.pedido).filter(Boolean).map(id=>id.replace(/^PD-/,'')));
-      const newlyLinkedKeys=new Set(apontamentosNovos.filter(a=>a.pedidoKey && pcpByKey[a.pedidoKey]).map(a=>a.pedidoKey));
-      const linkedKeys=new Set([...existingKeys,...newlyLinkedKeys]);
+      // ---------- produtos / pedidos (chave composta) ----------
+      const machPrefixes=['TUB03','TUB07','TUB08','CONE02'];
+      const existingCKeys=new Set((db.apontamentos||[]).map(a=>a.pedido).filter(Boolean).map(id=>{
+        const rest=id.replace(/^PD-/,'');
+        for(const mp of machPrefixes){ if(rest.startsWith(mp+'-')) return mp+'||'+rest.slice(mp.length+1); }
+        return rest;
+      }));
+      const newlyLinkedCKeys=new Set(apontamentosNovos.filter(a=>a.pedidoCKey && pcpByCKey[a.pedidoCKey]).map(a=>a.pedidoCKey));
+      const linkedCKeys=new Set([...existingCKeys,...newlyLinkedCKeys]);
       const openStatuses=new Set(['Em aberto','EM ABERTO','A SER PRODUZIDO - DENTRO DO ESTADO','A SER PRODUZIDO - FORA DO ESTADO','EM PRODUÇÃO']);
-      const openKeys=new Set(Object.keys(pcpByKey).filter(k=>openStatuses.has((pcpByKey[k].status||'').trim())));
-      const finalKeys=importPcpFile? new Set([...linkedKeys,...openKeys]) : null;
+      const openCKeys=new Set(Object.keys(pcpByCKey).filter(k=>openStatuses.has((pcpByCKey[k].status||'').trim())));
+      const finalCKeys=importPcpFile? new Set([...linkedCKeys,...openCKeys]) : null;
 
-      let produtosNovos=null, pedidosNovos=null, keyToProdId={}, keyToPedId={};
-      if(finalKeys){
+      let produtosNovos=null, pedidosNovos=null, ckeyToProdId={}, ckeyToPedId={};
+      if(finalCKeys){
         produtosNovos=[]; pedidosNovos=[];
-        for(const key of finalKeys){
-          const rec=pcpByKey[key]; if(!rec) continue;
-          const prodId='PR-'+key, pedId='PD-'+key;
-          keyToProdId[key]=prodId; keyToPedId[key]=pedId;
+        for(const ckey of finalCKeys){
+          const rec=pcpByCKey[ckey]; if(!rec) continue;
+          const safeId=ckey.replace(/\|\|/g,'-');
+          const prodId='PR-'+safeId, pedId='PD-'+safeId;
+          ckeyToProdId[ckey]=prodId; ckeyToPedId[ckey]=pedId;
           const clienteId=getCliente(rec.cliente);
           const tipo=rec.maquina==='CONE02'?'Conicaleira':'Tubeteira';
-          produtosNovos.push({ id:prodId, nome:(rec.produto||key).slice(0,90), cliente:clienteId, maquinaTipo:tipo,
+          produtosNovos.push({ id:prodId, nome:(rec.produto||ckey).slice(0,90), cliente:clienteId, maquinaTipo:tipo,
             diamMm:0, compMm:0, paredeMm:0, pesoIdeal:rec.pesoIdeal||0, pesoPadrao:rec.pesoIdeal||0,
             pesoMin:rec.pesoIdeal?+(rec.pesoIdeal*0.96).toFixed(4):0, pesoMax:rec.pesoIdeal?+(rec.pesoIdeal*1.04).toFixed(4):0,
             velAlvo:rec.velAlvo||null, unid:rec.unid||'pç' });
           let de=fmtDateCell(rec.dataEntrega); if(!de) de='IMEDIATO';
           let dp=fmtDateCell(rec.dataPedido); if(!dp) dp=(de!=='IMEDIATO'?de:'2025-08-01');
-          pedidosNovos.push({ id:pedId, nrCliente:rec.nrCliente||key, cliente:clienteId, produto:prodId, maquina:rec.maquina,
+          pedidosNovos.push({ id:pedId, nrCliente:rec.nrCliente||ckey, cliente:clienteId, produto:prodId, maquina:rec.maquina,
             qtd:rec.qtd||0, unid:rec.unid||'pç', valor:0, dataPedido:dp, dataEntrega:de, status:rec.status||'Em aberto', ordem:1 });
         }
       }
       for(const a of apontamentosNovos){
-        if(a.pedidoKey && keyToPedId[a.pedidoKey]){ a.pedido=keyToPedId[a.pedidoKey]; a.produto=keyToProdId[a.pedidoKey]; }
+        if(a.pedidoCKey && ckeyToPedId[a.pedidoCKey]){ a.pedido=ckeyToPedId[a.pedidoCKey]; a.produto=ckeyToProdId[a.pedidoCKey]; }
         else { a.pedido=null; a.produto=null; }
-        delete a.pedidoKey; delete a.operadorRaw;
+        delete a.pedidoCKey; delete a.operadorRaw;
       }
       if(pedidosNovos){
         const aptsForCalc=importF23File?apontamentosNovos:db.apontamentos;
-        const prodzByPed={};
-        for(const a of aptsForCalc){ if(a.pedido) prodzByPed[a.pedido]=(prodzByPed[a.pedido]||0)+(+a.qtdPc||0); }
+        const prodzPc={}, prodzKg={};
+        for(const a of aptsForCalc){ if(a.pedido){ prodzPc[a.pedido]=(prodzPc[a.pedido]||0)+(+a.qtdPc||0); prodzKg[a.pedido]=(prodzKg[a.pedido]||0)+(+a.qtdKg||0); } }
         for(const p of pedidosNovos){
-          const prodz=prodzByPed[p.id]||0; const raw=(p.status||'').trim().toUpperCase();
+          const unid=(p.unid||'').trim().toLowerCase();
+          const prodz = unid==='kg' ? (prodzKg[p.id]||0) : (prodzPc[p.id]||0);
+          const raw=(p.status||'').trim().toUpperCase();
           if(raw.startsWith('CANCELADO')){ p.status='CANCELADO'; continue; }
           if(p.qtd>0 && prodz>=0.9*p.qtd) p.status='PRONTO E ENTREGUE';
           else if(prodz>0) p.status='EM PRODUÇÃO';
