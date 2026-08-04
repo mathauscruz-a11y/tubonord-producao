@@ -35,7 +35,7 @@ export default async (req, context) => {
 
     const body = {
       systemInstruction: { parts: [{ text: system || 'Você é um assistente de análise industrial. Responda em português do Brasil.' }] },
-      contents: [{ role: 'user', parts: [{ text: 'DADOS DO PERÍODO ATUAL:\n' + (dataContext || '') + '\n\nPERGUNTA: ' + question }] }],
+      contents: [{ role: 'user', parts: [{ text: 'IMPORTANTE: responda sempre em português do Brasil, nunca em inglês, independente do idioma dos dados abaixo.\n\nDADOS DO PERÍODO ATUAL:\n' + (dataContext || '') + '\n\nPERGUNTA: ' + question }] }],
       generationConfig: { maxOutputTokens: 700 },
     };
 
