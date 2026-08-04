@@ -651,7 +651,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <div class="frm">
 <sc-for list="{{cadFields}}" as="f" hint-placeholder-count="4"><div class="fg"><label class="flab">{{f.label}}</label>
 <sc-if value="{{f.isSelect}}" hint-placeholder-val="{{false}}"><select class="inp" name="{{f.fname}}" value="{{f.value}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{f.options}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></sc-if>
-<sc-if value="{{f.isInput}}" hint-placeholder-val="{{true}}"><input class="inp" type="{{f.type}}" name="{{f.fname}}" value="{{f.value}}" onChange="{{onF}}"></sc-if>
+<sc-if value="{{f.isInput}}" hint-placeholder-val="{{true}}"><input class="inp" type="{{f.type}}" name="{{f.fname}}" value="{{f.value}}" onChange="{{onF}}" placeholder="{{f.placeholder}}"></sc-if>
 </div></sc-for>
 <div class="fg" style="justify-content:flex-end"><button class="btn btna" onClick="{{cadSave}}">{{cadSaveLbl}}</button></div>
 </div>
@@ -1507,13 +1507,14 @@ class Component extends DCLogic {
         fields:[{name:'nome',label:'Nome do componente',type:'text'},{name:'maquina',label:'Máquina',options:db.maquinas.map(m=>({v:m.id,l:m.nome}))},{name:'criticidade',label:'Criticidade',options:[{v:'A',l:'A - Crítico'},{v:'B',l:'B - Importante'},{v:'C',l:'C - Normal'}]}],
         make:f=>({nome:f.nome,maquina:f.maquina||'',criticidade:f.criticidade||'B'}),idp:'CP'},
       usuarios:{label:'Usuários',key:'usuarios',cols:['ID','Nome','Perfil','Login','E-mail'],cells:u=>[u.id,u.nome,u.perfil,u.login||'—',u.email||''],
-        fields:[{name:'nome',label:'Nome',type:'text'},{name:'perfil',label:'Perfil de acesso',options:['Administrador','Usuário'].map(v=>({v,l:v}))},{name:'login',label:'Login (usuário)',type:'text'},{name:'senha',label:'Senha',type:'text'},{name:'email',label:'E-mail',type:'text'}],
-        make:f=>({nome:f.nome,perfil:f.perfil||'Usuário',login:(f.login||'').trim(),senha:f.senha||'',email:f.email||''}),idp:'U'},
+        fields:[{name:'nome',label:'Nome',type:'text'},{name:'perfil',label:'Perfil de acesso',options:['Administrador','Usuário'].map(v=>({v,l:v}))},{name:'login',label:'Login (usuário)',type:'text'},{name:'senha',label:'Redefinir Senha (somente Administrador)',type:'password',noPrefill:true,placeholder:'deixe em branco para manter a senha atual'},{name:'email',label:'E-mail',type:'text'}],
+        make:f=>{ const o={nome:f.nome,perfil:f.perfil||'Usuário',login:(f.login||'').trim(),email:f.email||''}; if(f.senha&&f.senha.trim()) o.senha=f.senha.trim(); return o; },idp:'U'},
     };
   }
   cadSave = ()=>{
     const def=this.cadDefs()[this.state.cadTab], f=this.state.forms.cad||{};
     if(!f.nome){ this.toast('Preencha o nome.'); return; }
+    if(this.state.cadTab==='usuarios' && !this.state.cadEditId && !(f.senha&&f.senha.trim())){ this.toast('Defina uma senha para o novo usuário.'); return; }
     const db={...this.state.db};
     if(this.state.cadEditId){
       db[def.key]=db[def.key].map(x=>x.id===this.state.cadEditId?{...x,...def.make(f)}:x);
@@ -1527,7 +1528,7 @@ class Component extends DCLogic {
   cadEdit = (e)=>{
     const def=this.cadDefs()[this.state.cadTab];
     const x=this.state.db[def.key].find(r=>r.id===e.currentTarget.dataset.id); if(!x)return;
-    const cad={}; for(const fld of def.fields){ cad[fld.name]=x[fld.name]!=null?String(x[fld.name]):''; }
+    const cad={}; for(const fld of def.fields){ cad[fld.name]=fld.noPrefill?'':(x[fld.name]!=null?String(x[fld.name]):''); }
     this.setState({cadEditId:x.id,forms:{...this.state.forms,cad}});
   };
   cancelCadEdit = ()=>this.setState({cadEditId:null,forms:{...this.state.forms,cad:{}}});
@@ -2190,7 +2191,7 @@ class Component extends DCLogic {
     const def=defs[s.cadTab];
     const cadTabs=Object.entries(defs).map(([key,d])=>({key,label:d.label,cls:key===s.cadTab?'tabon':''}));
     const cadFields=def.fields.map(f=>({label:f.label,fname:'cad.'+f.name,type:f.type||'text',isSelect:!!f.options,isInput:!f.options,
-      options:f.options||[],value:(s.forms.cad||{})[f.name]||''}));
+      options:f.options||[],value:(s.forms.cad||{})[f.name]||'',placeholder:f.placeholder||''}));
     const cadRows=db[def.key].map(x=>({id:x.id,cells:def.cells(x)}));
     // os modal
     let osM=null;
