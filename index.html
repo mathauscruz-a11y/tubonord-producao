@@ -399,6 +399,20 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <div class="panel"><div class="ptit">⚠ Principais Alertas <button class="btsm" onClick="{{nav.ia}}" style="margin-left:auto">Ver análise completa do Agente IA →</button></div>
 <div class="insrow"><sc-for list="{{insTop}}" as="i" hint-placeholder-count="3"><div class="ins"><span class="insico {{i.sev}}"></span><div><div class="instit">{{i.titulo}}</div><div class="instxt">{{i.texto}}</div></div></div></sc-for></div>
 </div>
+<sc-if value="{{atrasadosTotal}}" hint-placeholder-val="{{false}}">
+<div class="duo">
+<div class="panel"><div class="ptit"><button class="chevbtn" data-k="atrasados" onClick="{{togglePanel}}">{{atrasadosChev}}</button>Pedidos com Entrega Atrasada <span class="mini fw5">— {{atrasadosTotal}} pedido(s), carteira completa</span></div>
+<sc-if value="{{atrasadosOpen}}" hint-placeholder-val="{{true}}">
+<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Pedido</th><th>Cliente</th><th>Entrega Prev.</th><th>Dias em atraso</th></tr></thead><tbody>
+<sc-for list="{{atrasadosLista}}" as="a" hint-placeholder-count="8"><tr><td class="fw6">{{a.id}}</td><td>{{a.cliente}}</td><td>{{a.entrega}}</td><td class="num stAtras fw6">{{a.dias}}</td></tr></sc-for>
+</tbody></table></div>
+</sc-if>
+</div>
+<div class="panel"><div class="ptit">Pareto de Atrasos por Cliente <span class="mini fw5">(nº de pedidos · % do total atrasado)</span></div>
+<sc-for list="{{atrasadosPareto}}" as="p" hint-placeholder-count="6"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.n}} <span class="mini">({{p.pct}}%)</span></div></div></sc-for>
+</div>
+</div>
+</sc-if>
 </sc-if>
 
 <sc-if value="{{vProd}}" hint-placeholder-val="{{false}}">
@@ -823,7 +837,7 @@ class Component extends DCLogic {
       valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false,
       sim:{}, simOver:null, solicOpen:false, tourOn:false, tourStep:0, tourPlaying:false,
       chat:[], chatInput:'', chatBusy:false, toast:null,
-      panelOpen:{carteira:true, metas:true},
+      panelOpen:{carteira:true, metas:true, atrasados:true},
       pedCardFilter:'', pedColFilters:{},
       importF23File:null, importPcpFile:null, importF23Name:'Nenhum arquivo selecionado', importPcpName:'Nenhum arquivo selecionado', importBusy:false, importMsg:'', importMsgErr:false,
       forms:{ prod:this.blankProd(), os:this.blankOs(), par:this.blankPar(),
@@ -1258,9 +1272,14 @@ class Component extends DCLogic {
       sugestao:'Implante diálogo de rotina com líderes de turno e programa de reconhecimento de assiduidade.'});
     const hoje=new Date().toISOString().slice(0,10);
     const atras=db.pedidos.filter(p=>p.dataEntrega!=='IMEDIATO'&&p.dataEntrega<hoje&&!this.pedidoCalc(p).status.startsWith('PRONTO'));
-    if(atras.length) out.push({sev:'sevA',titulo:atras.length+' pedido(s) com entrega atrasada',
-      texto:atras.map(p=>p.id+' ('+((db.clientes.find(c=>c.id===p.cliente)||{}).nome||'')+')').join(', ')+'.',
-      sugestao:'Reprograme o sequenciamento no PCP priorizando os atrasados e comunique os clientes sobre novas datas.'});
+    if(atras.length){
+      const porCli={};
+      for(const p of atras){ const nome=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—'; porCli[nome]=(porCli[nome]||0)+1; }
+      const topCli=Object.entries(porCli).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([n,c])=>n+' ('+c+')').join(', ');
+      out.push({sev:'sevA',titulo:atras.length+' pedido(s) com entrega atrasada',
+        texto:'Concentrados em '+Object.keys(porCli).length+' cliente(s) — principais: '+topCli+'. Lista completa e Pareto por cliente no painel abaixo do Dashboard.',
+        sugestao:'Reprograme o sequenciamento no PCP priorizando os atrasados e comunique os clientes sobre novas datas.'});
+    }
     const abertas=db.osList.filter(o=>o.status==='Aberta');
     if(abertas.length>2) out.push({sev:'sevB',titulo:abertas.length+' OS aguardando aprovação',
       texto:'OS paradas na etapa de aprovação atrasam o reparo e aumentam o MTTR.',
@@ -1812,6 +1831,20 @@ class Component extends DCLogic {
     const topParadasMes=topParadasPorMaquina(monthIni,monthFim);
     const topParadasAno=topParadasPorMaquina(yearIni,yearFim);
     const mesRefLabel=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][refM-1]+'/'+refY;
+    // Pedidos atrasados: lista organizada + pareto por cliente (independente do filtro de data do dashboard — é a carteira toda)
+    const hojeAtr=new Date().toISOString().slice(0,10);
+    const atrasTodos=db.pedidos.filter(p=>p.dataEntrega!=='IMEDIATO'&&p.dataEntrega<hojeAtr&&!this.pedidoCalc(p).status.startsWith('PRONTO'));
+    const diasAtraso=(d)=>Math.floor((new Date(hojeAtr+'T12:00:00')-new Date(d+'T12:00:00'))/86400000);
+    const atrasadosLista=atrasTodos.map(p=>({
+      id:p.id, cliente:(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',
+      entrega:this.fmtD(p.dataEntrega), dias:diasAtraso(p.dataEntrega)
+    })).sort((a,b)=>b.dias-a.dias);
+    const cliAtrMap={};
+    for(const p of atrasTodos){ const nome=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—'; cliAtrMap[nome]=(cliAtrMap[nome]||0)+1; }
+    const maxCliAtr=Math.max(1,...Object.values(cliAtrMap));
+    const atrasadosPareto=Object.entries(cliAtrMap).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([nome,n])=>({
+      nome,n,pct:+(n/atrasTodos.length*100).toFixed(1),style:{width:Math.max(2,Math.round(n/maxCliAtr*100))+'%'}
+    }));
     // trend semanal
     const trend=[];
     const fim=new Date(s.dataFim+'T12:00:00');
@@ -2261,7 +2294,9 @@ class Component extends DCLogic {
       viewTitle:titles[s.view],uAll:s.unidade==='ALL'?'segon':'',uNord:s.unidade==='NORD'?'segon':'',uCone:s.unidade==='CONE'?'segon':'',
       dataIniV:s.dataIni,dataFimV:s.dataFim,fMaqV:s.fMaq,fTurnoV:s.fTurno,fOperV:s.fOper,userV:s.user,userNome:u.nome,userPerfil:u.perfil,
       maqFilterOpts:maqs,operFilterOpts:db.operadores,userOpts:db.usuarios,metaOeeV:metaOee,
-      kpi,maqRows,pareto,trend,paretoRefugo,trendRefugo,topParadasMes,topParadasAno,mesRefLabel,anoRefLabel:refY,insTop:insights.slice(0,3),insights,
+      kpi,maqRows,pareto,trend,paretoRefugo,trendRefugo,topParadasMes,topParadasAno,mesRefLabel,anoRefLabel:refY,
+      atrasadosLista,atrasadosPareto,atrasadosTotal:atrasTodos.length,atrasadosOpen:s.panelOpen.atrasados!==false,atrasadosChev:s.panelOpen.atrasados!==false?'▾':'▸',
+      insTop:insights.slice(0,3),insights,
       prodDia,prodDiaPc,prodDiaIni:days.length?this.fmtD(days[0]):'—',prodDiaFim:days.length?this.fmtD(days[days.length-1]):'—',prodDiaMax:this.fmtN(maxDay),prodDiaMaxPc:this.fmtN(maxDayPc),
       mapaUf,mapaList,ader,aderWk,entr,
       fProd,fProdParadas:fProd.paradas.map((p,i)=>({...p,i})),prodEditing:!!fProd.editId,prodFormTit:fProd.editId?'Editar Apontamento':'Novo Apontamento de Produção',prodSaveLbl:fProd.editId?'Salvar alterações':'Salvar apontamento',
