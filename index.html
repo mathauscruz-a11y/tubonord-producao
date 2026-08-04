@@ -363,7 +363,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <div class="dlegend"><span>{{prodDiaIni}}</span><span>pico: {{prodDiaMax}} kg</span><span>{{prodDiaFim}}</span></div>
 </div>
 <div class="panel"><div class="ptit">Produção Diária <span class="mini fw5">(peças)</span></div>
-<div class="dbars"><sc-for list="{{prodDiaPc}}" as="d" hint-placeholder-count="10"><div class="dbar" style="{{d.style}};background:#2A6FDB" title="{{d.tip}}"></div></sc-for></div>
+<div class="dbars"><sc-for list="{{prodDiaPc}}" as="d" hint-placeholder-count="10"><div class="dbar" style="{{d.style}}" title="{{d.tip}}"></div></sc-for></div>
 <div class="dlegend"><span>{{prodDiaIni}}</span><span>pico: {{prodDiaMaxPc}} pç</span><span>{{prodDiaFim}}</span></div>
 </div>
 </div>
@@ -390,9 +390,9 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <div class="panel"><div class="ptit">Aderência de Entrega <span class="mini fw5">— entrega prevista × entrega final</span></div>
 <div class="fx gap24 ac" style="height:100%">
 <div style="text-align:center"><div class="kval {{entr.cls}}" style="font-size:52px">{{entr.pct}}%</div><div class="mini">{{entr.noPrazo}} de {{entr.total}} entregas no prazo</div></div>
-<div class="f1"><div class="pbrow" style="grid-template-columns:110px 1fr 46px"><div class="mini">No prazo</div><div class="pbtrack"><div class="pbfill" style="{{entr.styleOk}};background:var(--ok)"></div></div><div class="pbv">{{entr.noPrazo}}</div></div>
-<div class="pbrow" style="grid-template-columns:110px 1fr 46px"><div class="mini">Atrasadas</div><div class="pbtrack"><div class="pbfill" style="{{entr.styleBad}};background:var(--bad)"></div></div><div class="pbv">{{entr.atras}}</div></div>
-<div class="pbrow" style="grid-template-columns:110px 1fr 46px"><div class="mini">Em aberto</div><div class="pbtrack"><div class="pbfill" style="{{entr.styleOpen}};background:#c3ccd4"></div></div><div class="pbv">{{entr.aberto}}</div></div></div>
+<div class="f1"><div class="pbrow" style="grid-template-columns:110px 1fr 46px"><div class="mini">No prazo</div><div class="pbtrack"><div class="pbfill" style="{{entr.styleOk}}"></div></div><div class="pbv">{{entr.noPrazo}}</div></div>
+<div class="pbrow" style="grid-template-columns:110px 1fr 46px"><div class="mini">Atrasadas</div><div class="pbtrack"><div class="pbfill" style="{{entr.styleBad}}"></div></div><div class="pbv">{{entr.atras}}</div></div>
+<div class="pbrow" style="grid-template-columns:110px 1fr 46px"><div class="mini">Em aberto</div><div class="pbtrack"><div class="pbfill" style="{{entr.styleOpen}}"></div></div><div class="pbv">{{entr.aberto}}</div></div></div>
 </div>
 </div>
 </div>
@@ -1842,7 +1842,7 @@ class Component extends DCLogic {
     const maxDay=Math.max(1,...Object.values(dayMap));
     const maxDayPc=Math.max(1,...Object.values(dayMapPc));
     const prodDia=days.map(d=>({style:{height:Math.max(2,Math.round(dayMap[d]/maxDay*100))+'%'},tip:this.fmtD(d)+': '+this.fmtN(dayMap[d])+' kg'}));
-    const prodDiaPc=days.map(d=>({style:{height:Math.max(2,Math.round(dayMapPc[d]/maxDayPc*100))+'%'},tip:this.fmtD(d)+': '+this.fmtN(dayMapPc[d])+' pç'}));
+    const prodDiaPc=days.map(d=>({style:{height:Math.max(2,Math.round(dayMapPc[d]/maxDayPc*100))+'%',background:'#2A6FDB'},tip:this.fmtD(d)+': '+this.fmtN(dayMapPc[d])+' pç'}));
     // mapa por UF
     const ufCoords={BA:[163,95],PE:[184,69],SE:[187,81],AL:[192,74],CE:[176,53],RN:[192,58],PB:[190,64],MA:[153,52],PI:[166,66],SP:[130,141],RJ:[161,141],MG:[157,120],ES:[172,127],PR:[119,155],SC:[128,167],RS:[106,181],GO:[131,106],DF:[140,103],MT:[95,96],MS:[101,133],TO:[143,80],PA:[118,46],AM:[52,52],RO:[57,82],AC:[22,71],RR:[62,22],AP:[117,16]};
     const ufMap={};
@@ -1876,7 +1876,7 @@ class Component extends DCLogic {
     const entrPct=entrTot?Math.round(entrOk/entrTot*100):0;
     const entrMax=Math.max(1,entrOk,entrBad,entrOpen);
     const entr={total:entrTot,noPrazo:entrOk,atras:entrBad,aberto:entrOpen,pct:entrPct,cls:entrPct>=90?'kok':entrPct>=70?'kwarn':'kbad',
-      styleOk:{width:Math.round(entrOk/entrMax*100)+'%'},styleBad:{width:Math.round(entrBad/entrMax*100)+'%'},styleOpen:{width:Math.round(entrOpen/entrMax*100)+'%'}};
+      styleOk:{width:Math.round(entrOk/entrMax*100)+'%',background:'var(--ok)'},styleBad:{width:Math.round(entrBad/entrMax*100)+'%',background:'var(--bad)'},styleOpen:{width:Math.round(entrOpen/entrMax*100)+'%',background:'#c3ccd4'}};
     const oeeP=Math.round(g.oee*100);
     const kpi={
       oee:oeeP,oeeCls:oeeP>=metaOee?'kok':oeeP>=metaOee-10?'kwarn':'kbad',
