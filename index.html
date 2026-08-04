@@ -320,8 +320,8 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <sc-for list="{{maqRows}}" as="m" hint-placeholder-count="6"><tr><td><span class="dot {{m.dotCls}}"></span></td><td class="fw6">{{m.nome}}</td><td class="mini">{{m.unid}}</td><td class="num">{{m.oee}}%</td><td><div class="obar"><div class="ofill {{m.barCls}}" style="{{m.barStyle}}"></div></div></td><td class="num">{{m.disp}}%</td><td class="num">{{m.perf}}%</td><td class="num">{{m.qual}}%</td><td class="num">{{m.mttr}}</td><td class="num">{{m.mtbf}}</td><td class="num">{{m.prod}} pç</td><td class="num">{{m.paradas}}h</td></tr></sc-for>
 </tbody></table></div></div>
 <div class="duo">
-<div class="panel"><div class="ptit">Pareto de Paradas <span class="mini fw5">(minutos no período)</span></div>
-<sc-for list="{{pareto}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min</div></div></sc-for>
+<div class="panel"><div class="ptit">Pareto de Paradas <span class="mini fw5">(minutos no período · % do tempo total: produzido + parado)</span></div>
+<sc-for list="{{pareto}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min <span class="mini">({{p.pct}}%)</span></div></div></sc-for>
 </div>
 <div class="panel"><div class="ptit">OEE Semanal <span class="mini fw5">(tendência)</span></div>
 <div class="trend posrel">
@@ -330,8 +330,8 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 </div>
 </div>
 <div class="duo">
-<div class="panel"><div class="ptit">Pareto de Desperdício por Máquina <span class="mini fw5">(kg no período)</span></div>
-<sc-for list="{{paretoRefugo}}" as="p" hint-placeholder-count="4"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.kg}} kg</div></div></sc-for>
+<div class="panel"><div class="ptit">Pareto de Desperdício por Máquina <span class="mini fw5">(kg no período · % do total processado: produzido + refugo, por máquina)</span></div>
+<sc-for list="{{paretoRefugo}}" as="p" hint-placeholder-count="4"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.kg}} kg <span class="mini">({{p.pct}}%)</span></div></div></sc-for>
 </div>
 <div class="panel"><div class="ptit">Desperdício Semanal <span class="mini fw5">(% do peso produzido — tendência)</span></div>
 <div class="trend posrel">
@@ -340,19 +340,19 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 </div>
 </div>
 <div class="duo">
-<div class="panel"><div class="ptit">Top 5 Paradas por Máquina <span class="mini fw5">— mês de {{mesRefLabel}}</span></div>
+<div class="panel"><div class="ptit">Top 5 Paradas por Máquina <span class="mini fw5">— mês de {{mesRefLabel}} · % do tempo total da máquina no mês</span></div>
 <sc-for list="{{topParadasMes}}" as="mq" hint-placeholder-count="4">
 <div class="mt12"><div class="fw6 mini upper" style="color:var(--mut);margin-bottom:6px">{{mq.maquina}} <span class="fw5">— {{mq.totalMin}} min</span></div>
 <sc-if value="{{mq.vazio}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut)">Sem paradas no período.</div></sc-if>
-<sc-for list="{{mq.top5}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.rank}}. {{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min</div></div></sc-for>
+<sc-for list="{{mq.top5}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.rank}}. {{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min <span class="mini">({{p.pct}}%)</span></div></div></sc-for>
 </div>
 </sc-for>
 </div>
-<div class="panel"><div class="ptit">Top 5 Paradas por Máquina <span class="mini fw5">— ano de {{anoRefLabel}}</span></div>
+<div class="panel"><div class="ptit">Top 5 Paradas por Máquina <span class="mini fw5">— ano de {{anoRefLabel}} · % do tempo total da máquina no ano</span></div>
 <sc-for list="{{topParadasAno}}" as="mq" hint-placeholder-count="4">
 <div class="mt12"><div class="fw6 mini upper" style="color:var(--mut);margin-bottom:6px">{{mq.maquina}} <span class="fw5">— {{mq.totalMin}} min</span></div>
 <sc-if value="{{mq.vazio}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut)">Sem paradas no período.</div></sc-if>
-<sc-for list="{{mq.top5}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.rank}}. {{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min</div></div></sc-for>
+<sc-for list="{{mq.top5}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.rank}}. {{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min <span class="mini">({{p.pct}}%)</span></div></div></sc-for>
 </div>
 </sc-for>
 </div>
@@ -1630,7 +1630,7 @@ class Component extends DCLogic {
       {tag:'Volume',nome:'Produção',texto:'Total produzido no período em quilos e em peças, conforme os apontamentos. Os dois gráficos diários mostram a evolução separadamente em kg e em peças.',formula:'Σ Peso apontado  ·  Σ Peças apontadas',meta:'Compare com a capacidade teórica das metas de velocidade.'},
       {tag:'Perdas',nome:'Horas Paradas / Setup',texto:'Total de horas paradas e número de eventos, além do tempo gasto especificamente em setup (setup, troca de matriz e troca de facas) e seu peso sobre o tempo programado.',formula:'Setup % = Minutos de setup ÷ Tempo programado',meta:'Reduza o setup com preparação externa (SMED) antes de parar a máquina.'},
       {tag:'Manutenção',nome:'OS Abertas',texto:'Ordens de serviço que ainda não foram fechadas, somando Aberta, Aprovada e Em Execução. O subtexto mostra quantas foram fechadas no período filtrado.',formula:'Nº de OS com status ≠ Fechada',meta:'Acima de 4 o cartão alerta: fila de manutenção acumulando.'},
-      {tag:'Perdas',nome:'Refugo',texto:'Percentual de desperdício sobre o peso produzido, alimentando diretamente o fator Qualidade do OEE.',formula:'Refugo % = Refugo (kg) ÷ Peso produzido (kg)',meta:'Meta ≤ 2%.'},
+      {tag:'Perdas',nome:'Refugo',texto:'Percentual de desperdício sobre o total processado (produzido + refugo) no período — mostra a proporção real de material perdido em relação a tudo que passou pela máquina.',formula:'Refugo % = Refugo (kg) ÷ [Peso produzido (kg) + Refugo (kg)]',meta:'Meta ≤ 2%.'},
       {tag:'PCP',nome:'Alterações de Programação',texto:'Número de solicitações de alteração de programação feitas versus aprovadas. Cada alteração aprovada normalmente gera setup extra e desorganiza a fila, impactando diretamente a disponibilidade e o OEE.',formula:'Taxa = Solicitações aprovadas ÷ Solicitações feitas',meta:'Quanto menor o volume, mais estável a programação. Congelamento de 48h é a boa prática.'},
       {tag:'PCP',nome:'Status da Carteira',texto:'A carteira tem duas dimensões independentes. Status de Produção: Em Aberto (fila), Concluído (quantidade atingida), Não Concluído (iniciado e com entrega vencida) e Cancelado. Status de Logística, válido só para concluídos: Pronto e Não Entregue e Pronto e Entregue.',formula:'Conclusão = Concluídos ÷ Carteira ativa  ·  Entrega = Entregues ÷ Concluídos',meta:'Ambos os status são automáticos pelos apontamentos, com possibilidade de forçar manualmente no cadastro do pedido.'},
       {tag:'PCP',nome:'Aderência à Programação',texto:'Compara a data planejada de início com a data real do primeiro apontamento de cada pedido, com abertura semanal.',formula:'Aderência = Pedidos iniciados na data planejada ÷ Total programado',meta:'Meta ≥ 90%.'},
@@ -1775,18 +1775,23 @@ class Component extends DCLogic {
     const diasPerdidos=ausP.filter(a=>a.tipo!=='Férias').reduce((x,a)=>x+a.dias,0);
     const absPct=ops.length?diasPerdidos/(ops.length*diasUteis)*100:0;
     const feriasN=new Set(ausP.filter(a=>a.tipo==='Férias').map(a=>a.operador)).size;
-    // pareto
+    // pareto — % relativo ao tempo TOTAL do período (produzido + parado, exclui Correção)
     const parMap={};
     for(const p of pars){ const m=this.motivoDe(p.motivo); if(!m||m.tipo==='COR')continue; parMap[m.nome]=(parMap[m.nome]||0)+p.min; }
-    const totPar=Object.values(parMap).reduce((a,b)=>a+b,0)||1;
+    const corTotal=pars.reduce((x,p)=>{ const m=this.motivoDe(p.motivo); return x+(m&&m.tipo==='COR'?p.min:0); },0);
+    const tempoTotalBruto=aps.reduce((x,a)=>x+(+a.tempoTurnoMin||0),0);
+    const tempoTotalRef=Math.max(1,tempoTotalBruto-corTotal);
     const maxPar=Math.max(1,...Object.values(parMap));
-    const pareto=Object.entries(parMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([nome,min])=>({nome,min:this.fmtN(min),pct:Math.round(min/totPar*100),style:{width:Math.max(2,Math.round(min/maxPar*100))+'%'}}));
-    // pareto de desperdício (kg) por máquina
-    const refMap={};
-    for(const a of aps){ const mq=db.maquinas.find(m=>m.id===a.maquina); const nome=mq?mq.nome:a.maquina; refMap[nome]=(refMap[nome]||0)+(+a.refugoKg||0); }
-    const totRef=Object.values(refMap).reduce((a,b)=>a+b,0)||1;
+    const pareto=Object.entries(parMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([nome,min])=>({nome,min:this.fmtN(min),pct:+(min/tempoTotalRef*100).toFixed(1),style:{width:Math.max(2,Math.round(min/maxPar*100))+'%'}}));
+    // pareto de desperdício (kg) por máquina — % relativo ao total processado naquela máquina (produzido + desperdiçado)
+    const refMap={}, prodKgMap={};
+    for(const a of aps){ const mq=db.maquinas.find(m=>m.id===a.maquina); const nome=mq?mq.nome:a.maquina;
+      refMap[nome]=(refMap[nome]||0)+(+a.refugoKg||0); prodKgMap[nome]=(prodKgMap[nome]||0)+(+a.qtdKg||0); }
     const maxRef=Math.max(1,...Object.values(refMap));
-    const paretoRefugo=Object.entries(refMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([nome,kg])=>({nome,kg:this.fmtN(kg),pct:Math.round(kg/totRef*100),style:{width:Math.max(2,Math.round(kg/maxRef*100))+'%',background:'var(--warn)'}}));
+    const paretoRefugo=Object.entries(refMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([nome,kg])=>{
+      const totMaq=kg+(prodKgMap[nome]||0);
+      return {nome,kg:this.fmtN(kg),pct:totMaq?+(kg/totMaq*100).toFixed(1):0,style:{width:Math.max(2,Math.round(kg/maxRef*100))+'%',background:'var(--warn)'}};
+    });
     // Top 5 paradas por máquina — mês e ano de referência (fim do período selecionado), respeitando filtro de máquina/turno/operador
     const maqsForTop=this.maqsFiltered().filter(m=>s.fMaq==='ALL'||m.id===s.fMaq);
     const [refY,refM]=s.dataFim.split('-').map(Number);
@@ -1794,12 +1799,14 @@ class Component extends DCLogic {
     const monthFim=refM===12?(refY+1)+'-01-01':refY+'-'+String(refM+1).padStart(2,'0')+'-01';
     const yearIni=refY+'-01-01', yearFim=(refY+1)+'-01-01';
     const topParadasPorMaquina=(ini,fim)=>maqsForTop.map(m=>{
+      const apsM=db.apontamentos.filter(a=>a.maquina===m.id&&a.data>=ini&&a.data<fim&&(s.fTurno==='ALL'||a.turno===s.fTurno)&&(s.fOper==='ALL'||a.operador===s.fOper));
       const parsM=db.paradas.filter(p=>p.maquina===m.id&&p.data>=ini&&p.data<fim&&(s.fTurno==='ALL'||p.turno===s.fTurno)&&(s.fOper==='ALL'||p.operador===s.fOper));
       const map={};
-      for(const p of parsM){ const mo=this.motivoDe(p.motivo); if(!mo||mo.tipo==='COR') continue; map[mo.nome]=(map[mo.nome]||0)+p.min; }
+      let corM=0;
+      for(const p of parsM){ const mo=this.motivoDe(p.motivo); if(!mo){continue;} if(mo.tipo==='COR'){ corM+=p.min; continue; } map[mo.nome]=(map[mo.nome]||0)+p.min; }
       const totRaw=Object.values(map).reduce((a,b)=>a+b,0);
-      const tot=totRaw||1;
-      const top5=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([nome,min],i)=>({rank:i+1,nome,min:this.fmtN(min),pct:Math.round(min/tot*100),style:{width:Math.max(2,Math.round(min/tot*100))+'%'}}));
+      const tempoTotalM=Math.max(1, apsM.reduce((x,a)=>x+(+a.tempoTurnoMin||0),0)-corM);
+      const top5=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([nome,min],i)=>({rank:i+1,nome,min:this.fmtN(min),pct:+(min/tempoTotalM*100).toFixed(1),style:{width:Math.max(2,Math.round(min/tempoTotalM*100))+'%'}}));
       return {maquina:m.nome, top5, totalMin:this.fmtN(totRaw), vazio:top5.length===0};
     });
     const topParadasMes=topParadasPorMaquina(monthIni,monthFim);
@@ -1824,7 +1831,8 @@ class Component extends DCLogic {
       const i0=d0.toISOString().slice(0,10),i1=d1.toISOString().slice(0,10);
       const wa=aps.filter(a=>a.data>=i0&&a.data<i1);
       const wKg=wa.reduce((x,a)=>x+(+a.qtdKg||0),0), wRef=wa.reduce((x,a)=>x+(+a.refugoKg||0),0);
-      const v=wKg?+((wRef/wKg)*100).toFixed(1):0;
+      const wTot=wKg+wRef;
+      const v=wTot?+((wRef/wTot)*100).toFixed(1):0;
       trendRefugo.push({label:this.fmtD(i0),val:v,style:{height:Math.max(3,Math.min(100,v*8))+'%',background:v<=3?'var(--ok)':v<=6?'var(--warn)':'var(--bad)'}});
     }
     // produção diária
@@ -1880,7 +1888,7 @@ class Component extends DCLogic {
       setupH:(g.setupMin/60).toFixed(1),setupPct:g.tProg?(g.setupMin/g.tProg*100).toFixed(1):'0',
       osAbertas:db.osList.filter(o=>o.status!=='Fechada').length,osCls:db.osList.filter(o=>o.status!=='Fechada').length>4?'kbad':'',
       osFechadas:osArr.filter(o=>o.status==='Fechada').length,
-      refugo:g.kg?(g.ref/g.kg*100).toFixed(1):'0',refugoKg:this.fmtN(g.ref)
+      refugo:(g.kg+g.ref)?(g.ref/(g.kg+g.ref)*100).toFixed(1):'0',refugoKg:this.fmtN(g.ref)
     };
     const maqRows=maqStats.map(m=>{const o=Math.round(m.raw.oee*100);return{
       nome:m.nome,unid:m.unid,oee:o,disp:Math.round(m.raw.disp*100),perf:Math.round(m.raw.perf*100),qual:(m.raw.qual*100).toFixed(1),
