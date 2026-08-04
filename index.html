@@ -41,6 +41,8 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 .cardclick:hover{border-color:var(--ac)}
 .cardOn{border-color:var(--ac);box-shadow:0 0 0 2px rgba(232,134,45,.25)}
 .colf{width:100%;max-width:160px;box-sizing:border-box;font-size:11px;padding:4px 6px;border:1px solid var(--bd);border-radius:6px;font-family:inherit;background:#fff}
+select.colf[multiple]{height:64px;padding:2px}
+select.sel[multiple]{height:80px}
 .chevbtn{background:none;border:none;cursor:pointer;font-size:13px;color:var(--mut);padding:2px 6px 2px 0;line-height:1}
 .chevbtn:hover{color:var(--ac)}
 .scrollcap{max-height:460px;overflow-y:auto}
@@ -592,8 +594,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 </div>
 <div class="panel" id="p-carteira"><div class="ptit"><button class="chevbtn" data-k="carteira" onClick="{{togglePanel}}">{{carteiraChev}}</button>Carteira de Pedidos <span class="mini fw5">quantidade e status atualizados automaticamente pelos apontamentos de produção · {{pedRows.length}} pedido(s)</span>
 <div class="pwbox" style="margin-left:auto;gap:8px">
-<select class="sel" onChange="{{onPedStatusFilter}}" value="{{pedCardFilter}}">
-<option value="">Todos os status</option>
+<select class="sel" multiple onChange="{{onPedStatusFilter}}">
 <option value="aberto">Em Aberto</option>
 <option value="concluido">Concluído</option>
 <option value="naoConc">Não Concluído</option>
@@ -601,11 +602,12 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <option value="pne">Pronto e Não Entregue</option>
 <option value="pe">Pronto e Entregue</option>
 </select>
+<span class="mini" style="color:var(--mut)">{{pedStatusResumo}}</span>
 <sc-if value="{{pedFiltroAtivo}}" hint-placeholder-val="{{false}}"><button class="btsm" onClick="{{clearPedFilters}}">✕ Limpar filtros</button></sc-if>
 <sc-if value="{{valorLocked}}" hint-placeholder-val="{{true}}"><button class="btsm" onClick="{{openPw}}">🔒 Mostrar valores (senha)</button></sc-if><sc-if value="{{valorUnlocked}}" hint-placeholder-val="{{false}}"><span class="mini kok fw6">🔓 Valores visíveis</span><button class="btsm" onClick="{{lockValor}}">Ocultar</button></sc-if></div></div>
 <sc-if value="{{carteiraOpen}}" hint-placeholder-val="{{true}}">
 <div class="scroll scrollcap"><table class="tbl"><thead><tr><th>OP</th><th>Nº Cliente</th><th>Cliente</th><th>Produto</th><th>Máquina</th><th>Qtd</th><th>Valor (R$)</th><th>Produzido</th><th>Avanço</th><th>Entrega Prev.</th><th>Prog. Prod.</th><th>Prog. Real</th><th>Entrega Final</th><th>Replan.</th><th>Status Produção</th><th>Status Logística</th><th></th></tr>
-<tr class="filterrow"><th></th><th><select class="colf" data-col="nr" value="{{pedColFilters.nr}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.nr}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="cliente" value="{{pedColFilters.cliente}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.cliente}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="produto" value="{{pedColFilters.produto}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.produto}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="maq" value="{{pedColFilters.maq}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.maq}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="qtd" value="{{pedColFilters.qtd}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.qtd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th><th><select class="colf" data-col="prodz" value="{{pedColFilters.prodz}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.prodz}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th><th><select class="colf" data-col="entrega" value="{{pedColFilters.entrega}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.entrega}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="progProd" value="{{pedColFilters.progProd}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.progProd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="progReal" value="{{pedColFilters.progReal}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.progReal}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="entregaFinal" value="{{pedColFilters.entregaFinal}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.entregaFinal}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="replan" value="{{pedColFilters.replan}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.replan}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="statusProd" value="{{pedColFilters.statusProd}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.statusProd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="statusLog" value="{{pedColFilters.statusLog}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.statusLog}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th></tr>
+<tr class="filterrow"><th></th><th><select class="colf" multiple data-col="nr" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.nr}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="cliente" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.cliente}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="produto" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.produto}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="maq" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.maq}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="qtd" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.qtd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th><th><select class="colf" multiple data-col="prodz" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.prodz}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th><th><select class="colf" multiple data-col="entrega" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.entrega}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="progProd" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.progProd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="progReal" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.progReal}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="entregaFinal" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.entregaFinal}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="replan" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.replan}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="statusProd" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.statusProd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="statusLog" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.statusLog}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th></tr>
 </thead><tbody>
 <sc-for list="{{pedRows}}" as="p" hint-placeholder-count="8"><tr><td class="fw6">{{p.id}}</td><td>{{p.nr}}</td><td class="fw6">{{p.cliente}}</td><td class="mini">{{p.produto}}</td><td>{{p.maq}}</td><td class="num">{{p.qtd}}</td><td class="num">{{p.valorShow}}</td><td class="num">{{p.prodz}}</td><td><div class="obar"><div class="ofill" style="{{p.pctStyle}}"></div></div><span class="mini">{{p.pct}}%</span></td><td>{{p.entrega}} <sc-if value="{{p.atrasado}}" hint-placeholder-val="{{false}}"><span class="chip stAtras">ATRASADO</span></sc-if></td><td>{{p.progProd}}</td><td class="fw6">{{p.progReal}}</td><td class="fw6">{{p.entregaFinal}}</td><td class="mini" title="{{p.obsReplan}}">{{p.replan}}</td><td><span class="chip {{p.spCls}}">{{p.statusProd}}</span></td><td><span class="chip {{p.slCls}}">{{p.statusLog}}</span></td><td class="fx gap8">
 <sc-if value="{{p.canEntregar}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{p.id}}" onClick="{{entregarPed}}">Entregar</button></sc-if>
@@ -812,7 +814,8 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <div class="modal" onClick="{{closePw}}"><div class="mbox" onClick="{{stop}}" style="max-width:420px">
 <div class="ptit">🔒 Liberar visualização de valores</div>
 <div class="mini" style="margin-bottom:12px">Informe a senha do administrador para exibir os valores dos pedidos nesta sessão.</div>
-<input class="inp" type="password" value="{{pwInput}}" onChange="{{onPwInput}}" onKeyDown="{{onPwKey}}" placeholder="Senha do administrador" autofocus>
+<input class="inp" type="{{pwInputType}}" value="{{pwInput}}" onChange="{{onPwInput}}" onKeyDown="{{onPwKey}}" placeholder="Senha do administrador">
+<label class="mini fx gap8" style="margin-top:6px;align-items:center;cursor:pointer"><input type="checkbox" onChange="{{togglePwShow}}"> Mostrar senha digitada</label>
 <sc-if value="{{pwErr}}" hint-placeholder-val="{{false}}"><div class="mini kbad fw6" style="margin-top:6px">Senha incorreta.</div></sc-if>
 <div class="fx gap8 mt16"><button class="btsm" onClick="{{closePw}}">Cancelar</button><button class="btn btna" onClick="{{confirmPw}}" style="margin-left:auto">Liberar</button></div>
 <div class="mini" style="margin-top:12px;color:#9aa6b0">Senha padrão: <b>admin</b> — altere em Cadastros futuramente.</div>
@@ -833,11 +836,11 @@ class Component extends DCLogic {
       dataIni:d0.toISOString().slice(0,10), dataFim:hoje,
       fMaq:'ALL', fTurno:'ALL', fOper:'ALL', user:'U01',
       db:null, cadTab:'maquinas', cadEditId:null, osDetail:null, osFechando:false, osMEdit:false,
-      valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false,
+      valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, pwShow:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false,
       sim:{}, simOver:null, solicOpen:false, tourOn:false, tourStep:0, tourPlaying:false,
       chat:[], chatInput:'', chatBusy:false, toast:null,
       panelOpen:{carteira:true, metas:true, atrasados:true},
-      pedCardFilter:'', pedColFilters:{},
+      pedCardFilter:[], pedColFilters:{},
       importF23File:null, importPcpFile:null, importF23Name:'Nenhum arquivo selecionado', importPcpName:'Nenhum arquivo selecionado', importBusy:false, importMsg:'', importMsgErr:false,
       forms:{ prod:this.blankProd(), os:this.blankOs(), par:this.blankPar(),
         ped:this.blankPed(), aus:this.blankAus(),
@@ -968,10 +971,11 @@ class Component extends DCLogic {
   };
   onImportF23File = (e)=>{ const f=e.target.files&&e.target.files[0]; this.setState({importF23File:f||null, importMsg:''}); };
   onImportPcpFile = (e)=>{ const f=e.target.files&&e.target.files[0]; this.setState({importPcpFile:f||null, importMsg:''}); };
-  pedCardClick = (e)=>{ const k=e.currentTarget.dataset.k; this.setState({pedCardFilter: this.state.pedCardFilter===k?'':k}); };
-  onPedStatusFilter = (e)=>{ this.setState({pedCardFilter:e.target.value}); };
-  onPedColFilter = (e)=>{ const col=e.target.dataset.col; const v=e.target.value; this.setState({pedColFilters:{...this.state.pedColFilters,[col]:v}}); };
-  clearPedFilters = ()=>{ this.setState({pedCardFilter:'', pedColFilters:{}}); };
+  pedCardClick = (e)=>{ const k=e.currentTarget.dataset.k; const cur=this.state.pedCardFilter||[];
+    this.setState({pedCardFilter: cur.includes(k)?cur.filter(x=>x!==k):[...cur,k]}); };
+  onPedStatusFilter = (e)=>{ const vals=Array.from(e.target.selectedOptions).map(o=>o.value); this.setState({pedCardFilter:vals}); };
+  onPedColFilter = (e)=>{ const col=e.target.dataset.col; const vals=Array.from(e.target.selectedOptions).map(o=>o.value); this.setState({pedColFilters:{...this.state.pedColFilters,[col]:vals}}); };
+  clearPedFilters = ()=>{ this.setState({pedCardFilter:[], pedColFilters:{}}); };
   togglePanel = (e)=>{ const k=e.currentTarget.dataset.k; this.setState({panelOpen:{...this.state.panelOpen,[k]:!this.state.panelOpen[k]}}); };
   loadXlsxLib = ()=>{
     if(typeof XLSX!=='undefined') return Promise.resolve();
@@ -1584,12 +1588,13 @@ class Component extends DCLogic {
   cadDel = (e)=>{ const id=e.currentTarget.dataset.id; const def=this.cadDefs()[this.state.cadTab]; const db={...this.state.db};
     db[def.key]=db[def.key].filter(x=>x.id!==id); this.persist(db); };
   // ----- chat -----
-  openPw = ()=>this.setState({pwOpen:true,pwInput:'',pwErr:false});
+  openPw = ()=>this.setState({pwOpen:true,pwInput:'',pwErr:false,pwShow:false});
   closePw = ()=>this.setState({pwOpen:false,pwErr:false});
+  togglePwShow = ()=>this.setState({pwShow:!this.state.pwShow});
   onPwInput = (e)=>this.setState({pwInput:e.target.value});
   onPwKey = (e)=>{ if(e.key==='Enter') this.confirmPw(); };
-  confirmPw = ()=>{ const senha=(this.state.db&&this.state.db.config&&this.state.db.config.senhaValor)||'admin';
-    if(this.state.pwInput===senha){ this.setState({valorUnlocked:true,pwOpen:false,pwErr:false}); this.toast('Valores liberados 🔓'); }
+  confirmPw = ()=>{ const senha=((this.state.db&&this.state.db.config&&this.state.db.config.senhaValor)||'admin').trim();
+    if((this.state.pwInput||'').trim()===senha){ this.setState({valorUnlocked:true,pwOpen:false,pwErr:false}); this.toast('Valores liberados 🔓'); }
     else this.setState({pwErr:true}); };
   lockValor = ()=>this.setState({valorUnlocked:false});
   onProgDate = (e)=>this.setState({progDate:e.target.value});
@@ -1967,9 +1972,10 @@ class Component extends DCLogic {
     const maxUf=Math.max(1,...ufArr.map(([,v])=>v.n));
     const mapaUf=ufArr.map(([uf,v])=>{const [cx,cy]=ufCoords[uf];const r=6+Math.round(v.n/maxUf*14);return{uf,cx:String(cx),cy:String(cy),ty:String(cy+3),r:String(r)};});
     const mapaList=ufArr.slice(0,8).map(([uf,v])=>({uf,n:v.n,qtd:this.fmtN(v.qtd),barStyle:{width:Math.round(v.n/maxUf*120)+'px'},dotStyle:{opacity:0.4+v.n/maxUf*0.6}}));
-    // aderência à programação (data programada x data real de início) e de entrega
-    const pedsUnid=db.pedidos.filter(p=>{const mq=db.maquinas.find(m=>m.id===p.maquina);return s.unidade==='ALL'||!mq||mq.unidade===s.unidade;});
-    const comProg=pedsUnid.map(p=>({p,calc:this.pedidoCalc(p)})).filter(x=>x.p.dataProgramada&&x.calc.progReal);
+    // aderência à programação (data programada x data real de início) e de entrega — respeita filtro de máquina e de data
+    const pedsUnid=db.pedidos.filter(p=>{const mq=db.maquinas.find(m=>m.id===p.maquina);
+      return (s.unidade==='ALL'||!mq||mq.unidade===s.unidade)&&(s.fMaq==='ALL'||p.maquina===s.fMaq);});
+    const comProg=pedsUnid.map(p=>({p,calc:this.pedidoCalc(p)})).filter(x=>x.p.dataProgramada&&x.p.dataProgramada>=s.dataIni&&x.p.dataProgramada<=s.dataFim&&x.calc.progReal);
     const aderNoPrazo=comProg.filter(x=>x.calc.progReal<=x.p.dataProgramada).length;
     const aderPct=comProg.length?Math.round(aderNoPrazo/comProg.length*100):0;
     const ader={total:comProg.length,noPrazo:aderNoPrazo,pct:aderPct,vazio:comProg.length===0,cls:aderPct>=90?'kok':aderPct>=70?'kwarn':'kbad'};
@@ -1980,7 +1986,7 @@ class Component extends DCLogic {
     const aderWk=Object.keys(wkMap).sort().slice(-6).map(k=>{const v=wkMap[k];const pct=Math.round(v.ok/v.n*100);return{label:this.fmtD(k),n:v.n,pct,style:{width:pct+'%',background:pct>=90?'var(--ok)':pct>=70?'var(--warn)':'var(--bad)'}};});
     // aderência de entrega
     let entrOk=0,entrBad=0,entrOpen=0;
-    for(const p of pedsUnid){ if(p.dataEntrega==='IMEDIATO'||!p.dataEntrega)continue; const c=this.pedidoCalc(p);
+    for(const p of pedsUnid){ if(p.dataEntrega==='IMEDIATO'||!p.dataEntrega)continue; if(p.dataEntrega<s.dataIni||p.dataEntrega>s.dataFim)continue; const c=this.pedidoCalc(p);
       if(c.entregaFinal){ if(c.entregaFinal<=p.dataEntrega)entrOk++; else entrBad++; } else entrOpen++; }
     const entrTot=entrOk+entrBad;
     const entrPct=entrTot?Math.round(entrOk/entrTot*100):0;
@@ -2095,19 +2101,15 @@ class Component extends DCLogic {
     const canPrintOs=perfilAtual==='Gestor'||perfilAtual==='Líder'||perfilAtual==='Manutenção';
     // pcp
     const hoje=new Date().toISOString().slice(0,10);
-    const pedCardFilter=s.pedCardFilter||'';
+    const pedCardFilter=s.pedCardFilter||[];
     const pedColFilters=s.pedColFilters||{};
+    const cardStatusMap={aberto:c=>c.statusProd==='Em Aberto',concluido:c=>c.statusProd==='Concluído',naoConc:c=>c.statusProd==='Não Concluído',
+      cancelado:c=>c.statusProd==='Cancelado',pne:c=>c.statusLog==='Pronto e Não Entregue',pe:c=>c.statusLog==='Pronto e Entregue'};
     const matchesCardFilter=(c)=>{
-      if(!pedCardFilter) return true;
-      if(pedCardFilter==='aberto') return c.statusProd==='Em Aberto';
-      if(pedCardFilter==='concluido') return c.statusProd==='Concluído';
-      if(pedCardFilter==='naoConc') return c.statusProd==='Não Concluído';
-      if(pedCardFilter==='cancelado') return c.statusProd==='Cancelado';
-      if(pedCardFilter==='pne') return c.statusLog==='Pronto e Não Entregue';
-      if(pedCardFilter==='pe') return c.statusLog==='Pronto e Entregue';
-      return true;
+      if(!pedCardFilter.length) return true;
+      return pedCardFilter.some(k=>cardStatusMap[k]&&cardStatusMap[k](c));
     };
-    const pedRowsAll=db.pedidos.filter(p=>{const mq=db.maquinas.find(m=>m.id===p.maquina);return s.unidade==='ALL'||!mq||mq.unidade===s.unidade;}).map(p=>{
+    const pedRowsAll=db.pedidos.filter(p=>{const mq=db.maquinas.find(m=>m.id===p.maquina);return (s.unidade==='ALL'||!mq||mq.unidade===s.unidade)&&(s.fMaq==='ALL'||p.maquina===s.fMaq);}).map(p=>{
       const cl=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—';
       const pr=(db.produtos.find(x=>x.id===p.produto)||{});
       const mq=(db.maquinas.find(m=>m.id===p.maquina)||{}).nome||'—';
@@ -2128,7 +2130,7 @@ class Component extends DCLogic {
         spCls:calc.statusProd==='Concluído'?'stPronto':calc.statusProd==='Não Concluído'?'stAtras':calc.statusProd==='Cancelado'?'stCOR':'stFila',
         slCls:calc.statusLog==='Pronto e Entregue'?'stPronto':calc.statusLog==='Pronto e Não Entregue'?'stAprovada':'stCOR',
         canEntregar:calc.statusLog==='Pronto e Não Entregue', _calc:calc};});
-    const colOk=(v,f)=>!f||String(v==null?'':v)===String(f);
+    const colOk=(v,arr)=>!arr||!arr.length||arr.includes(String(v==null?'':v));
     const uniqOpts=(arr,key)=>[...new Set(arr.map(r=>r[key]).filter(v=>v!=null&&v!==''))].sort((a,b)=>String(a).localeCompare(String(b),'pt-BR'));
     const pedColOptions={
       nr:uniqOpts(pedRowsAll,'nr'), cliente:uniqOpts(pedRowsAll,'cliente'), produto:uniqOpts(pedRowsAll,'produto'),
@@ -2159,8 +2161,8 @@ class Component extends DCLogic {
       pe:nPe,peQtd:this.fmtN(sumQ(o=>o.c.statusLog==='Pronto e Entregue')),
       concPct,cancPct:Math.round(cnt(o=>o.c.statusProd==='Cancelado')/(cAll.length||1)*100),
       entrPct:entrPctCart,taxaCls:concPct>=70?'kok':concPct>=40?'kwarn':'kbad',entrCls:entrPctCart>=80?'kok':entrPctCart>=50?'kwarn':'kbad',
-      cAberto:pedCardFilter==='aberto'?'cardOn':'',cConcluido:pedCardFilter==='concluido'?'cardOn':'',cNaoConc:pedCardFilter==='naoConc'?'cardOn':'',
-      cCancelado:pedCardFilter==='cancelado'?'cardOn':'',cPne:pedCardFilter==='pne'?'cardOn':'',cPe:pedCardFilter==='pe'?'cardOn':''};
+      cAberto:pedCardFilter.includes('aberto')?'cardOn':'',cConcluido:pedCardFilter.includes('concluido')?'cardOn':'',cNaoConc:pedCardFilter.includes('naoConc')?'cardOn':'',
+      cCancelado:pedCardFilter.includes('cancelado')?'cardOn':'',cPne:pedCardFilter.includes('pne')?'cardOn':'',cPe:pedCardFilter.includes('pe')?'cardOn':''};
     this._iaCtx+='\nCarteira: '+stK.aberto+' em aberto, '+stK.concluido+' concluídos, '+stK.naoConc+' não concluídos, '+stK.cancelado+' cancelados; logística: '+stK.pne+' pronto e não entregue, '+stK.pe+' entregues. Conclusão '+concPct+'%, entrega '+entrPct+'%.';
     const metaRows=db.produtos.map(p=>({nome:p.nome,cliente:(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',tipo:p.maquinaTipo,
       peso:String(p.pesoIdeal),vel:p.velAlvo+' '+p.unid,cap:this.fmtN(p.velAlvo*480*0.85)}));
@@ -2339,8 +2341,8 @@ class Component extends DCLogic {
       saveAus:this.saveAus,editAus:this.editAus,delAus:this.delAus,cancelAusEdit:this.cancelAusEdit,
       setCadTab:this.setCadTab,cadSave:this.cadSave,cadEdit:this.cadEdit,cadDel:this.cadDel,cancelCadEdit:this.cancelCadEdit,
       onChatInput:this.onChatInput,onChatKey:this.onChatKey,sendChat:this.sendChat,
-      openPw:this.openPw,closePw:this.closePw,onPwInput:this.onPwInput,onPwKey:this.onPwKey,confirmPw:this.confirmPw,lockValor:this.lockValor,
-      pwOpen:s.pwOpen,pwInput:s.pwInput,pwErr:s.pwErr,valorUnlocked:s.valorUnlocked,valorLocked:!s.valorUnlocked,
+      openPw:this.openPw,closePw:this.closePw,onPwInput:this.onPwInput,onPwKey:this.onPwKey,confirmPw:this.confirmPw,lockValor:this.lockValor,togglePwShow:this.togglePwShow,
+      pwOpen:s.pwOpen,pwInput:s.pwInput,pwErr:s.pwErr,pwInputType:s.pwShow?'text':'password',valorUnlocked:s.valorUnlocked,valorLocked:!s.valorUnlocked,
       valorInpType:canVerValor?'number':'password',valorPh:canVerValor?'':'•••• (libere para ver)',
       ganttRows,ganttTicks,ganttToday,
       simCols,sim,simRows,simCanDrag:true,simLocked:false,
@@ -2397,8 +2399,9 @@ class Component extends DCLogic {
       tecOpts:db.operadores.filter(o=>o.funcao==='Técnico de Manutenção'),osRows,osK,
       fPed,pedEditing:!!fPed.editId,pedFormTit:fPed.editId?'Editar Pedido':'Novo Pedido',pedSaveLbl:fPed.editId?'Salvar alterações':'Criar pedido',
       cliOpts:db.clientes,prodCliOpts:db.produtos.filter(p=>!fPed.cliente||p.cliente===fPed.cliente).map(p=>({id:p.id,label:p.nome})),
-      pedRows,metaRows,stK,pedCardFilter,pedColOptions,pedColFilters:{nr:'',cliente:'',produto:'',maq:'',qtd:'',prodz:'',entrega:'',progProd:'',progReal:'',entregaFinal:'',replan:'',statusProd:'',statusLog:'',...pedColFilters},pedCardClick:this.pedCardClick,onPedStatusFilter:this.onPedStatusFilter,
-      onPedColFilter:this.onPedColFilter,clearPedFilters:this.clearPedFilters,pedFiltroAtivo:!!(pedCardFilter||Object.values(pedColFilters).some(v=>v)),
+      pedRows,metaRows,stK,pedCardFilter,pedColOptions,pedColFilters:{nr:[],cliente:[],produto:[],maq:[],qtd:[],prodz:[],entrega:[],progProd:[],progReal:[],entregaFinal:[],replan:[],statusProd:[],statusLog:[],...pedColFilters},pedCardClick:this.pedCardClick,onPedStatusFilter:this.onPedStatusFilter,
+      onPedColFilter:this.onPedColFilter,clearPedFilters:this.clearPedFilters,pedFiltroAtivo:!!(pedCardFilter.length||Object.values(pedColFilters).some(v=>v&&v.length)),
+      pedStatusResumo:pedCardFilter.length?pedCardFilter.length+' selecionado(s)':'todos',
       togglePanel:this.togglePanel,carteiraOpen:s.panelOpen.carteira!==false,metasOpen:s.panelOpen.metas!==false,
       carteiraChev:s.panelOpen.carteira!==false?'▾':'▸',metasChev:s.panelOpen.metas!==false?'▾':'▸',
       fAus,ausEditing:!!fAus.editId,ausFormTit:fAus.editId?'Editar Ausência':'Registrar Ausência',ausSaveLbl:fAus.editId?'Salvar alterações':'Registrar',
