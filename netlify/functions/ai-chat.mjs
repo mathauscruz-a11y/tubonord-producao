@@ -36,7 +36,7 @@ export default async (req, context) => {
     const body = {
       systemInstruction: { parts: [{ text: system || 'Você é um assistente de análise industrial. Responda em português do Brasil.' }] },
       contents: [{ role: 'user', parts: [{ text: 'IMPORTANTE: responda sempre em português do Brasil, nunca em inglês, independente do idioma dos dados abaixo.\n\nDADOS DO PERÍODO ATUAL:\n' + (dataContext || '') + '\n\nPERGUNTA: ' + question }] }],
-      generationConfig: { maxOutputTokens: 1100 },
+      generationConfig: { maxOutputTokens: 1400 },
     };
 
     let data = null, lastErr = null;
@@ -70,7 +70,9 @@ export default async (req, context) => {
     }
 
     const finishReason = data && data.candidates && data.candidates[0] ? data.candidates[0].finishReason : null;
-    const finalText = finishReason === 'MAX_TOKENS' ? (text + '\n\n_(resposta truncada pelo limite de tamanho — peça um resumo mais curto ou uma parte específica)_') : text;
+    const trimmed = text.trim();
+    const looksComplete = /[.!?…"'\)\]]\s*$/.test(trimmed); // termina com pontuação/fechamento típico de frase — trata como completo mesmo se a API sinalizar MAX_TOKENS
+    const finalText = (finishReason === 'MAX_TOKENS' && !looksComplete) ? (text + '\n\n_(resposta truncada pelo limite de tamanho — peça um resumo mais curto ou uma parte específica)_') : text;
 
     return new Response(JSON.stringify({ text: finalText }), { status: 200, headers: CORS_HEADERS });
   } catch (err) {
