@@ -717,12 +717,25 @@ select.sel[multiple]{height:80px}
 <div class="panel"><div class="ptit">Pergunte ao Agente IA <span class="mini fw5">— analisa os indicadores do período filtrado</span></div>
 <div class="chatbox" id="chatbox">
 <div class="msg ma">Olá! Sou o agente de análise da Tubonord. Pergunte sobre OEE, paradas, manutenção, absenteísmo ou pedidos — eu analiso os dados do período selecionado.</div>
-<sc-for list="{{chatMsgs}}" as="m" hint-placeholder-count="0"><div class="msg {{m.cls}}">{{m.text}}</div></sc-for>
+<sc-for list="{{chatMsgs}}" as="m" hint-placeholder-count="0"><div class="msg {{m.cls}}">{{m.text}}<sc-if value="{{m.isAi}}" hint-placeholder-val="{{false}}"><div class="mt8"><button class="btsm" data-idx="{{m.idx}}" onClick="{{openIaPrint}}">🖨 Imprimir (ISO 9001)</button></div></sc-if></div></sc-for>
 <sc-if value="{{chatBusy}}" hint-placeholder-val="{{false}}"><div class="msg ma mini">Analisando dados…</div></sc-if>
 </div>
 <div class="chatin"><input class="inp f1" value="{{chatInput}}" onChange="{{onChatInput}}" onKeyDown="{{onChatKey}}" placeholder="Ex.: Por que o OEE da Tubeteira 07 caiu?"><button class="btn btna" onClick="{{sendChat}}">Enviar</button></div>
 </div>
 </div>
+<sc-if value="{{iaPrintOpen}}" hint-placeholder-val="{{false}}">
+<div class="modal" onClick="{{closeIaPrint}}"><div class="mbox" onClick="{{stop}}" style="max-width:800px">
+<div class="isohead"><div class="isoc"><b style="font-size:13px">TUBONORD</b><span class="mini">Sistema de Gestão da Qualidade</span></div><div class="isoc isot">RELATÓRIO DE ANÁLISE — AGENTE IA</div><div class="isoc" style="border-right:none"><div class="isor"><span>Código:</span><b>IA-01</b></div><div class="isor"><span>Revisão:</span><b>01</b></div><div class="isor"><span>Página:</span><b>1 de 1</b></div></div></div>
+<div class="fx jb mini mt8"><span>Elaborado por: PWR Gestão (Agente IA)</span><span>Aprovado por: Helder Gomes</span><span>Emitido em: {{iaPrintData}}</span><span>Conforme ISO 9001:2015 — 9.1</span></div>
+<div class="isosec">PERGUNTA</div>
+<div class="mini" style="padding:8px 0">{{iaPrintQuestion}}</div>
+<div class="isosec">ANÁLISE</div>
+<div style="padding:8px 0;white-space:pre-wrap;font-size:13px;line-height:1.6">{{iaPrintText}}</div>
+<div class="mini" style="margin-top:10px;color:var(--mut)">Gerado por IA (Google Gemini) com base nos dados do Sistema Tubonord no momento da consulta. Revisão humana recomendada antes de decisões formais.</div>
+<div class="fx gap24 mt16" style="border-top:1px solid var(--bd);padding-top:14px"><div class="f1"><div class="isoflab">Revisado por (PCP/Gestão)</div><div style="border-top:1px solid var(--ink);margin-top:26px;font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div><div class="f1"><div class="isoflab">Aprovado por</div><div style="border-top:1px solid var(--ink);margin-top:26px;font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div></div>
+<div class="fx gap8 mt16 noprint"><button class="btsm" onClick="{{printOs}}">🖨 Imprimir</button><button class="btsm" onClick="{{closeIaPrint}}" style="margin-left:auto">Fechar</button></div>
+</div></div>
+</sc-if>
 </sc-if>
 
 <sc-if value="{{vMan}}" hint-placeholder-val="{{false}}">
@@ -868,7 +881,7 @@ class Component extends DCLogic {
       dataIni:d0.toISOString().slice(0,10), dataFim:hoje,
       fMaq:'ALL', fTurno:'ALL', fOper:'ALL', user:'U01',
       db:null, cadTab:'maquinas', cadEditId:null, osDetail:null, osFechando:false, osMEdit:false,
-      valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, pwShow:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false,
+      valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, pwShow:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false, iaPrintOpen:false, iaPrintIdx:null,
       sim:{}, simOver:null, solicOpen:false, tourOn:false, tourStep:0, tourPlaying:false,
       chat:[], chatInput:'', chatBusy:false, toast:null,
       panelOpen:{carteira:false, metas:false, atrasados:true},
@@ -1825,6 +1838,8 @@ class Component extends DCLogic {
   addDias(iso,n){ const d=new Date(iso+'T12:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
   openProgPrint = ()=>this.setState({progPrintOpen:true});
   closeProgPrint = ()=>this.setState({progPrintOpen:false});
+  openIaPrint = (e)=>{ const idx=+e.currentTarget.dataset.idx; this.setState({iaPrintOpen:true,iaPrintIdx:idx}); };
+  closeIaPrint = ()=>this.setState({iaPrintOpen:false});
   moveOrdem = (e)=>{
     const {id,dir}=e.currentTarget.dataset; const db={...this.state.db};
     const alvo=db.pedidos.find(p=>p.id===id); if(!alvo)return;
@@ -1892,7 +1907,10 @@ class Component extends DCLogic {
     }
     try{
       const res=await fetch('/api/ai-chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({
-        system:'Você é o agente de análise industrial da Tubonord (fábrica de tubos e cones de papelão). Responda em português do Brasil, de forma direta e prática, com base APENAS nos dados fornecidos. Dê sugestões acionáveis de melhoria quando fizer sentido. Seja conciso: no máximo 180 palavras ou 6 tópicos curtos, e SEMPRE termine sua resposta de forma completa dentro desse limite — nunca pare no meio de uma frase ou tópico.',
+        system:'Você é o agente de análise industrial da Tubonord (fábrica de tubos e cones de papelão). Responda em português do Brasil, de forma direta e prática, com base APENAS nos dados fornecidos. '
+          +'Para perguntas simples/pontuais, no máximo 100 palavras. '
+          +'Se pedirem um RELATÓRIO (ex.: "relatório", "resumo do mês", "pontos fortes e fracos"), siga ESTRITAMENTE esta estrutura curta, sem passar disso: título de uma linha; até 3 pontos fortes (uma frase curta cada); até 3 pontos de atenção (uma frase curta cada); 1 recomendação final de uma frase. Não escreva parágrafos longos nem introduções. '
+          +'Regra mais importante: SEMPRE termine a resposta de forma completa dentro desse limite curto — nunca pare no meio de uma palavra, frase ou tópico. Prefira ser breve demais a arriscar cortar no fim.',
         context, question:q
       })});
       const data=await res.json();
@@ -2504,7 +2522,11 @@ class Component extends DCLogic {
       fAus,ausEditing:!!fAus.editId,ausFormTit:fAus.editId?'Editar Ausência':'Registrar Ausência',ausSaveLbl:fAus.editId?'Salvar alterações':'Registrar',
       ausRows,rhK,
       cadTabs,cadLabel:def.label,cadFields,cadCols:def.cols,cadRows,cadEditing:!!s.cadEditId,cadEditId:s.cadEditId||'',cadFormTit:s.cadEditId?'Editar registro':'Novo registro',cadSaveLbl:s.cadEditId?'Salvar alterações':'Adicionar',
-      chatMsgs:s.chat.map(m=>({cls:m.role==='user'?'mu':'ma',text:m.text})),chatInput:s.chatInput,chatBusy:s.chatBusy,
+      chatMsgs:s.chat.map((m,i)=>({cls:m.role==='user'?'mu':'ma',text:m.text,isAi:m.role==='ai',idx:i})),chatInput:s.chatInput,chatBusy:s.chatBusy,
+      openIaPrint:this.openIaPrint,closeIaPrint:this.closeIaPrint,iaPrintOpen:s.iaPrintOpen,
+      iaPrintText:s.iaPrintIdx!=null&&s.chat[s.iaPrintIdx]?s.chat[s.iaPrintIdx].text:'',
+      iaPrintQuestion:s.iaPrintIdx!=null&&s.chat[s.iaPrintIdx-1]?s.chat[s.iaPrintIdx-1].text:'',
+      iaPrintData:this.fmtD(hoje),
       osMOpen:!!osM,osM:osM||{},fFech:s.forms.fech,
       toastOn:!!s.toast,toastMsg:s.toast||'',
       showLoading:false,showLogin:false,showApp:true,
