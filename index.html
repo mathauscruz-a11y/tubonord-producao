@@ -190,6 +190,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 .ufrow{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0}
 .ufdot{width:12px;height:12px;border-radius:50%;background:var(--ac);flex:none}
 .ufbar{height:10px;background:var(--ac);border-radius:3px;opacity:.85}
+.sfootwarn{margin-top:8px;font-size:10px;line-height:1.4;color:#e0a15c;opacity:.9}
 .loadwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px}
 .loginwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--side);padding:20px;box-sizing:border-box}
 .loginbox{background:#fff;border-radius:14px;padding:34px 30px;width:340px;max-width:100%;box-shadow:0 10px 40px rgba(0,0,0,.28);box-sizing:border-box}
@@ -197,6 +198,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 .logintit{font-size:18px;font-weight:700;text-align:center;margin-bottom:4px}
 .loginsub{font-size:12px;color:var(--mut);text-align:center;margin-bottom:22px}
 .loginerr{color:var(--bad);font-size:12px;margin-top:8px;text-align:center;font-weight:600}
+.loginwarn{font-size:11px;line-height:1.4;color:var(--warn);background:#fdf3e7;border:1px solid #f0d9b5;border-radius:8px;padding:8px 10px;margin-bottom:18px;text-align:center}
 .userbadge{display:flex;align-items:center;gap:8px;font-size:12px;margin-left:auto}
 .userbadge .mini{color:var(--mut)}
 .mobtoggle{display:none}
@@ -241,6 +243,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <img class="loginlogo" src="assets/logo-tubonord.png" alt="Tubonord">
 <div class="logintit">Sistema de Gestão Industrial</div>
 <div class="loginsub">Tubonord &amp; Tubocone — acesso restrito</div>
+<div class="loginwarn">⚠ Use sempre o mesmo computador/navegador para lançar dados — as informações não são sincronizadas entre dispositivos.</div>
 <div class="fg" style="margin-bottom:10px"><label class="flab">Usuário</label><input class="inp" type="text" autocomplete="username" value="{{loginId}}" onChange="{{onLoginId}}" onKeyDown="{{onLoginKey}}" placeholder="login ou e-mail"></div>
 <div class="fg" style="margin-bottom:6px"><label class="flab">Senha</label><input class="inp" type="password" autocomplete="current-password" value="{{loginSenha}}" onChange="{{onLoginSenha}}" onKeyDown="{{onLoginKey}}" placeholder="senha"></div>
 <sc-if value="{{loginErr}}" hint-placeholder-val="{{false}}"><div class="loginerr">Usuário ou senha inválidos.</div></sc-if>
@@ -261,7 +264,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <sc-if value="{{isAdmin}}" hint-placeholder-val="{{true}}"><div class="nitem {{cCad}}" onClick="{{nav.cad}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path><rect x="2.5" y="2.5" width="19" height="19" rx="4"></rect></svg>Cadastros</div></sc-if>
 <div class="nitem {{cIa}}" onClick="{{nav.ia}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.8 4.9L19 9.7l-4.4 3.4L16 18.5 12 15.6 8 18.5l1.4-5.4L5 9.7l5.2-.8z"></path></svg>Agente IA</div>
 <div class="nitem {{cMan}}" onClick="{{nav.man}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4.5h6a2 2 0 0 1 2 2v13a1.6 1.6 0 0 0-1.6-1.6H4z"></path><path d="M20 4.5h-6a2 2 0 0 0-2 2v13a1.6 1.6 0 0 1 1.6-1.6H20z"></path></svg>Manual de Uso</div>
-<div class="sfoot"><div class="fw6" style="color:#c7d3dc;font-size:12px">{{userNome}}</div>{{userPerfil}} · v1.1</div>
+<div class="sfoot"><div class="fw6" style="color:#c7d3dc;font-size:12px">{{userNome}}</div>{{userPerfil}} · v1.1<div class="sfootwarn">⚠ Dados salvos só neste navegador — não são compartilhados com outros usuários/dispositivos.</div></div>
 </aside>
 <main class="main">
 <div class="tbar">

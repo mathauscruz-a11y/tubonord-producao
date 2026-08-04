@@ -2,6 +2,17 @@
 
 Sistema single-page (HTML/JS puro, sem backend) de PCM: apontamento de produção, paradas, manutenção (OS), PCP/pedidos, RH e cadastros.
 
+## ⚠️ LIMITAÇÃO CRÍTICA — leia antes de usar em produção
+
+**Este sistema NÃO tem banco de dados central.** Tudo que é apontado, cadastrado ou editado na tela é salvo apenas no `localStorage` do navegador de quem está usando — não existe sincronização entre usuários.
+
+Na prática:
+- Um apontamento lançado no computador do chão de fábrica **não aparece** para quem abre o sistema em outro computador/celular.
+- Publicar uma atualização de código no Netlify **não** move os dados de ninguém — cada navegador continua com sua própria cópia isolada.
+- Não existe hoje um botão para importar planilhas (F-23/PCP) atualizadas dentro do app; os dados de `data.js` foram carregados manualmente uma vez, como carga inicial.
+
+**Uso recomendado enquanto essa limitação existir:** um único usuário/dispositivo de cada vez alimentando o sistema (ex.: sempre o mesmo computador do PCP), para não gerar dados divergentes entre pessoas. Para virar multiusuário de verdade (todo mundo vendo os mesmos dados ao vivo), o sistema precisa migrar para um backend real (ex.: Supabase) — isso ainda não foi feito.
+
 ## Dados
 `data.js` foi alimentado com dados **reais** extraídos de:
 - `F-23_Controle_de_Produção_Diária.xlsx` (abas "F-23" e "F-23 (2)") — 4.172 apontamentos, ago/2025 a hoje
