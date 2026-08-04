@@ -14,7 +14,7 @@
 <style>
 :root{--ac:#E8862D;--ink:#16232E;--mut:#66727d;--bd:#dde3e8;--bg:#eef1f4;--side:#0f1d28;--ok:#1F8A5B;--warn:#C77E14;--bad:#C23A3A}
 html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--ink);background:var(--bg)}
-.app{display:grid;grid-template-columns:224px 1fr;height:100vh}
+.app{display:grid;grid-template-columns:224px minmax(0,1fr);height:100vh}
 .side{background:var(--side);color:#dfe7ee;display:flex;flex-direction:column;padding:18px 0 12px;overflow-y:auto}
 .logos{padding:0 20px 14px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px;text-align:center}
 .logoimg{width:130px;display:block;margin:0 auto}
@@ -25,7 +25,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 .nion{color:#fff;background:rgba(255,255,255,.07);border-left-color:var(--ac)}
 .nico{width:18px;height:18px;flex:none}
 .sfoot{margin-top:auto;padding:12px 20px 0;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:#7d93a5}
-.main{overflow-y:auto;display:flex;flex-direction:column}
+.main{overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;min-width:0}
 .tbar{display:flex;align-items:center;gap:10px;padding:12px 24px;background:#fff;border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:5;flex-wrap:wrap}
 .h1{font-size:18px;font-weight:700;margin-right:auto}
 .seg{display:flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden}
@@ -35,19 +35,20 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 .datew{display:flex;align-items:center;gap:4px;border:1px solid var(--bd);border-radius:8px;padding:0 8px;background:#fff}
 .datein{border:none;font-family:inherit;font-size:13px;padding:7px 2px;color:var(--ink);background:none;outline:none;width:112px}
 .datesep{color:var(--mut);font-size:12px}
-.content{padding:22px 24px 40px;display:flex;flex-direction:column;gap:18px}
+.content{padding:22px 24px 40px;display:flex;flex-direction:column;gap:18px;min-width:0}
 .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
 .card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
 .cardclick{cursor:pointer;transition:border-color .15s,box-shadow .15s}
 .cardclick:hover{border-color:var(--ac)}
 .cardOn{border-color:var(--ac);box-shadow:0 0 0 2px rgba(232,134,45,.25)}
-.colf{width:100%;box-sizing:border-box;font-size:11px;padding:4px 6px;border:1px solid var(--bd);border-radius:6px;font-family:inherit;background:#fff}
+.colf{width:100%;max-width:160px;box-sizing:border-box;font-size:11px;padding:4px 6px;border:1px solid var(--bd);border-radius:6px;font-family:inherit;background:#fff}
 .filterrow th{padding:4px 8px;font-weight:400}
 .klab{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
 .kval{font-family:'Barlow Condensed';font-size:34px;font-weight:700;line-height:1.1;margin-top:4px}
 .ksub{font-size:12px;color:var(--mut);margin-top:2px}
 .kok{color:var(--ok)}.kwarn{color:var(--warn)}.kbad{color:var(--bad)}
-.panel{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:16px 18px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+.panel{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:16px 18px;min-width:0}
 .ptit{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
 .tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);font-weight:600;padding:7px 10px;border-bottom:1px solid var(--bd);white-space:nowrap}
@@ -59,7 +60,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 .ofw{background:var(--warn)}.ofb{background:var(--bad)}
 .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
 .dg{background:var(--ok)}.dy{background:var(--warn)}.dr{background:var(--bad)}
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
 .pbrow{display:grid;grid-template-columns:190px 1fr 76px;align-items:center;gap:10px;font-size:13px;padding:5px 0}
 .pbtrack{height:14px;background:#eef1f4;border-radius:4px;overflow:hidden}
 .pbfill{height:100%;background:var(--ac);border-radius:4px}
@@ -324,6 +325,24 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 </div>
 </div>
 <div class="duo">
+<div class="panel"><div class="ptit">Top 5 Paradas por Máquina <span class="mini fw5">— mês de {{mesRefLabel}}</span></div>
+<sc-for list="{{topParadasMes}}" as="mq" hint-placeholder-count="4">
+<div class="mt12"><div class="fw6 mini upper" style="color:var(--mut);margin-bottom:6px">{{mq.maquina}} <span class="fw5">— {{mq.totalMin}} min</span></div>
+<sc-if value="{{mq.vazio}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut)">Sem paradas no período.</div></sc-if>
+<sc-for list="{{mq.top5}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.rank}}. {{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min</div></div></sc-for>
+</div>
+</sc-for>
+</div>
+<div class="panel"><div class="ptit">Top 5 Paradas por Máquina <span class="mini fw5">— ano de {{anoRefLabel}}</span></div>
+<sc-for list="{{topParadasAno}}" as="mq" hint-placeholder-count="4">
+<div class="mt12"><div class="fw6 mini upper" style="color:var(--mut);margin-bottom:6px">{{mq.maquina}} <span class="fw5">— {{mq.totalMin}} min</span></div>
+<sc-if value="{{mq.vazio}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut)">Sem paradas no período.</div></sc-if>
+<sc-for list="{{mq.top5}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.rank}}. {{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min</div></div></sc-for>
+</div>
+</sc-for>
+</div>
+</div>
+<div class="duo">
 <div class="panel"><div class="ptit">Produção Diária <span class="mini fw5">(kg)</span></div>
 <div class="dbars"><sc-for list="{{prodDia}}" as="d" hint-placeholder-count="10"><div class="dbar" style="{{d.style}}" title="{{d.tip}}"></div></sc-for></div>
 <div class="dlegend"><span>{{prodDiaIni}}</span><span>pico: {{prodDiaMax}} kg</span><span>{{prodDiaFim}}</span></div>
@@ -557,7 +576,7 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 <sc-if value="{{pedFiltroAtivo}}" hint-placeholder-val="{{false}}"><button class="btsm" onClick="{{clearPedFilters}}">✕ Limpar filtros</button></sc-if>
 <sc-if value="{{valorLocked}}" hint-placeholder-val="{{true}}"><button class="btsm" onClick="{{openPw}}">🔒 Mostrar valores (senha)</button></sc-if><sc-if value="{{valorUnlocked}}" hint-placeholder-val="{{false}}"><span class="mini kok fw6">🔓 Valores visíveis</span><button class="btsm" onClick="{{lockValor}}">Ocultar</button></sc-if></div></div>
 <div class="scroll"><table class="tbl"><thead><tr><th>OP</th><th>Nº Cliente</th><th>Cliente</th><th>Produto</th><th>Máquina</th><th>Qtd</th><th>Valor (R$)</th><th>Produzido</th><th>Avanço</th><th>Entrega Prev.</th><th>Prog. Prod.</th><th>Prog. Real</th><th>Entrega Final</th><th>Replan.</th><th>Status Produção</th><th>Status Logística</th><th></th></tr>
-<tr class="filterrow"><th></th><th><input class="colf" data-col="nr" value="{{pedColFilters.nr}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="cliente" value="{{pedColFilters.cliente}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="produto" value="{{pedColFilters.produto}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="maq" value="{{pedColFilters.maq}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="qtd" value="{{pedColFilters.qtd}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th></th><th><input class="colf" data-col="prodz" value="{{pedColFilters.prodz}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th></th><th><input class="colf" data-col="entrega" value="{{pedColFilters.entrega}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="progProd" value="{{pedColFilters.progProd}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="progReal" value="{{pedColFilters.progReal}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="entregaFinal" value="{{pedColFilters.entregaFinal}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="replan" value="{{pedColFilters.replan}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="statusProd" value="{{pedColFilters.statusProd}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th><input class="colf" data-col="statusLog" value="{{pedColFilters.statusLog}}" onChange="{{onPedColFilter}}" placeholder="filtrar"></th><th></th></tr>
+<tr class="filterrow"><th></th><th><select class="colf" data-col="nr" value="{{pedColFilters.nr}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.nr}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="cliente" value="{{pedColFilters.cliente}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.cliente}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="produto" value="{{pedColFilters.produto}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.produto}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="maq" value="{{pedColFilters.maq}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.maq}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="qtd" value="{{pedColFilters.qtd}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.qtd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th><th><select class="colf" data-col="prodz" value="{{pedColFilters.prodz}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.prodz}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th><th><select class="colf" data-col="entrega" value="{{pedColFilters.entrega}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.entrega}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="progProd" value="{{pedColFilters.progProd}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.progProd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="progReal" value="{{pedColFilters.progReal}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.progReal}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="entregaFinal" value="{{pedColFilters.entregaFinal}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.entregaFinal}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="replan" value="{{pedColFilters.replan}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.replan}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="statusProd" value="{{pedColFilters.statusProd}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.statusProd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" data-col="statusLog" value="{{pedColFilters.statusLog}}" onChange="{{onPedColFilter}}"><option value="">todos</option><sc-for list="{{pedColOptions.statusLog}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th></tr>
 </thead><tbody>
 <sc-for list="{{pedRows}}" as="p" hint-placeholder-count="8"><tr><td class="fw6">{{p.id}}</td><td>{{p.nr}}</td><td class="fw6">{{p.cliente}}</td><td class="mini">{{p.produto}}</td><td>{{p.maq}}</td><td class="num">{{p.qtd}}</td><td class="num">{{p.valorShow}}</td><td class="num">{{p.prodz}}</td><td><div class="obar"><div class="ofill" style="{{p.pctStyle}}"></div></div><span class="mini">{{p.pct}}%</span></td><td>{{p.entrega}} <sc-if value="{{p.atrasado}}" hint-placeholder-val="{{false}}"><span class="chip stAtras">ATRASADO</span></sc-if></td><td>{{p.progProd}}</td><td class="fw6">{{p.progReal}}</td><td class="fw6">{{p.entregaFinal}}</td><td class="mini" title="{{p.obsReplan}}">{{p.replan}}</td><td><span class="chip {{p.spCls}}">{{p.statusProd}}</span></td><td><span class="chip {{p.slCls}}">{{p.statusLog}}</span></td><td class="fx gap8">
 <sc-if value="{{p.canEntregar}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{p.id}}" onClick="{{entregarPed}}">Entregar</button></sc-if>
@@ -1700,6 +1719,24 @@ class Component extends DCLogic {
     const totRef=Object.values(refMap).reduce((a,b)=>a+b,0)||1;
     const maxRef=Math.max(1,...Object.values(refMap));
     const paretoRefugo=Object.entries(refMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([nome,kg])=>({nome,kg:this.fmtN(kg),pct:Math.round(kg/totRef*100),style:{width:Math.max(2,Math.round(kg/maxRef*100))+'%',background:'var(--warn)'}}));
+    // Top 5 paradas por máquina — mês e ano de referência (fim do período selecionado), respeitando filtro de máquina/turno/operador
+    const maqsForTop=this.maqsFiltered().filter(m=>s.fMaq==='ALL'||m.id===s.fMaq);
+    const [refY,refM]=s.dataFim.split('-').map(Number);
+    const monthIni=refY+'-'+String(refM).padStart(2,'0')+'-01';
+    const monthFim=refM===12?(refY+1)+'-01-01':refY+'-'+String(refM+1).padStart(2,'0')+'-01';
+    const yearIni=refY+'-01-01', yearFim=(refY+1)+'-01-01';
+    const topParadasPorMaquina=(ini,fim)=>maqsForTop.map(m=>{
+      const parsM=db.paradas.filter(p=>p.maquina===m.id&&p.data>=ini&&p.data<fim&&(s.fTurno==='ALL'||p.turno===s.fTurno)&&(s.fOper==='ALL'||p.operador===s.fOper));
+      const map={};
+      for(const p of parsM){ const mo=this.motivoDe(p.motivo); if(!mo||mo.tipo==='COR') continue; map[mo.nome]=(map[mo.nome]||0)+p.min; }
+      const totRaw=Object.values(map).reduce((a,b)=>a+b,0);
+      const tot=totRaw||1;
+      const top5=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([nome,min],i)=>({rank:i+1,nome,min:this.fmtN(min),pct:Math.round(min/tot*100),style:{width:Math.max(2,Math.round(min/tot*100))+'%'}}));
+      return {maquina:m.nome, top5, totalMin:this.fmtN(totRaw), vazio:top5.length===0};
+    });
+    const topParadasMes=topParadasPorMaquina(monthIni,monthFim);
+    const topParadasAno=topParadasPorMaquina(yearIni,yearFim);
+    const mesRefLabel=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][refM-1]+'/'+refY;
     // trend semanal
     const trend=[];
     const fim=new Date(s.dataFim+'T12:00:00');
@@ -1905,7 +1942,15 @@ class Component extends DCLogic {
         spCls:calc.statusProd==='Concluído'?'stPronto':calc.statusProd==='Não Concluído'?'stAtras':calc.statusProd==='Cancelado'?'stCOR':'stFila',
         slCls:calc.statusLog==='Pronto e Entregue'?'stPronto':calc.statusLog==='Pronto e Não Entregue'?'stAprovada':'stCOR',
         canEntregar:calc.statusLog==='Pronto e Não Entregue', _calc:calc};});
-    const colOk=(v,f)=>!f||String(v==null?'':v).toLowerCase().indexOf(String(f).toLowerCase())>=0;
+    const colOk=(v,f)=>!f||String(v==null?'':v)===String(f);
+    const uniqOpts=(arr,key)=>[...new Set(arr.map(r=>r[key]).filter(v=>v!=null&&v!==''))].sort((a,b)=>String(a).localeCompare(String(b),'pt-BR'));
+    const pedColOptions={
+      nr:uniqOpts(pedRowsAll,'nr'), cliente:uniqOpts(pedRowsAll,'cliente'), produto:uniqOpts(pedRowsAll,'produto'),
+      maq:uniqOpts(pedRowsAll,'maq'), qtd:uniqOpts(pedRowsAll,'qtd'), prodz:uniqOpts(pedRowsAll,'prodz'),
+      entrega:uniqOpts(pedRowsAll,'entrega'), progProd:uniqOpts(pedRowsAll,'progProd'), progReal:uniqOpts(pedRowsAll,'progReal'),
+      entregaFinal:uniqOpts(pedRowsAll,'entregaFinal'), replan:uniqOpts(pedRowsAll,'replan'),
+      statusProd:uniqOpts(pedRowsAll,'statusProd'), statusLog:uniqOpts(pedRowsAll,'statusLog')
+    };
     const pedRows=pedRowsAll.filter(r=>matchesCardFilter(r._calc)
       && colOk(r.nr,pedColFilters.nr) && colOk(r.cliente,pedColFilters.cliente) && colOk(r.produto,pedColFilters.produto)
       && colOk(r.maq,pedColFilters.maq) && colOk(r.qtd,pedColFilters.qtd) && colOk(r.prodz,pedColFilters.prodz)
@@ -2140,7 +2185,7 @@ class Component extends DCLogic {
       viewTitle:titles[s.view],uAll:s.unidade==='ALL'?'segon':'',uNord:s.unidade==='NORD'?'segon':'',uCone:s.unidade==='CONE'?'segon':'',
       dataIniV:s.dataIni,dataFimV:s.dataFim,fMaqV:s.fMaq,fTurnoV:s.fTurno,fOperV:s.fOper,userV:s.user,userNome:u.nome,userPerfil:u.perfil,
       maqFilterOpts:maqs,operFilterOpts:db.operadores,userOpts:db.usuarios,metaOeeV:metaOee,
-      kpi,maqRows,pareto,trend,paretoRefugo,trendRefugo,insTop:insights.slice(0,3),insights,
+      kpi,maqRows,pareto,trend,paretoRefugo,trendRefugo,topParadasMes,topParadasAno,mesRefLabel,anoRefLabel:refY,insTop:insights.slice(0,3),insights,
       prodDia,prodDiaPc,prodDiaIni:days.length?this.fmtD(days[0]):'—',prodDiaFim:days.length?this.fmtD(days[days.length-1]):'—',prodDiaMax:this.fmtN(maxDay),prodDiaMaxPc:this.fmtN(maxDayPc),
       mapaUf,mapaList,ader,aderWk,entr,
       fProd,fProdParadas:fProd.paradas.map((p,i)=>({...p,i})),prodEditing:!!fProd.editId,prodFormTit:fProd.editId?'Editar Apontamento':'Novo Apontamento de Produção',prodSaveLbl:fProd.editId?'Salvar alterações':'Salvar apontamento',
@@ -2164,7 +2209,7 @@ class Component extends DCLogic {
       tecOpts:db.operadores.filter(o=>o.funcao==='Técnico de Manutenção'),osRows,osK,
       fPed,pedEditing:!!fPed.editId,pedFormTit:fPed.editId?'Editar Pedido':'Novo Pedido',pedSaveLbl:fPed.editId?'Salvar alterações':'Criar pedido',
       cliOpts:db.clientes,prodCliOpts:db.produtos.filter(p=>!fPed.cliente||p.cliente===fPed.cliente).map(p=>({id:p.id,label:p.nome})),
-      pedRows,metaRows,stK,pedCardFilter,pedColFilters:{nr:'',cliente:'',produto:'',maq:'',qtd:'',prodz:'',entrega:'',progProd:'',progReal:'',entregaFinal:'',replan:'',statusProd:'',statusLog:'',...pedColFilters},pedCardClick:this.pedCardClick,onPedStatusFilter:this.onPedStatusFilter,
+      pedRows,metaRows,stK,pedCardFilter,pedColOptions,pedColFilters:{nr:'',cliente:'',produto:'',maq:'',qtd:'',prodz:'',entrega:'',progProd:'',progReal:'',entregaFinal:'',replan:'',statusProd:'',statusLog:'',...pedColFilters},pedCardClick:this.pedCardClick,onPedStatusFilter:this.onPedStatusFilter,
       onPedColFilter:this.onPedColFilter,clearPedFilters:this.clearPedFilters,pedFiltroAtivo:!!(pedCardFilter||Object.values(pedColFilters).some(v=>v)),
       fAus,ausEditing:!!fAus.editId,ausFormTit:fAus.editId?'Editar Ausência':'Registrar Ausência',ausSaveLbl:fAus.editId?'Salvar alterações':'Registrar',
       ausRows,rhK,
