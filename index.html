@@ -9,8 +9,7 @@
 <x-dc>
 <helmet data-dc-atomics>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="data.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="data.js" defer></script>
 <style>
 :root{--ac:#E8862D;--ink:#16232E;--mut:#66727d;--bd:#dde3e8;--bg:#eef1f4;--side:#0f1d28;--ok:#1F8A5B;--warn:#C77E14;--bad:#C23A3A}
 html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--ink);background:var(--bg)}
@@ -974,12 +973,25 @@ class Component extends DCLogic {
   onPedColFilter = (e)=>{ const col=e.target.dataset.col; const v=e.target.value; this.setState({pedColFilters:{...this.state.pedColFilters,[col]:v}}); };
   clearPedFilters = ()=>{ this.setState({pedCardFilter:'', pedColFilters:{}}); };
   togglePanel = (e)=>{ const k=e.currentTarget.dataset.k; this.setState({panelOpen:{...this.state.panelOpen,[k]:!this.state.panelOpen[k]}}); };
+  loadXlsxLib = ()=>{
+    if(typeof XLSX!=='undefined') return Promise.resolve();
+    if(this._xlsxLoading) return this._xlsxLoading;
+    this._xlsxLoading = new Promise((resolve,reject)=>{
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload=()=>resolve(); s.onerror=()=>reject(new Error('falha ao carregar biblioteca de planilhas'));
+      document.head.appendChild(s);
+    });
+    return this._xlsxLoading;
+  };
   processImport = async ()=>{
     if(this.state.importBusy) return;
     const {importF23File, importPcpFile} = this.state;
     if(!importF23File && !importPcpFile){ this.setState({importMsg:'Selecione ao menos um arquivo.', importMsgErr:true}); return; }
-    if(typeof XLSX==='undefined'){ this.setState({importMsg:'Biblioteca de leitura de planilhas não carregou. Verifique sua conexão e recarregue a página.', importMsgErr:true}); return; }
-    this.setState({importBusy:true, importMsg:'Processando…', importMsgErr:false});
+    this.setState({importBusy:true, importMsg:'Carregando leitor de planilhas…', importMsgErr:false});
+    try{ await this.loadXlsxLib(); }catch(e){ this.setState({importBusy:false, importMsg:'Não foi possível carregar a biblioteca de planilhas (sem internet?).', importMsgErr:true}); return; }
+    this.setState({importMsg:'Processando…'});
+    if(typeof XLSX==='undefined'){ this.setState({importBusy:false, importMsg:'Biblioteca de leitura de planilhas não carregou. Verifique sua conexão e recarregue a página.', importMsgErr:true}); return; }
     try{
       const db=JSON.parse(JSON.stringify(this.state.db));
       const norm=(s)=>(s==null?'':String(s)).replace(/\s+/g,' ').trim();
