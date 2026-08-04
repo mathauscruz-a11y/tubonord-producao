@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="data.js"></script>
+<style>
+:root{--ac:#E8862D;--ink:#16232E;--mut:#66727d;--bd:#dde3e8;--bg:#eef1f4;--side:#0f1d28;--ok:#1F8A5B;--warn:#C77E14;--bad:#C23A3A}
+html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--ink);background:var(--bg)}
+.app{display:grid;grid-template-columns:224px 1fr;height:100vh}
+.side{background:var(--side);color:#dfe7ee;display:flex;flex-direction:column;padding:18px 0 12px;overflow-y:auto}
+.logos{padding:0 20px 14px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px;text-align:center}
+.logoimg{width:130px;display:block;margin:0 auto}
+.logoimg2{width:88px;display:block;margin:6px auto 0;opacity:.85}
+.grupo{font-size:10px;letter-spacing:.14em;color:#7d93a5;margin-top:10px}
+.nitem{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:14px;font-weight:500;color:#aebdc9;cursor:pointer;border-left:3px solid transparent}
+.nitem:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nion{color:#fff;background:rgba(255,255,255,.07);border-left-color:var(--ac)}
+.nico{width:18px;height:18px;flex:none}
+.sfoot{margin-top:auto;padding:12px 20px 0;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:#7d93a5}
+.main{overflow-y:auto;display:flex;flex-direction:column}
+.tbar{display:flex;align-items:center;gap:10px;padding:12px 24px;background:#fff;border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.h1{font-size:18px;font-weight:700;margin-right:auto}
+.seg{display:flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.segb{padding:7px 12px;font-size:13px;font-weight:600;background:#fff;border:none;cursor:pointer;color:var(--mut);font-family:inherit}
+.segon{background:var(--ink);color:#fff}
+.sel{padding:7px 9px;font-size:13px;border:1px solid var(--bd);border-radius:8px;background:#fff;font-family:inherit;color:var(--ink)}
+.datew{display:flex;align-items:center;gap:4px;border:1px solid var(--bd);border-radius:8px;padding:0 8px;background:#fff}
+.datein{border:none;font-family:inherit;font-size:13px;padding:7px 2px;color:var(--ink);background:none;outline:none;width:112px}
+.datesep{color:var(--mut);font-size:12px}
+.content{padding:22px 24px 40px;display:flex;flex-direction:column;gap:18px}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
+.klab{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.kval{font-family:'Barlow Condensed';font-size:34px;font-weight:700;line-height:1.1;margin-top:4px}
+.ksub{font-size:12px;color:var(--mut);margin-top:2px}
+.kok{color:var(--ok)}.kwarn{color:var(--warn)}.kbad{color:var(--bad)}
+.panel{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:16px 18px}
+.ptit{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);font-weight:600;padding:7px 10px;border-bottom:1px solid var(--bd);white-space:nowrap}
+.tbl td{padding:8px 10px;border-bottom:1px solid #edf1f4;white-space:nowrap}
+.tbl tr:hover td{background:#f7f9fa}
+.num{font-family:'Barlow Condensed';font-size:15px;font-weight:600}
+.obar{width:90px;height:8px;background:#e8edf1;border-radius:4px;overflow:hidden}
+.ofill{height:100%;border-radius:4px;background:var(--ok)}
+.ofw{background:var(--warn)}.ofb{background:var(--bad)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.dg{background:var(--ok)}.dy{background:var(--warn)}.dr{background:var(--bad)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.pbrow{display:grid;grid-template-columns:190px 1fr 76px;align-items:center;gap:10px;font-size:13px;padding:5px 0}
+.pbtrack{height:14px;background:#eef1f4;border-radius:4px;overflow:hidden}
+.pbfill{height:100%;background:var(--ac);border-radius:4px}
+.pbv{text-align:right;color:var(--mut);font-size:12px}
+.trend{display:flex;align-items:flex-end;gap:10px;height:150px;padding:6px 4px 0}
+.tcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;min-width:0}
+.tbarv{width:100%;max-width:44px;background:var(--ink);border-radius:4px 4px 0 0;min-height:3px}
+.tlab{font-size:10px;color:var(--mut);white-space:nowrap}
+.tval{font-family:'Barlow Condensed';font-size:13px;font-weight:600}
+.dbars{display:flex;align-items:flex-end;gap:3px;height:130px;padding-top:4px}
+.dbar{flex:1;background:var(--ac);border-radius:2px 2px 0 0;min-height:2px;opacity:.85}
+.dbar:hover{opacity:1}
+.dlegend{display:flex;justify-content:space-between;font-size:10px;color:var(--mut);margin-top:4px}
+.ins{display:flex;gap:10px;padding:11px 12px;border:1px solid var(--bd);border-radius:8px;align-items:flex-start}
+.insico{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none}
+.sevA{background:var(--bad)}.sevB{background:var(--warn)}.sevC{background:var(--ok)}
+.instit{font-weight:600;font-size:13px}
+.instxt{font-size:13px;color:var(--mut);margin-top:2px}
+.inssug{font-size:13px;margin-top:5px}
+.inssug b{color:var(--ac)}
+.insrow{display:flex;flex-direction:column;gap:8px}
+.frm{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.flab{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.inp{padding:8px 10px;font-size:14px;border:1px solid var(--bd);border-radius:8px;font-family:inherit;background:#fff;color:var(--ink);width:100%;box-sizing:border-box}
+.inp:focus{outline:2px solid var(--ac);outline-offset:-1px}
+.btn{padding:9px 18px;font-size:14px;font-weight:600;border:none;border-radius:8px;background:var(--ink);color:#fff;cursor:pointer;font-family:inherit}
+.btn:hover{opacity:.9}
+.btna{background:var(--ac)}
+.btsm{padding:4px 10px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--bd);background:#fff;cursor:pointer;font-family:inherit;color:var(--ink)}
+.btsm:hover{border-color:var(--ink)}
+.btdel{color:var(--bad)}
+.editing{background:#fdf3e3;border:1px solid var(--warn);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--warn);display:flex;align-items:center;gap:10px}
+.chip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;display:inline-block}
+.stAberta{background:#fdecec;color:var(--bad)}
+.stAprovada{background:#fdf3e3;color:var(--warn)}
+.stExec{background:#e7effc;color:#2A5FA8}
+.stFechada{background:#e6f4ec;color:var(--ok)}
+.stProd{background:#e7effc;color:#2A5FA8}
+.stPronto{background:#e6f4ec;color:var(--ok)}
+.stFila{background:#f0f2f5;color:var(--mut)}
+.stAtras{background:#fdecec;color:var(--bad)}
+.stNP{background:#fdecec;color:var(--bad)}
+.stPR{background:#e7effc;color:#2A5FA8}
+.stCOR{background:#f0f2f5;color:var(--mut)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{padding:7px 14px;font-size:13px;font-weight:600;border-radius:20px;border:1px solid var(--bd);background:#fff;cursor:pointer;font-family:inherit;color:var(--mut)}
+.tabon{background:var(--ink);color:#fff;border-color:var(--ink)}
+.parline{display:grid;grid-template-columns:1fr 110px 36px;gap:8px;align-items:center;margin-top:6px}
+.modal{position:fixed;inset:0;background:rgba(10,20,28,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+.mbox{background:#fff;border-radius:12px;max-width:820px;width:100%;max-height:90vh;overflow-y:auto;padding:22px 26px}
+.isohead{display:grid;grid-template-columns:1fr 2fr 1fr;border:1.5px solid var(--ink);font-size:12px}
+.isoc{padding:8px 10px;border-right:1.5px solid var(--ink);display:flex;flex-direction:column;justify-content:center}
+.isot{font-size:16px;font-weight:700;text-align:center}
+.isor{display:flex;justify-content:space-between;padding:2px 0}
+.isosec{background:var(--ink);color:#fff;font-size:12px;font-weight:700;padding:5px 10px;margin-top:14px;letter-spacing:.05em}
+.isogrid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--bd);border-top:none}
+.isofield{padding:7px 10px;border-right:1px solid var(--bd);font-size:13px}
+.isoflab{font-size:10px;text-transform:uppercase;color:var(--mut);font-weight:600;letter-spacing:.05em}
+.chatbox{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;padding:4px 2px}
+.msg{max-width:78%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.45;white-space:pre-wrap}
+.mu{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
+.ma{align-self:flex-start;background:#f0f3f6;border-bottom-left-radius:4px}
+.chatin{display:flex;gap:8px;margin-top:12px}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;font-weight:500;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.mini{font-size:12px;color:var(--mut)}
+.scroll{overflow-x:auto}
+.simwrap{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.simcol{min-width:150px;flex:none;background:#f7f9fa;border:1px solid var(--bd);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-height:130px}
+.simcolOver{background:#fdf3e3;border-color:var(--ac)}
+.simcolHoje{border-color:var(--ac);border-width:2px}
+.simdate{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);display:flex;justify-content:space-between;align-items:center}
+.simcard{background:#fff;border:1px solid var(--bd);border-left:4px solid #93a3b0;border-radius:6px;padding:7px 8px;font-size:12px;line-height:1.35}
+.simcardDrag{cursor:grab}
+.simcardDrag:hover{border-color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.simMoved{border-left-color:var(--ac);background:#fffaf3}
+.simLate{border-left-color:var(--bad)}
+.simOk{border-left-color:var(--ok)}
+.simid{font-weight:700}
+.simmeta{color:var(--mut);font-size:11px}
+.simdelta{font-size:10px;font-weight:700;color:var(--ac)}
+.simimp{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.simbox{border:1px solid var(--bd);border-radius:8px;padding:10px 12px}
+.simbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.simv{font-family:'Barlow Condensed';font-size:26px;font-weight:700;line-height:1.1}
+.simarrow{font-size:13px;color:var(--mut)}
+.simlock{background:#f0f3f6;border:1px dashed var(--bd);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--mut)}
+.manrow{display:grid;grid-template-columns:190px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid #edf1f4}
+.manrow:last-child{border-bottom:none}
+.mannome{font-size:15px;font-weight:700;display:flex;flex-direction:column;gap:4px}
+.mantag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ac)}
+.mantxt{font-size:13.5px;line-height:1.55;color:#3b4a57}
+.manlist{margin:8px 0 0;padding-left:18px;font-size:13px;line-height:1.6;color:#3b4a57}
+.manlist b{color:var(--ink)}
+.formula{font-family:'Barlow Condensed';font-size:14px;font-weight:600;background:#f5f7f9;border:1px solid var(--bd);border-radius:6px;padding:5px 9px;display:inline-block;margin-top:6px;letter-spacing:.02em}
+.tourbar{display:flex;align-items:center;gap:14px;background:var(--side);color:#fff;border-radius:10px;padding:16px 20px;flex-wrap:wrap}
+.tourbtn{padding:8px 16px;font-size:13px;font-weight:600;border-radius:8px;border:none;cursor:pointer;font-family:inherit;background:rgba(255,255,255,.14);color:#fff}
+.tourbtn:hover{background:rgba(255,255,255,.24)}
+.tourplay{background:var(--ac)}
+.tourtrack{flex:1;height:6px;background:rgba(255,255,255,.16);border-radius:3px;overflow:hidden;min-width:120px}
+.tourfill{height:100%;background:var(--ac);border-radius:3px;transition:width .4s ease}
+.tourcard{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:min(620px,calc(100% - 48px));background:#fff;border:1px solid var(--bd);border-left:5px solid var(--ac);border-radius:12px;box-shadow:0 14px 40px rgba(10,20,28,.28);padding:16px 20px;z-index:70}
+.tourstep{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ac)}
+.tourtit{font-size:16px;font-weight:700;margin-top:3px}
+.tourtxt{font-size:13.5px;line-height:1.5;color:#3b4a57;margin-top:5px}
+.tourfoot{display:flex;align-items:center;gap:8px;margin-top:12px}
+.tourdots{display:flex;gap:4px;margin-right:auto;flex-wrap:wrap}
+.tdot{width:7px;height:7px;border-radius:50%;background:var(--bd)}
+.tdotOn{background:var(--ac)}
+.tdotDone{background:#9fb0bd}
+.tourHL{outline:3px solid var(--ac) !important;outline-offset:3px;border-radius:8px;box-shadow:0 0 0 9999px rgba(10,20,28,.32)}
+.gantt{overflow-x:auto}
+.gwrap{min-width:820px}
+.grow{display:grid;grid-template-columns:150px 1fr;align-items:stretch;border-bottom:1px solid #edf1f4}
+.ghead{display:grid;grid-template-columns:150px 1fr;border-bottom:1.5px solid var(--bd)}
+.gmlab{padding:10px 10px;font-size:13px;font-weight:600;display:flex;align-items:center;border-right:1px solid var(--bd);background:#f7f9fa}
+.gtrack{position:relative;height:38px}
+.gmonths{position:relative;height:22px}
+.gtick{position:absolute;top:0;bottom:0;border-left:1px solid #eef1f4}
+.gticklab{position:absolute;top:3px;font-size:10px;color:var(--mut);padding-left:3px;white-space:nowrap}
+.gbar{position:absolute;top:7px;height:24px;border-radius:5px;font-size:11px;font-weight:600;color:#fff;display:flex;align-items:center;padding:0 7px;overflow:hidden;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.15);cursor:default}
+.gbProd{background:var(--ok)}
+.gbFila{background:#93a3b0}
+.gbAtras{background:var(--bad)}
+.gbPronto{background:#2A6FDB}
+.gtoday{position:absolute;top:0;bottom:0;width:2px;background:var(--ac);z-index:3}
+.gtodaylab{position:absolute;top:-18px;font-size:10px;font-weight:700;color:var(--ac);transform:translateX(-50%)}
+.glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin-top:10px}
+.glg{display:flex;align-items:center;gap:6px}
+.glgc{width:14px;height:14px;border-radius:4px}
+.pwbox{position:relative;display:inline-flex;align-items:center;gap:8px}
+.maprow{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;align-items:center}
+.mapsvg{width:100%;height:auto}
+.ufrow{display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0}
+.ufdot{width:12px;height:12px;border-radius:50%;background:var(--ac);flex:none}
+.ufbar{height:10px;background:var(--ac);border-radius:3px;opacity:.85}
+.loadwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px}
+.loginwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--side);padding:20px;box-sizing:border-box}
+.loginbox{background:#fff;border-radius:14px;padding:34px 30px;width:340px;max-width:100%;box-shadow:0 10px 40px rgba(0,0,0,.28);box-sizing:border-box}
+.loginlogo{width:140px;display:block;margin:0 auto 20px}
+.logintit{font-size:18px;font-weight:700;text-align:center;margin-bottom:4px}
+.loginsub{font-size:12px;color:var(--mut);text-align:center;margin-bottom:22px}
+.loginerr{color:var(--bad);font-size:12px;margin-top:8px;text-align:center;font-weight:600}
+.userbadge{display:flex;align-items:center;gap:8px;font-size:12px;margin-left:auto}
+.userbadge .mini{color:var(--mut)}
+.mobtoggle{display:none}
+@media print{.side,.tbar,.noprint{display:none !important}.app{display:block}.modal{position:static;background:none;padding:0}.mbox{max-height:none;box-shadow:none}}
+@media (max-width:860px){
+  .app{display:block;height:auto;min-height:100vh}
+  .side{position:fixed;left:0;right:0;bottom:0;top:auto;flex-direction:row;align-items:stretch;padding:0;z-index:20;overflow-x:auto;overflow-y:hidden;border-top:1px solid rgba(255,255,255,.12);height:64px}
+  .logos,.sfoot{display:none}
+  .grupo{display:none}
+  .nitem{flex-direction:column;justify-content:center;gap:2px;padding:8px 12px;font-size:10px;border-left:none;border-top:3px solid transparent;white-space:nowrap;flex:none}
+  .nitem.nion{border-top-color:var(--ac);border-left-color:transparent}
+  .nico{width:20px;height:20px}
+  .main{padding-bottom:64px}
+  .tbar{position:sticky;top:0;padding:10px 12px;gap:8px}
+  .h1{font-size:15px;width:100%;order:1}
+  .seg,.datew,.sel,.userbadge{order:2}
+  .userbadge{width:100%;justify-content:space-between;margin-left:0}
+  .content{padding:14px 12px 24px;gap:12px}
+  .cards{grid-template-columns:repeat(2,1fr);gap:8px}
+  .card{padding:10px 12px}
+  .kval{font-size:24px}
+  .duo{grid-template-columns:1fr}
+  .panel{padding:12px}
+  .frm{grid-template-columns:1fr 1fr}
+  .maprow{grid-template-columns:1fr}
+  .loginbox{width:100%}
+}
+@media (max-width:480px){
+  .cards{grid-template-columns:1fr}
+  .frm{grid-template-columns:1fr}
+  .seg,.datew,.sel{display:none}
+  .tbar{flex-wrap:wrap}
+}
+.panel{overflow-x:auto}
+.panel .tbl{min-width:640px}
+</style>
+</helmet>
+<sc-if value="{{showLoading}}" hint-placeholder-val="{{false}}"><div class="loadwrap">Carregando…</div></sc-if>
+<sc-if value="{{showLogin}}" hint-placeholder-val="{{false}}">
+<div class="loginwrap">
+<div class="loginbox">
+<img class="loginlogo" src="assets/logo-tubonord.png" alt="Tubonord">
+<div class="logintit">Sistema de Gestão Industrial</div>
+<div class="loginsub">Tubonord &amp; Tubocone — acesso restrito</div>
+<div class="fg" style="margin-bottom:10px"><label class="flab">Usuário</label><input class="inp" type="text" autocomplete="username" value="{{loginId}}" onChange="{{onLoginId}}" onKeyDown="{{onLoginKey}}" placeholder="login ou e-mail"></div>
+<div class="fg" style="margin-bottom:6px"><label class="flab">Senha</label><input class="inp" type="password" autocomplete="current-password" value="{{loginSenha}}" onChange="{{onLoginSenha}}" onKeyDown="{{onLoginKey}}" placeholder="senha"></div>
+<sc-if value="{{loginErr}}" hint-placeholder-val="{{false}}"><div class="loginerr">Usuário ou senha inválidos.</div></sc-if>
+<button class="btn btna" style="width:100%;margin-top:14px" onClick="{{doLogin}}">Entrar</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{showApp}}" hint-placeholder-val="{{true}}">
+<div class="app">
+<aside class="side noprint">
+<div class="logos"><img class="logoimg" src="assets/logo-tubonord.png" alt="Tubonord"><img class="logoimg2" src="assets/logo-tubocone.png" alt="Tubocone"><div class="grupo upper fw6">SISTEMA DE GESTÃO INDUSTRIAL</div></div>
+<div class="nitem {{cDash}}" onClick="{{nav.dash}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>Dashboard</div>
+<div class="nitem {{cProd}}" onClick="{{nav.prod}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"></path></svg>Produção</div>
+<div class="nitem {{cPar}}" onClick="{{nav.par}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M10 8v8M14 8v8"></path></svg>Paradas</div>
+<div class="nitem {{cManut}}" onClick="{{nav.manut}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4.5 4.5 0 0 0-6.1 5.3L3 17.2V21h3.8l5.6-5.6a4.5 4.5 0 0 0 5.3-6.1L14.5 12l-2.5-2.5 2.7-3.2z"></path></svg>Manutenção</div>
+<div class="nitem {{cPcp}}" onClick="{{nav.pcp}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4M16 2v4M3 9h18"></path><rect x="3" y="4" width="18" height="18" rx="2"></rect></svg>PCP / Pedidos</div>
+<div class="nitem {{cRh}}" onClick="{{nav.rh}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 21c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5M17 4a3.5 3.5 0 0 1 0 7M21.5 21c0-2.9-1.9-5.4-4.5-6.2"></path></svg>RH / Ausências</div>
+<sc-if value="{{isAdmin}}" hint-placeholder-val="{{true}}"><div class="nitem {{cCad}}" onClick="{{nav.cad}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"></path><rect x="2.5" y="2.5" width="19" height="19" rx="4"></rect></svg>Cadastros</div></sc-if>
+<div class="nitem {{cIa}}" onClick="{{nav.ia}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.8 4.9L19 9.7l-4.4 3.4L16 18.5 12 15.6 8 18.5l1.4-5.4L5 9.7l5.2-.8z"></path></svg>Agente IA</div>
+<div class="nitem {{cMan}}" onClick="{{nav.man}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4.5h6a2 2 0 0 1 2 2v13a1.6 1.6 0 0 0-1.6-1.6H4z"></path><path d="M20 4.5h-6a2 2 0 0 0-2 2v13a1.6 1.6 0 0 1 1.6-1.6H20z"></path></svg>Manual de Uso</div>
+<div class="sfoot"><div class="fw6" style="color:#c7d3dc;font-size:12px">{{userNome}}</div>{{userPerfil}} · v1.1</div>
+</aside>
+<main class="main">
+<div class="tbar">
+<div class="h1">{{viewTitle}}</div>
+<div class="seg"><button class="segb {{uAll}}" onClick="{{unid.all}}">Grupo</button><button class="segb {{uNord}}" onClick="{{unid.nord}}">Tubonord</button><button class="segb {{uCone}}" onClick="{{unid.cone}}">Tubocone</button></div>
+<div class="datew"><input class="datein" type="date" value="{{dataIniV}}" onChange="{{onDataIni}}"><span class="datesep">até</span><input class="datein" type="date" value="{{dataFimV}}" onChange="{{onDataFim}}"></div>
+<select class="sel" onChange="{{onFMaq}}" value="{{fMaqV}}"><option value="ALL">Todas as máquinas</option><sc-for list="{{maqFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select>
+<select class="sel" onChange="{{onFOper}}" value="{{fOperV}}"><option value="ALL">Todos os operadores</option><sc-for list="{{operFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select>
+<select class="sel" onChange="{{onFTurno}}" value="{{fTurnoV}}"><option value="ALL">Todos os turnos</option><option value="A">1º Turno</option><option value="B">2º Turno</option><option value="C">3º Turno</option></select>
+<div class="userbadge"><span class="fw6">{{userNome}}</span><span class="mini">{{userPerfil}}</span><button class="btsm" onClick="{{doLogout}}">Sair</button></div>
+</div>
+<div class="content">
+
+<sc-if value="{{vDash}}" hint-placeholder-val="{{true}}">
+<div class="cards">
+<div class="card"><div class="klab">OEE Global</div><div class="kval {{kpi.oeeCls}}">{{kpi.oee}}%</div><div class="ksub">Meta: {{metaOeeV}}%</div></div>
+<div class="card"><div class="klab">Disponibilidade</div><div class="kval">{{kpi.disp}}%</div><div class="ksub">Perf. {{kpi.perf}}% · Qual. {{kpi.qual}}%</div></div>
+<div class="card"><div class="klab">MTTR Corretiva</div><div class="kval">{{kpi.mttr}}h</div><div class="ksub">Meta ≤ 2h</div></div>
+<div class="card"><div class="klab">MTBF</div><div class="kval">{{kpi.mtbf}}h</div><div class="ksub">{{kpi.nFalhas}} falhas no período</div></div>
+<div class="card"><div class="klab">Absenteísmo</div><div class="kval {{kpi.absCls}}">{{kpi.abs}}%</div><div class="ksub">Meta ≤ 3%</div></div>
+<div class="card"><div class="klab">Produção</div><div class="kval">{{kpi.prodKg}}</div><div class="ksub">{{kpi.prodPc}} peças</div></div>
+<div class="card"><div class="klab">Horas Paradas</div><div class="kval">{{kpi.hParadas}}h</div><div class="ksub">{{kpi.nParadas}} eventos</div></div>
+<div class="card"><div class="klab">Tempo de Setup</div><div class="kval">{{kpi.setupH}}h</div><div class="ksub">{{kpi.setupPct}}% do tempo programado</div></div>
+<div class="card"><div class="klab">OS Abertas</div><div class="kval {{kpi.osCls}}">{{kpi.osAbertas}}</div><div class="ksub">{{kpi.osFechadas}} fechadas no período</div></div>
+<div class="card"><div class="klab">Refugo</div><div class="kval">{{kpi.refugo}}%</div><div class="ksub">{{kpi.refugoKg}} kg desperdiçados</div></div>
+<div class="card"><div class="klab">Alterações de Programação</div><div class="kval {{solK.cls}}">{{solK.total}} / {{solK.aprov}}</div><div class="ksub">solicitadas / aprovadas · {{solK.taxa}}%</div></div>
+<div class="card"><div class="klab">Carteira — Conclusão</div><div class="kval {{stK.taxaCls}}">{{stK.concPct}}%</div><div class="ksub">{{stK.concluido}} concl. · {{stK.aberto}} abertos · {{stK.naoConc}} não concl.</div></div>
+<div class="card"><div class="klab">Carteira — Entrega</div><div class="kval {{stK.entrCls}}">{{stK.entrPct}}%</div><div class="ksub">{{stK.pe}} entregues · {{stK.pne}} aguardando</div></div>
+</div>
+<div class="panel" id="p-maquinas"><div class="ptit">Desempenho por Máquina</div><div class="scroll"><table class="tbl"><thead><tr><th></th><th>Máquina</th><th>Unidade</th><th>OEE</th><th></th><th>Disp.</th><th>Perf.</th><th>Qual.</th><th>MTTR</th><th>MTBF</th><th>Produção</th><th>Paradas</th></tr></thead><tbody>
+<sc-for list="{{maqRows}}" as="m" hint-placeholder-count="6"><tr><td><span class="dot {{m.dotCls}}"></span></td><td class="fw6">{{m.nome}}</td><td class="mini">{{m.unid}}</td><td class="num">{{m.oee}}%</td><td><div class="obar"><div class="ofill {{m.barCls}}" style="{{m.barStyle}}"></div></div></td><td class="num">{{m.disp}}%</td><td class="num">{{m.perf}}%</td><td class="num">{{m.qual}}%</td><td class="num">{{m.mttr}}</td><td class="num">{{m.mtbf}}</td><td class="num">{{m.prod}} pç</td><td class="num">{{m.paradas}}h</td></tr></sc-for>
+</tbody></table></div></div>
+<div class="duo">
+<div class="panel"><div class="ptit">Pareto de Paradas <span class="mini fw5">(minutos no período)</span></div>
+<sc-for list="{{pareto}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min</div></div></sc-for>
+</div>
+<div class="panel"><div class="ptit">OEE Semanal <span class="mini fw5">(tendência)</span></div>
+<div class="trend posrel">
+<sc-for list="{{trend}}" as="t" hint-placeholder-count="6"><div class="tcol"><div class="tval">{{t.val}}%</div><div class="tbarv" style="{{t.style}}"></div><div class="tlab">{{t.label}}</div></div></sc-for>
+</div>
+</div>
+</div>
+<div class="duo">
+<div class="panel"><div class="ptit">Produção Diária <span class="mini fw5">(kg)</span></div>
+<div class="dbars"><sc-for list="{{prodDia}}" as="d" hint-placeholder-count="10"><div class="dbar" style="{{d.style}}" title="{{d.tip}}"></div></sc-for></div>
+<div class="dlegend"><span>{{prodDiaIni}}</span><span>pico: {{prodDiaMax}} kg</span><span>{{prodDiaFim}}</span></div>
+</div>
+<div class="panel"><div class="ptit">Produção Diária <span class="mini fw5">(peças)</span></div>
+<div class="dbars"><sc-for list="{{prodDiaPc}}" as="d" hint-placeholder-count="10"><div class="dbar" style="{{d.style}};background:#2A6FDB" title="{{d.tip}}"></div></sc-for></div>
+<div class="dlegend"><span>{{prodDiaIni}}</span><span>pico: {{prodDiaMaxPc}} pç</span><span>{{prodDiaFim}}</span></div>
+</div>
+</div>
+<div class="duo">
+<div class="panel"><div class="ptit">Mapa de Pedidos por Estado <span class="mini fw5">(carteira atual)</span></div>
+<div class="maprow">
+<svg class="mapsvg" viewBox="0 0 210 210">
+<path d="M21,48 20,24 36,21 54,16 71,1 92,17 102,14 114,5 122,18 117,30 133,31 150,39 164,42 181,46 198,55 200,65 189,83 179,93 179,108 175,121 169,136 163,144 149,146 138,152 130,162 129,172 112,190 105,199 84,181 92,170 93,165 99,158 100,149 95,149 82,139 82,129 83,119 71,110 69,97 52,91 44,86 44,77 23,83 6,73 1,64 6,53 Z" fill="#e4eaef" stroke="#b9c6d0" stroke-width="1.5" stroke-linejoin="round"></path>
+<sc-for list="{{mapaUf}}" as="b" hint-placeholder-count="4"><circle cx="{{b.cx}}" cy="{{b.cy}}" r="{{b.r}}" fill="var(--ac)" opacity="0.55" stroke="var(--ac)" stroke-width="1"></circle></sc-for>
+<sc-for list="{{mapaUf}}" as="b" hint-placeholder-count="4"><text x="{{b.cx}}" y="{{b.ty}}" text-anchor="middle" font-size="8" font-weight="700" fill="#16232E" font-family="Barlow">{{b.uf}}</text></sc-for>
+</svg>
+<div><sc-for list="{{mapaList}}" as="u" hint-placeholder-count="4"><div class="ufrow"><span class="ufdot" style="{{u.dotStyle}}"></span><b style="width:28px">{{u.uf}}</b><div class="ufbar" style="{{u.barStyle}}"></div><span class="mini">{{u.n}} pedidos · {{u.qtd}} pç</span></div></sc-for></div>
+</div>
+</div>
+</div>
+<div class="duo">
+<div class="panel"><div class="ptit">Aderência à Programação <span class="mini fw5">— data planejada × data real de início</span></div>
+<div class="fx gap24 ac">
+<div style="text-align:center"><div class="kval {{ader.cls}}" style="font-size:52px">{{ader.pct}}%</div><div class="mini">{{ader.noPrazo}} de {{ader.total}} pedidos no prazo</div></div>
+<div class="f1"><sc-for list="{{aderWk}}" as="w" hint-placeholder-count="4"><div class="pbrow" style="grid-template-columns:70px 1fr 90px"><div class="mini">{{w.label}}</div><div class="pbtrack"><div class="pbfill" style="{{w.style}}"></div></div><div class="pbv">{{w.pct}}% ({{w.n}})</div></div></sc-for>
+<sc-if value="{{ader.vazio}}" hint-placeholder-val="{{false}}"><div class="mini" style="padding:8px 0">Informe a "Data Programada na Produção" nos pedidos (aba PCP) para acompanhar a aderência.</div></sc-if></div>
+</div>
+</div>
+<div class="panel"><div class="ptit">Aderência de Entrega <span class="mini fw5">— entrega prevista × entrega final</span></div>
+<div class="fx gap24 ac" style="height:100%">
+<div style="text-align:center"><div class="kval {{entr.cls}}" style="font-size:52px">{{entr.pct}}%</div><div class="mini">{{entr.noPrazo}} de {{entr.total}} entregas no prazo</div></div>
+<div class="f1"><div class="pbrow" style="grid-template-columns:110px 1fr 46px"><div class="mini">No prazo</div><div class="pbtrack"><div class="pbfill" style="{{entr.styleOk}};background:var(--ok)"></div></div><div class="pbv">{{entr.noPrazo}}</div></div>
+<div class="pbrow" style="grid-template-columns:110px 1fr 46px"><div class="mini">Atrasadas</div><div class="pbtrack"><div class="pbfill" style="{{entr.styleBad}};background:var(--bad)"></div></div><div class="pbv">{{entr.atras}}</div></div>
+<div class="pbrow" style="grid-template-columns:110px 1fr 46px"><div class="mini">Em aberto</div><div class="pbtrack"><div class="pbfill" style="{{entr.styleOpen}};background:#c3ccd4"></div></div><div class="pbv">{{entr.aberto}}</div></div></div>
+</div>
+</div>
+</div>
+<div class="panel"><div class="ptit">⚠ Principais Alertas <button class="btsm" onClick="{{nav.ia}}" style="margin-left:auto">Ver análise completa do Agente IA →</button></div>
+<div class="insrow"><sc-for list="{{insTop}}" as="i" hint-placeholder-count="3"><div class="ins"><span class="insico {{i.sev}}"></span><div><div class="instit">{{i.titulo}}</div><div class="instxt">{{i.texto}}</div></div></div></sc-for></div>
+</div>
+</sc-if>
+
+<sc-if value="{{vProd}}" hint-placeholder-val="{{false}}">
+<div class="panel" id="p-prod-form"><div class="ptit">{{prodFormTit}} <span class="mini fw5">— lançamento por turno (F-23)</span>
+<sc-if value="{{prodEditing}}" hint-placeholder-val="{{false}}"><span class="editing">Editando {{fProd.editId}} <button class="btsm" onClick="{{cancelProdEdit}}">Cancelar</button></span></sc-if></div>
+<div class="frm">
+<div class="fg"><label class="flab">Início — Data</label><input class="inp" type="date" name="prod.dataInicio" value="{{fProd.dataInicio}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Início — Hora</label><input class="inp" type="time" name="prod.horaInicio" value="{{fProd.horaInicio}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Fim — Data</label><input class="inp" type="date" name="prod.dataFim" value="{{fProd.dataFim}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Fim — Hora</label><input class="inp" type="time" name="prod.horaFim" value="{{fProd.horaFim}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Máquina</label><select class="inp" name="prod.maquina" value="{{fProd.maquina}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{maqOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Turno</label><select class="inp" name="prod.turno" value="{{fProd.turno}}" onChange="{{onF}}"><option value="A">1º Turno (06–14h)</option><option value="B">2º Turno (14–22h)</option><option value="C">3º Turno (22–06h)</option></select></div>
+<div class="fg"><label class="flab">Operador</label><select class="inp" name="prod.operador" value="{{fProd.operador}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{opOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Pedido / OP (vincula cliente + produto)</label><select class="inp" name="prod.pedido" value="{{fProd.pedido}}" onChange="{{onF}}"><option value="">Sem pedido vinculado</option><sc-for list="{{pedOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Produto</label><select class="inp" name="prod.produto" value="{{fProd.produto}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{prodOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Qtd Produzida (pç)</label><input class="inp" type="number" name="prod.qtdPc" value="{{fProd.qtdPc}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Refugo / Desperdício (kg)</label><input class="inp" type="number" name="prod.refugoKg" value="{{fProd.refugoKg}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Velocidade alvo</label><div class="inp" style="background:#f5f7f9;border-style:dashed">{{metaProdSel}}</div></div>
+<div class="fg"><label class="flab">Velocidade atingida</label><div class="inp" style="background:#f5f7f9;border-style:dashed">{{velAtingida}}</div></div>
+<div class="fg"><label class="flab">Tempo bruto (máquina disponível)</label><div class="inp" style="background:#f5f7f9;border-style:dashed">{{tempoBrutoSel}}</div></div>
+<div class="fg"><label class="flab">Tempo rodando (bruto − paradas)</label><div class="inp" style="background:#f5f7f9;border-style:dashed">{{tempoRodandoSel}}</div></div>
+</div>
+<div style="margin-top:14px"><div class="flab">Paradas do turno</div>
+<sc-for list="{{fProdParadas}}" as="p" hint-placeholder-count="1"><div class="parline"><select class="inp" data-i="{{p.i}}" data-f="motivo" onChange="{{onParada}}" value="{{p.motivo}}"><sc-for list="{{motivoOpts}}" as="m" hint-placeholder-count="3"><option value="{{m.id}}">{{m.nome}}</option></sc-for></select><input class="inp" type="number" placeholder="min" data-i="{{p.i}}" data-f="min" value="{{p.min}}" onChange="{{onParada}}"><button class="btsm btdel" data-i="{{p.i}}" onClick="{{rmParada}}">✕</button></div></sc-for>
+<div class="fx gap8 mt8"><button class="btsm" onClick="{{addParada}}">+ Adicionar parada</button><button class="btn btna" onClick="{{saveProd}}" style="margin-left:auto">{{prodSaveLbl}}</button></div>
+</div>
+</div>
+<div class="panel" id="p-prod-lista"><div class="ptit">Apontamentos <span class="mini fw5">{{apCount}} registros no período filtrado</span></div>
+<div class="scroll"><table class="tbl"><thead><tr><th>Início</th><th>Fim</th><th>Máquina</th><th>Turno</th><th>Operador</th><th>Produto</th><th>Bruto</th><th>Rodando</th><th>Vel. Real</th><th>Qtd (pç)</th><th>Peso (kg)</th><th>Refugo</th><th></th></tr></thead><tbody>
+<sc-for list="{{apRows}}" as="a" hint-placeholder-count="8"><tr><td>{{a.inicio}}</td><td>{{a.fim}}</td><td class="fw6">{{a.maq}}</td><td>{{a.turno}}</td><td>{{a.op}}</td><td class="mini">{{a.prod}}</td><td class="num">{{a.bruto}}</td><td class="num">{{a.rodando}}</td><td class="num {{a.velCls}}">{{a.velReal}}</td><td class="num">{{a.qtd}}</td><td class="num">{{a.kg}}</td><td class="num">{{a.refugo}} kg</td><td class="fx gap8"><button class="btsm" data-id="{{a.id}}" onClick="{{editAp}}">Editar</button><button class="btsm btdel" data-id="{{a.id}}" onClick="{{delAp}}">Excluir</button></td></tr></sc-for>
+</tbody></table></div></div>
+</sc-if>
+
+<sc-if value="{{vPar}}" hint-placeholder-val="{{false}}">
+<div class="cards" style="grid-template-columns:repeat(4,1fr)">
+<div class="card"><div class="klab">Total de Paradas</div><div class="kval">{{parK.n}}</div><div class="ksub">{{parK.h}}h no período</div></div>
+<div class="card"><div class="klab">Não Programadas</div><div class="kval kbad">{{parK.np}}h</div><div class="ksub">{{parK.npPct}}% do total</div></div>
+<div class="card"><div class="klab">Programadas</div><div class="kval">{{parK.pr}}h</div><div class="ksub">setup, limpeza, preventivas</div></div>
+<div class="card"><div class="klab">Paradas de Manutenção</div><div class="kval kwarn">{{parK.man}}</div><div class="ksub">{{parK.manOs}} geraram OS automática</div></div>
+</div>
+<div class="panel" id="p-parada-form"><div class="ptit">{{parFormTit}} <span class="mini fw5">— paradas de manutenção geram OS automaticamente</span>
+<sc-if value="{{parEditing}}" hint-placeholder-val="{{false}}"><span class="editing">Editando {{fPar.editId}} <button class="btsm" onClick="{{cancelParEdit}}">Cancelar</button></span></sc-if></div>
+<div class="frm">
+<div class="fg"><label class="flab">Data</label><input class="inp" type="date" name="par.data" value="{{fPar.data}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Máquina</label><select class="inp" name="par.maquina" value="{{fPar.maquina}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{maqOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Turno</label><select class="inp" name="par.turno" value="{{fPar.turno}}" onChange="{{onF}}"><option value="A">1º Turno</option><option value="B">2º Turno</option><option value="C">3º Turno</option></select></div>
+<div class="fg"><label class="flab">Operador</label><select class="inp" name="par.operador" value="{{fPar.operador}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{opOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Motivo da parada</label><select class="inp" name="par.motivo" value="{{fPar.motivo}}" onChange="{{onF}}"><sc-for list="{{motivoOpts}}" as="m" hint-placeholder-count="3"><option value="{{m.id}}">{{m.nome}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Duração (min)</label><input class="inp" type="number" name="par.min" value="{{fPar.min}}" onChange="{{onF}}"></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Produção em curso (vínculo)</label><select class="inp" name="par.apId" value="{{fPar.apId}}" onChange="{{onF}}"><option value="">Sem vínculo</option><sc-for list="{{apLinkOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
+<div class="fg" style="grid-column:span 3"><label class="flab">Observação</label><input class="inp" name="par.obs" value="{{fPar.obs}}" onChange="{{onF}}"></div>
+</div>
+<div class="fx mt12"><button class="btn btna" onClick="{{savePar}}" style="margin-left:auto">{{parSaveLbl}}</button></div>
+</div>
+<div class="panel" id="p-parada-lista"><div class="ptit">Registro de Paradas <span class="mini fw5">{{parCount}} no período filtrado</span></div>
+<div class="scroll"><table class="tbl"><thead><tr><th>ID</th><th>Data</th><th>Máquina</th><th>Turno</th><th>Operador</th><th>Motivo</th><th>Classif.</th><th>Min</th><th>Produção vinculada</th><th>Observação</th><th>OS</th><th></th></tr></thead><tbody>
+<sc-for list="{{parRows}}" as="p" hint-placeholder-count="8"><tr><td class="fw6">{{p.id}}</td><td>{{p.data}}</td><td class="fw6">{{p.maq}}</td><td>{{p.turno}}</td><td>{{p.op}}</td><td class="mini">{{p.motivo}}</td><td><span class="chip {{p.tipoCls}}">{{p.tipo}}</span></td><td class="num">{{p.min}}</td><td class="mini">{{p.vinculo}}</td><td class="mini">{{p.obsTxt}}</td><td class="fw6">{{p.os}}</td><td class="fx gap8"><button class="btsm" data-id="{{p.id}}" onClick="{{editPar}}">Editar</button><button class="btsm btdel" data-id="{{p.id}}" onClick="{{delPar}}">Excluir</button></td></tr></sc-for>
+</tbody></table></div></div>
+</sc-if>
+
+<sc-if value="{{vManut}}" hint-placeholder-val="{{false}}">
+<div class="cards" style="grid-template-columns:repeat(4,1fr)">
+<div class="card"><div class="klab">Abertas</div><div class="kval kbad">{{osK.aberta}}</div><div class="ksub">aguardando aprovação</div></div>
+<div class="card"><div class="klab">Aprovadas</div><div class="kval kwarn">{{osK.aprovada}}</div><div class="ksub">aguardando execução</div></div>
+<div class="card"><div class="klab">Em Execução</div><div class="kval" style="color:#2A5FA8">{{osK.exec}}</div><div class="ksub">técnicos em campo</div></div>
+<div class="card"><div class="klab">Fechadas no período</div><div class="kval kok">{{osK.fechada}}</div><div class="ksub">MTTR {{kpi.mttr}}h · MTBF {{kpi.mtbf}}h</div></div>
+</div>
+<div class="panel" id="p-os-form"><div class="ptit">{{osFormTit}} <span class="mini fw5">— F-06 · fluxo: Aberta → Aprovada → Em Execução → Fechada · nº gerado automaticamente</span>
+<sc-if value="{{osEditing}}" hint-placeholder-val="{{false}}"><span class="editing">Editando {{fOs.editId}} <button class="btsm" onClick="{{cancelOsEdit}}">Cancelar</button></span></sc-if></div>
+<div class="frm">
+<div class="fg"><label class="flab">Tipo</label><select class="inp" name="os.tipo" value="{{fOs.tipo}}" onChange="{{onF}}"><option>Corretiva</option><option>Preventiva</option><option>Preditiva</option></select></div>
+<div class="fg"><label class="flab">Máquina / Equipamento</label><select class="inp" name="os.maquina" value="{{fOs.maquina}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{maqOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Item / Componente</label><select class="inp" name="os.item" value="{{fOs.item}}" onChange="{{onF}}"><sc-for list="{{itemOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.v}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Motivo</label><select class="inp" name="os.motivo" value="{{fOs.motivo}}" onChange="{{onF}}"><sc-for list="{{motivoOsOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.v}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Parou a máquina?</label><select class="inp" name="os.parou" value="{{fOs.parou}}" onChange="{{onF}}"><option value="sim">Sim</option><option value="nao">Não</option></select></div>
+<sc-if value="{{osParou}}" hint-placeholder-val="{{true}}"><div class="fg"><label class="flab">Tempo impactado (min)</label><input class="inp" type="number" name="os.tempoParadaMin" value="{{fOs.tempoParadaMin}}" onChange="{{onF}}" placeholder="min de máquina parada"></div></sc-if>
+<div class="fg"><label class="flab">Responsável Execução</label><select class="inp" name="os.responsavel" value="{{fOs.responsavel}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{tecOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Vincular a uma parada existente</label><select class="inp" name="os.paradaId" value="{{fOs.paradaId}}" onChange="{{onF}}"><option value="">Sem vínculo</option><sc-for list="{{osParadaOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Descrição da solicitação</label><input class="inp" name="os.descricao" value="{{fOs.descricao}}" onChange="{{onF}}" placeholder="Descreva o problema…"></div>
+</div>
+<div class="fx mt12"><button class="btn btna" onClick="{{saveOs}}" style="margin-left:auto">{{osSaveLbl}}</button></div>
+</div>
+<div class="panel" id="p-os-lista"><div class="ptit">Ordens de Serviço</div>
+<div class="scroll"><table class="tbl"><thead><tr><th>OS</th><th>Abertura</th><th>Tipo</th><th>Máquina</th><th>Item</th><th>Motivo</th><th>Parada</th><th>Responsável</th><th>Reparo</th><th>Status</th><th style="min-width:210px">Ações</th></tr></thead><tbody>
+<sc-for list="{{osRows}}" as="o" hint-placeholder-count="8"><tr><td class="fw6">{{o.id}}</td><td>{{o.abertura}}</td><td>{{o.tipo}}</td><td class="fw6">{{o.maq}}</td><td class="mini">{{o.item}}</td><td class="mini">{{o.motivo}}</td><td class="mini">{{o.parRef}}</td><td>{{o.resp}}</td><td class="num">{{o.reparo}}</td><td><span class="chip {{o.stCls}}">{{o.status}}</span></td><td class="fx gap8">
+<sc-if value="{{o.canAprovar}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{o.id}}" data-act="aprovar" onClick="{{osAct}}">Aprovar</button></sc-if>
+<sc-if value="{{o.canIniciar}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{o.id}}" data-act="iniciar" onClick="{{osAct}}">Iniciar</button></sc-if>
+<sc-if value="{{o.canFechar}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{o.id}}" data-act="fechar" onClick="{{osAct}}">Fechar</button></sc-if>
+<sc-if value="{{o.canEdit}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{o.id}}" onClick="{{editOs}}">Editar</button></sc-if>
+<button class="btsm" data-id="{{o.id}}" onClick="{{openOs}}">F-06</button>
+<button class="btsm btdel" data-id="{{o.id}}" onClick="{{delOs}}">✕</button>
+</td></tr></sc-for>
+</tbody></table></div></div>
+</sc-if>
+
+<sc-if value="{{vPcp}}" hint-placeholder-val="{{false}}">
+<div class="panel"><div class="ptit">{{pedFormTit}}
+<sc-if value="{{pedEditing}}" hint-placeholder-val="{{false}}"><span class="editing">Editando {{fPed.editId}} <button class="btsm" onClick="{{cancelPedEdit}}">Cancelar</button></span></sc-if></div>
+<div class="frm">
+<div class="fg"><label class="flab">Nº Pedido Cliente</label><input class="inp" name="ped.nrCliente" value="{{fPed.nrCliente}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Cliente</label><select class="inp" name="ped.cliente" value="{{fPed.cliente}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{cliOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Produto (do cliente)</label><select class="inp" name="ped.produto" value="{{fPed.produto}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{prodCliOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Máquina</label><select class="inp" name="ped.maquina" value="{{fPed.maquina}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{maqOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Quantidade</label><input class="inp" type="number" name="ped.qtd" value="{{fPed.qtd}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Valor (R$)</label><input class="inp" type="{{valorInpType}}" name="ped.valor" value="{{fPed.valor}}" onChange="{{onF}}" placeholder="{{valorPh}}"></div>
+<div class="fg"><label class="flab">Data Entrega Prevista</label><input class="inp" type="date" name="ped.dataEntrega" value="{{fPed.dataEntrega}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Data Programada na Produção</label><input class="inp" type="date" name="ped.dataProgramada" value="{{fPed.dataProgramada}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Ordem na fila (sequência)</label><input class="inp" type="number" name="ped.ordem" value="{{fPed.ordem}}" onChange="{{onF}}" placeholder="1 = primeiro"></div>
+<div class="fg"><label class="flab">Data de Replanejamento</label><input class="inp" type="date" name="ped.dataReplan" value="{{fPed.dataReplan}}" onChange="{{onF}}"></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Observação (motivo do replanejamento)</label><input class="inp" name="ped.obsReplan" value="{{fPed.obsReplan}}" onChange="{{onF}}" placeholder="Ex.: antecipação solicitada pelo comercial…"></div>
+<div class="fg"><label class="flab">Status de Produção</label><select class="inp" name="ped.statusProd" value="{{fPed.statusProd}}" onChange="{{onF}}"><option value="">Automático (Em Aberto)</option><option>Em Aberto</option><option>Concluído</option><option>Não Concluído</option><option>Cancelado</option></select></div>
+<div class="fg"><label class="flab">Status de Logística</label><select class="inp" name="ped.statusLog" value="{{fPed.statusLog}}" onChange="{{onF}}"><option value="">Automático</option><option>Pronto e Não Entregue</option><option>Pronto e Entregue</option></select></div>
+<div class="fg"><label class="flab">Origem comercial</label><select class="inp" name="ped.status" value="{{fPed.status}}" onChange="{{onF}}"><option>A SER PRODUZIDO - DENTRO DO ESTADO</option><option>A SER PRODUZIDO - FORA DO ESTADO</option><option>AMOSTRA DE PRODUÇÃO</option></select></div>
+</div>
+<div class="fx mt12"><button class="btn btna" onClick="{{savePed}}" style="margin-left:auto">{{pedSaveLbl}}</button></div>
+</div>
+<div class="panel" id="p-sim"><div class="ptit">Simulador de Programação <span class="mini fw5">— cenário “e se”, não altera a programação real</span>
+<div class="fx gap8 ac" style="margin-left:auto"><span class="mini">Arraste os pedidos entre as datas</span><sc-if value="{{sim.hasMoved}}" hint-placeholder-val="{{false}}"><button class="btn btna btsm" onClick="{{openSolic}}" style="padding:6px 14px">Solicitar alteração</button><button class="btsm" onClick="{{simReset}}">↺ Restaurar cenário</button></sc-if></div></div>
+<div class="simlock">Simulação livre para todos os perfis. A <b>confirmação da alteração</b> exige solicitação com justificativa e aprovação do <b>Coordenador de Produção</b>.</div>
+<div class="simwrap"><sc-for list="{{simCols}}" as="c" hint-placeholder-count="7"><div class="simcol {{c.cls}}" data-date="{{c.iso}}" onDragOver="{{simDragOver}}" onDragLeave="{{simDragLeave}}" onDrop="{{simDrop}}">
+<div class="simdate"><span>{{c.label}}</span><span class="mini">{{c.qtd}}</span></div>
+<sc-for list="{{c.cards}}" as="k" hint-placeholder-count="1"><div class="simcard {{k.cls}}" draggable="{{simCanDrag}}" data-id="{{k.id}}" onDragStart="{{simDragStart}}" title="{{k.tip}}"><div class="simid">{{k.nr}}</div><div>{{k.cliente}}</div><div class="simmeta">{{k.maq}} · {{k.qtd}}</div><div class="simmeta">Entrega {{k.entrega}}</div><sc-if value="{{k.moved}}" hint-placeholder-val="{{false}}"><div class="simdelta">{{k.delta}}</div></sc-if></div></sc-for>
+<sc-if value="{{c.vazio}}" hint-placeholder-val="{{false}}"><div class="mini" style="opacity:.5">—</div></sc-if>
+</div></sc-for></div>
+<div class="simimp">
+<div class="simbox"><div class="simbl">Pedidos atrasados</div><div class="fx gap8 ac"><span class="simv">{{sim.lateBefore}}</span><span class="simarrow">→</span><span class="simv {{sim.lateCls}}">{{sim.lateAfter}}</span></div><div class="mini">real → simulado</div></div>
+<div class="simbox"><div class="simbl">Aderência de entrega</div><div class="fx gap8 ac"><span class="simv">{{sim.adBefore}}%</span><span class="simarrow">→</span><span class="simv {{sim.adCls}}">{{sim.adAfter}}%</span></div><div class="mini">previsto no prazo</div></div>
+<div class="simbox"><div class="simbl">Pedidos movidos</div><div class="simv">{{sim.nMoved}}</div><div class="mini">{{sim.movedTxt}}</div></div>
+<div class="simbox"><div class="simbl">Impacto comercial</div><div class="simv {{sim.impCls}}" style="font-size:19px">{{sim.impacto}}</div><div class="mini">{{sim.impactoSub}}</div></div>
+</div>
+<sc-if value="{{sim.hasMoved}}" hint-placeholder-val="{{false}}"><div style="margin-top:12px"><div class="flab">Pedidos afetados no cenário</div>
+<div class="scroll"><table class="tbl"><thead><tr><th>Pedido</th><th>Cliente</th><th>Máquina</th><th>Programação real</th><th>Programação simulada</th><th>Entrega prevista</th><th>Situação simulada</th></tr></thead><tbody>
+<sc-for list="{{simRows}}" as="r" hint-placeholder-count="2"><tr><td class="fw6">{{r.nr}}</td><td>{{r.cliente}}</td><td>{{r.maq}}</td><td>{{r.real}}</td><td class="fw6">{{r.novo}} <span class="simdelta">{{r.delta}}</span></td><td>{{r.entrega}}</td><td><span class="chip {{r.stCls}}">{{r.situacao}}</span></td></tr></sc-for>
+</tbody></table></div></div></sc-if>
+</div>
+<div class="panel" id="p-solic"><div class="ptit">Solicitações de Alteração de Programação <span class="mini fw5">— {{solK.total}} solicitadas · {{solK.aprov}} aprovadas · {{solK.taxa}}% de aprovação</span></div>
+<div class="scroll"><table class="tbl"><thead><tr><th>ID</th><th>Data</th><th>Solicitante</th><th>Pedidos</th><th>Deslocamento</th><th>Justificativa</th><th>Status</th><th>Decisão</th><th style="min-width:170px"></th></tr></thead><tbody>
+<sc-for list="{{solRows}}" as="r" hint-placeholder-count="3"><tr><td class="fw6">{{r.id}}</td><td>{{r.data}}</td><td>{{r.solicitante}} <span class="mini">({{r.perfil}})</span></td><td class="mini">{{r.pedidos}}</td><td class="num">{{r.desloc}}</td><td class="mini" title="{{r.motivo}}">{{r.motivoCurto}}</td><td><span class="chip {{r.stCls}}">{{r.status}}</span></td><td class="mini">{{r.decisao}}</td><td class="fx gap8">
+<sc-if value="{{r.canDecide}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{r.id}}" data-act="aprovar" onClick="{{solAct}}">Aprovar</button><button class="btsm btdel" data-id="{{r.id}}" data-act="reprovar" onClick="{{solAct}}">Reprovar</button></sc-if>
+<sc-if value="{{r.aguardando}}" hint-placeholder-val="{{false}}"><span class="mini">aguardando coordenação</span></sc-if>
+</td></tr></sc-for>
+</tbody></table></div>
+<sc-if value="{{solVazio}}" hint-placeholder-val="{{false}}"><div class="empty">Nenhuma solicitação registrada. Use o simulador acima para propor uma alteração.</div></sc-if>
+</div>
+<div class="panel" id="p-progdia"><div class="ptit">Programação do Dia <span class="mini fw5">— sequência de produção por máquina</span>
+<div class="fx gap8 ac" style="margin-left:auto"><div class="datew"><input class="datein" type="date" value="{{progDateV}}" onChange="{{onProgDate}}" style="width:130px"></div>
+<select class="sel" value="{{progMaqFilterV}}" onChange="{{onProgMaqFilter}}"><option value="ALL">Todas as máquinas</option><sc-for list="{{maqFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select>
+<button class="btsm" onClick="{{openProgPrint}}">🖨 Imprimir Programação</button></div></div>
+<sc-for list="{{progMaqs}}" as="pm" hint-placeholder-count="2"><div style="margin-top:12px"><div class="fw7 fs14" style="border-bottom:2px solid var(--ac);padding-bottom:4px;margin-bottom:4px">{{pm.maq}} <span class="mini fw5">· {{pm.n}} pedido(s) · {{pm.tot}} pç</span></div>
+<div class="scroll"><table class="tbl"><thead><tr><th>Ordem</th><th>Nº Pedido</th><th>Cliente</th><th>Produto</th><th>Ø × Comp</th><th>Parede</th><th>Vel. Alvo</th><th>Peso Mín</th><th>Peso Padrão</th><th>Peso Máx</th><th>Qtd</th><th></th></tr></thead><tbody>
+<sc-for list="{{pm.itens}}" as="it" hint-placeholder-count="2"><tr><td class="num fw7">{{it.ordem}}</td><td class="fw6">{{it.nrCliente}}</td><td>{{it.cliente}}</td><td class="mini">{{it.produto}}</td><td class="num">{{it.dim}}</td><td class="num">{{it.parede}}</td><td class="num">{{it.vel}}</td><td class="num">{{it.pesoMin}}</td><td class="num fw6">{{it.pesoPad}}</td><td class="num">{{it.pesoMax}}</td><td class="num">{{it.qtd}}</td><td class="fx gap8"><button class="btsm" data-id="{{it.id}}" data-dir="up" onClick="{{moveOrdem}}">↑</button><button class="btsm" data-id="{{it.id}}" data-dir="down" onClick="{{moveOrdem}}">↓</button></td></tr></sc-for>
+</tbody></table></div></div></sc-for>
+<sc-if value="{{progVazio}}" hint-placeholder-val="{{false}}"><div class="empty">Nenhum pedido programado para esta data. Defina a "Data Programada na Produção" nos pedidos.</div></sc-if>
+</div>
+<div class="panel" id="p-gantt"><div class="ptit">Gantt de Máquinas <span class="mini fw5">— carga e sequenciamento da produção</span></div>
+<div class="gantt"><div class="gwrap">
+<div class="ghead"><div class="gmlab">Máquina</div><div class="gmonths"><sc-for list="{{ganttTicks}}" as="t" hint-placeholder-count="6"><div class="gtick" style="{{t.style}}"></div><div class="gticklab" style="{{t.labStyle}}">{{t.label}}</div></sc-for></div></div>
+<sc-for list="{{ganttRows}}" as="r" hint-placeholder-count="6"><div class="grow"><div class="gmlab">{{r.maq}}</div><div class="gtrack">
+<sc-for list="{{ganttTicks}}" as="t" hint-placeholder-count="6"><div class="gtick" style="{{t.style}}"></div></sc-for>
+<div class="gtoday" style="{{ganttToday}}"></div>
+<sc-for list="{{r.bars}}" as="b" hint-placeholder-count="2"><div class="gbar {{b.cls}}" style="{{b.style}}" title="{{b.tip}}">{{b.label}}</div></sc-for>
+</div></div></sc-for>
+<div class="grow" style="border:none"><div class="gmlab" style="background:none"></div><div class="gtrack" style="height:20px"><div class="gtoday" style="{{ganttToday}}"></div><div class="gtodaylab" style="{{ganttToday}}">HOJE</div></div></div>
+</div></div>
+<div class="glegend"><div class="glg"><span class="glgc gbProd"></span>Em produção</div><div class="glg"><span class="glgc gbFila"></span>Em espera / fila</div><div class="glg"><span class="glgc gbAtras"></span>Atrasado</div><div class="glg"><span class="glgc gbPronto"></span>Pronto</div></div>
+</div>
+<div class="panel"><div class="ptit">Status da Carteira <span class="mini fw5">— indicadores de produção e logística</span></div>
+<div class="cards" style="grid-template-columns:repeat(4,1fr)">
+<div class="card"><div class="klab">Em Aberto</div><div class="kval">{{stK.aberto}}</div><div class="ksub">{{stK.abertoQtd}} pç na fila</div></div>
+<div class="card"><div class="klab">Concluídos</div><div class="kval kok">{{stK.concluido}}</div><div class="ksub">{{stK.concPct}}% da carteira</div></div>
+<div class="card"><div class="klab">Não Concluídos</div><div class="kval kbad">{{stK.naoConc}}</div><div class="ksub">produção iniciada e vencida</div></div>
+<div class="card"><div class="klab">Cancelados</div><div class="kval">{{stK.cancelado}}</div><div class="ksub">{{stK.cancPct}}% da carteira</div></div>
+<div class="card"><div class="klab">Pronto e Não Entregue</div><div class="kval kwarn">{{stK.pne}}</div><div class="ksub">{{stK.pneQtd}} pç aguardando expedição</div></div>
+<div class="card"><div class="klab">Pronto e Entregue</div><div class="kval kok">{{stK.pe}}</div><div class="ksub">{{stK.peQtd}} pç faturados</div></div>
+<div class="card"><div class="klab">Taxa de Conclusão</div><div class="kval {{stK.taxaCls}}">{{stK.concPct}}%</div><div class="ksub">concluídos ÷ carteira ativa</div></div>
+<div class="card"><div class="klab">Taxa de Entrega</div><div class="kval {{stK.entrCls}}">{{stK.entrPct}}%</div><div class="ksub">entregues ÷ concluídos</div></div>
+</div>
+</div>
+<div class="panel" id="p-carteira"><div class="ptit">Carteira de Pedidos <span class="mini fw5">quantidade e status atualizados automaticamente pelos apontamentos de produção</span>
+<div class="pwbox" style="margin-left:auto"><sc-if value="{{valorLocked}}" hint-placeholder-val="{{true}}"><button class="btsm" onClick="{{openPw}}">🔒 Mostrar valores (senha)</button></sc-if><sc-if value="{{valorUnlocked}}" hint-placeholder-val="{{false}}"><span class="mini kok fw6">🔓 Valores visíveis</span><button class="btsm" onClick="{{lockValor}}">Ocultar</button></sc-if></div></div>
+<div class="scroll"><table class="tbl"><thead><tr><th>OP</th><th>Nº Cliente</th><th>Cliente</th><th>Produto</th><th>Máquina</th><th>Qtd</th><th>Valor (R$)</th><th>Produzido</th><th>Avanço</th><th>Entrega Prev.</th><th>Prog. Prod.</th><th>Prog. Real</th><th>Entrega Final</th><th>Replan.</th><th>Status Produção</th><th>Status Logística</th><th></th></tr></thead><tbody>
+<sc-for list="{{pedRows}}" as="p" hint-placeholder-count="8"><tr><td class="fw6">{{p.id}}</td><td>{{p.nr}}</td><td class="fw6">{{p.cliente}}</td><td class="mini">{{p.produto}}</td><td>{{p.maq}}</td><td class="num">{{p.qtd}}</td><td class="num">{{p.valorShow}}</td><td class="num">{{p.prodz}}</td><td><div class="obar"><div class="ofill" style="{{p.pctStyle}}"></div></div><span class="mini">{{p.pct}}%</span></td><td>{{p.entrega}} <sc-if value="{{p.atrasado}}" hint-placeholder-val="{{false}}"><span class="chip stAtras">ATRASADO</span></sc-if></td><td>{{p.progProd}}</td><td class="fw6">{{p.progReal}}</td><td class="fw6">{{p.entregaFinal}}</td><td class="mini" title="{{p.obsReplan}}">{{p.replan}}</td><td><span class="chip {{p.spCls}}">{{p.statusProd}}</span></td><td><span class="chip {{p.slCls}}">{{p.statusLog}}</span></td><td class="fx gap8">
+<sc-if value="{{p.canEntregar}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{p.id}}" onClick="{{entregarPed}}">Entregar</button></sc-if>
+<button class="btsm" data-id="{{p.id}}" onClick="{{editPed}}">Editar</button><button class="btsm btdel" data-id="{{p.id}}" onClick="{{delPed}}">✕</button></td></tr></sc-for>
+</tbody></table></div></div>
+<div class="panel"><div class="ptit">Metas de Velocidade por Produto × Cliente <span class="mini fw5">(edite em Cadastros → Produtos)</span></div>
+<div class="scroll"><table class="tbl"><thead><tr><th>Produto</th><th>Cliente</th><th>Tipo de Máquina</th><th>Peso Ideal (kg/pç)</th><th>Velocidade Alvo</th><th>Capacidade/turno (8h)</th></tr></thead><tbody>
+<sc-for list="{{metaRows}}" as="m" hint-placeholder-count="8"><tr><td class="fw6">{{m.nome}}</td><td>{{m.cliente}}</td><td>{{m.tipo}}</td><td class="num">{{m.peso}}</td><td class="num">{{m.vel}}</td><td class="num">{{m.cap}} pç</td></tr></sc-for>
+</tbody></table></div></div>
+</sc-if>
+
+<sc-if value="{{vRh}}" hint-placeholder-val="{{false}}">
+<div class="cards" style="grid-template-columns:repeat(4,1fr)">
+<div class="card"><div class="klab">Absenteísmo</div><div class="kval {{kpi.absCls}}">{{kpi.abs}}%</div><div class="ksub">Meta ≤ 3% · exclui férias</div></div>
+<div class="card"><div class="klab">Faltas Justificadas + Atestados</div><div class="kval">{{rhK.just}}</div><div class="ksub">dias no período</div></div>
+<div class="card"><div class="klab">Faltas Injustificadas</div><div class="kval kbad">{{rhK.injust}}</div><div class="ksub">dias no período</div></div>
+<div class="card"><div class="klab">Em Férias</div><div class="kval">{{rhK.ferias}}</div><div class="ksub">colaboradores</div></div>
+</div>
+<div class="panel"><div class="ptit">{{ausFormTit}}
+<sc-if value="{{ausEditing}}" hint-placeholder-val="{{false}}"><span class="editing">Editando {{fAus.editId}} <button class="btsm" onClick="{{cancelAusEdit}}">Cancelar</button></span></sc-if></div>
+<div class="frm">
+<div class="fg"><label class="flab">Data</label><input class="inp" type="date" name="aus.data" value="{{fAus.data}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Colaborador</label><select class="inp" name="aus.operador" value="{{fAus.operador}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{opTodosOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Tipo</label><select class="inp" name="aus.tipo" value="{{fAus.tipo}}" onChange="{{onF}}"><option>Falta Injustificada</option><option>Falta Justificada</option><option>Atestado</option><option>Férias</option></select></div>
+<div class="fg"><label class="flab">Dias</label><input class="inp" type="number" name="aus.dias" value="{{fAus.dias}}" onChange="{{onF}}"></div>
+</div>
+<div class="fx mt12"><button class="btn btna" onClick="{{saveAus}}" style="margin-left:auto">{{ausSaveLbl}}</button></div>
+</div>
+<div class="panel"><div class="ptit">Ausências no Período</div>
+<div class="scroll"><table class="tbl"><thead><tr><th>Data</th><th>Colaborador</th><th>Função</th><th>Turno</th><th>Tipo</th><th>Dias</th><th></th></tr></thead><tbody>
+<sc-for list="{{ausRows}}" as="a" hint-placeholder-count="6"><tr><td>{{a.data}}</td><td class="fw6">{{a.nome}}</td><td>{{a.funcao}}</td><td>{{a.turno}}</td><td><span class="chip {{a.cls}}">{{a.tipo}}</span></td><td class="num">{{a.dias}}</td><td class="fx gap8"><button class="btsm" data-id="{{a.id}}" onClick="{{editAus}}">Editar</button><button class="btsm btdel" data-id="{{a.id}}" onClick="{{delAus}}">Excluir</button></td></tr></sc-for>
+</tbody></table></div></div>
+</sc-if>
+
+<sc-if value="{{vCad}}" hint-placeholder-val="{{false}}">
+<div class="tabs"><sc-for list="{{cadTabs}}" as="t" hint-placeholder-count="7"><button class="tab {{t.cls}}" data-tab="{{t.key}}" onClick="{{setCadTab}}">{{t.label}}</button></sc-for></div>
+<div class="panel"><div class="ptit">{{cadFormTit}} — {{cadLabel}}
+<sc-if value="{{cadEditing}}" hint-placeholder-val="{{false}}"><span class="editing">Editando {{cadEditId}} <button class="btsm" onClick="{{cancelCadEdit}}">Cancelar</button></span></sc-if></div>
+<div class="frm">
+<sc-for list="{{cadFields}}" as="f" hint-placeholder-count="4"><div class="fg"><label class="flab">{{f.label}}</label>
+<sc-if value="{{f.isSelect}}" hint-placeholder-val="{{false}}"><select class="inp" name="{{f.fname}}" value="{{f.value}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{f.options}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></sc-if>
+<sc-if value="{{f.isInput}}" hint-placeholder-val="{{true}}"><input class="inp" type="{{f.type}}" name="{{f.fname}}" value="{{f.value}}" onChange="{{onF}}"></sc-if>
+</div></sc-for>
+<div class="fg" style="justify-content:flex-end"><button class="btn btna" onClick="{{cadSave}}">{{cadSaveLbl}}</button></div>
+</div>
+</div>
+<div class="panel"><div class="ptit">{{cadLabel}} cadastrados</div>
+<div class="scroll"><table class="tbl"><thead><tr><sc-for list="{{cadCols}}" as="c" hint-placeholder-count="4"><th>{{c}}</th></sc-for><th></th></tr></thead><tbody>
+<sc-for list="{{cadRows}}" as="r" hint-placeholder-count="8"><tr><sc-for list="{{r.cells}}" as="c" hint-placeholder-count="4"><td>{{c}}</td></sc-for><td class="fx gap8"><button class="btsm" data-id="{{r.id}}" onClick="{{cadEdit}}">Editar</button><button class="btsm btdel" data-id="{{r.id}}" onClick="{{cadDel}}">Excluir</button></td></tr></sc-for>
+</tbody></table></div></div>
+</sc-if>
+
+<sc-if value="{{vIa}}" hint-placeholder-val="{{false}}">
+<div class="duo">
+<div class="panel"><div class="ptit">Diagnóstico Automático <span class="mini fw5">— regras sobre os dados do período</span></div>
+<div class="insrow"><sc-for list="{{insights}}" as="i" hint-placeholder-count="5"><div class="ins"><span class="insico {{i.sev}}"></span><div><div class="instit">{{i.titulo}}</div><div class="instxt">{{i.texto}}</div><div class="inssug"><b>Sugestão:</b> {{i.sugestao}}</div></div></div></sc-for></div>
+</div>
+<div class="panel"><div class="ptit">Pergunte ao Agente IA <span class="mini fw5">— analisa os indicadores do período filtrado</span></div>
+<div class="chatbox" id="chatbox">
+<div class="msg ma">Olá! Sou o agente de análise da Tubonord & Tubocone. Pergunte sobre OEE, paradas, manutenção, absenteísmo ou pedidos — eu analiso os dados do período selecionado.</div>
+<sc-for list="{{chatMsgs}}" as="m" hint-placeholder-count="0"><div class="msg {{m.cls}}">{{m.text}}</div></sc-for>
+<sc-if value="{{chatBusy}}" hint-placeholder-val="{{false}}"><div class="msg ma mini">Analisando dados…</div></sc-if>
+</div>
+<div class="chatin"><input class="inp f1" value="{{chatInput}}" onChange="{{onChatInput}}" onKeyDown="{{onChatKey}}" placeholder="Ex.: Por que o OEE da Tubeteira 07 caiu?"><button class="btn btna" onClick="{{sendChat}}">Enviar</button></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{vMan}}" hint-placeholder-val="{{false}}">
+<div class="panel" id="tour-anchor"><div class="ptit">Tour Interativo <span class="mini fw5">— explicação ponto a ponto, navegando pelo próprio sistema</span></div>
+<div class="tourbar">
+<button class="tourbtn tourplay" onClick="{{tourToggle}}">{{tourBtnLbl}}</button>
+<button class="tourbtn" onClick="{{tourPrev}}">‹ Anterior</button>
+<button class="tourbtn" onClick="{{tourNext}}">Próximo ›</button>
+<div class="tourtrack"><div class="tourfill" style="{{tourFill}}"></div></div>
+<span class="mini" style="color:#aebdc9">Passo {{tourN}} de {{tourTot}}</span>
+</div>
+<div class="mantxt" style="margin-top:10px">O tour percorre {{tourTot}} passos, abre a aba correspondente e destaca o elemento em foco, explicando para que serve. Use ▶ para reprodução automática (avanço a cada 8s) ou navegue manualmente.</div>
+</div>
+<div class="panel"><div class="ptit">Indicadores do Dashboard <span class="mini fw5">— o que cada número significa e como é calculado</span></div>
+<sc-for list="{{manIndic}}" as="i" hint-placeholder-count="6"><div class="manrow"><div class="mannome"><span class="mantag">{{i.tag}}</span>{{i.nome}}</div><div><div class="mantxt">{{i.texto}}</div><div class="formula">{{i.formula}}</div><div class="mantxt" style="margin-top:6px"><b>Meta / leitura:</b> {{i.meta}}</div></div></div></sc-for>
+</div>
+<div class="panel"><div class="ptit">Abas do Sistema <span class="mini fw5">— função, campos editáveis e automações</span></div>
+<sc-for list="{{manAbas}}" as="a" hint-placeholder-count="6"><div class="manrow"><div class="mannome"><span class="mantag">{{a.tag}}</span>{{a.nome}}</div><div><div class="mantxt">{{a.texto}}</div>
+<div class="flab" style="margin-top:10px">Campos editáveis</div><ul class="manlist"><sc-for list="{{a.campos}}" as="c" hint-placeholder-count="3"><li><b>{{c.n}}</b> — {{c.d}}</li></sc-for></ul>
+<div class="flab" style="margin-top:10px">Calculado automaticamente</div><ul class="manlist"><sc-for list="{{a.autos}}" as="x" hint-placeholder-count="2"><li>{{x.t}}</li></sc-for></ul>
+</div></div></sc-for>
+</div>
+<div class="panel"><div class="ptit">Permissões por Perfil</div>
+<div class="scroll"><table class="tbl"><thead><tr><th>Ação</th><th>Quem pode</th><th>Observação</th></tr></thead><tbody>
+<sc-for list="{{manPerm}}" as="p" hint-placeholder-count="4"><tr><td class="fw6">{{p.acao}}</td><td>{{p.quem}}</td><td class="mini">{{p.obs}}</td></tr></sc-for>
+</tbody></table></div></div>
+</sc-if>
+
+</div>
+</main>
+</div>
+</sc-if>
+<sc-if value="{{tourOn}}" hint-placeholder-val="{{false}}">
+<div class="tourcard">
+<div class="tourstep">Passo {{tourN}} de {{tourTot}} · {{tourAba}}</div>
+<div class="tourtit">{{tourTit}}</div>
+<div class="tourtxt">{{tourTxt}}</div>
+<div class="tourfoot">
+<div class="tourdots"><sc-for list="{{tourDots}}" as="d" hint-placeholder-count="8"><span class="tdot {{d.cls}}"></span></sc-for></div>
+<button class="btsm" onClick="{{tourPrev}}">‹</button>
+<button class="btsm" onClick="{{tourToggle}}">{{tourBtnLbl}}</button>
+<button class="btn btna" onClick="{{tourNext}}" style="padding:6px 14px;font-size:13px">Próximo ›</button>
+<button class="btsm btdel" onClick="{{tourStop}}">Encerrar</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{osMOpen}}" hint-placeholder-val="{{false}}">
+<div class="modal" onClick="{{closeOs}}"><div class="mbox" onClick="{{stop}}">
+<div class="isohead"><div class="isoc"><b style="font-size:13px">{{osM.empresa}}</b><span class="mini">Sistema de Gestão da Qualidade</span></div><div class="isoc isot">ORDEM DE SERVIÇO DE MANUTENÇÃO</div><div class="isoc" style="border-right:none"><div class="isor"><span>Código:</span><b>F-06</b></div><div class="isor"><span>Revisão:</span><b>02</b></div><div class="isor"><span>Página:</span><b>1 de 1</b></div></div></div>
+<div class="fx jb mini mt8"><span>Elaborado por: PWR Gestão</span><span>Aprovado por: Helder Gomes</span><span>Emissão: 19/06/2026</span><span>Próx. Revisão: 19/12/2026</span><span>Conforme ISO 9001:2015 — 7.1.3 / 8.5.1</span></div>
+<div class="isosec">1. IDENTIFICAÇÃO DA ORDEM DE SERVIÇO</div>
+<div class="isogrid"><div class="isofield"><div class="isoflab">ID da OS</div><b>{{osM.id}}</b></div><div class="isofield"><div class="isoflab">Tipo</div>{{osM.tipo}}</div><div class="isofield"><div class="isoflab">Status</div>{{osM.status}}</div><div class="isofield"><div class="isoflab">Abertura</div>{{osM.abertura}}</div><div class="isofield"><div class="isoflab">Parou a máquina?</div>{{osM.parou}}</div><div class="isofield"><div class="isoflab">Solicitante</div>{{osM.solicitante}}</div></div>
+<div class="isosec">2. LOCALIZAÇÃO DO ATIVO</div>
+<div class="isogrid"><div class="isofield"><div class="isoflab">Unidade</div>{{osM.unidade}}</div><div class="isofield"><div class="isoflab">Equipamento</div>{{osM.maq}}</div><div class="isofield"><div class="isoflab">Item</div>{{osM.item}}</div></div>
+<div class="isosec">3. CRONOLOGIA (RASTREABILIDADE)</div>
+<div class="isogrid" style="grid-template-columns:repeat(4,1fr)"><div class="isofield"><div class="isoflab">Abertura</div>{{osM.abertura}}</div><div class="isofield"><div class="isoflab">Aprovação</div>{{osM.aprovadoEm}}</div><div class="isofield"><div class="isoflab">Início Execução</div>{{osM.inicioEm}}</div><div class="isofield"><div class="isoflab">Fechamento</div>{{osM.fechadoEm}}</div></div>
+<div class="isosec">4. DESCRIÇÃO DA SOLICITAÇÃO</div>
+<div class="isogrid" style="grid-template-columns:1fr"><div class="isofield"><div class="isoflab">Motivo / Descrição do problema</div>{{osM.motivo}} — {{osM.descricao}}</div></div>
+<div class="isosec">5. ANÁLISE E SERVIÇO EXECUTADO</div>
+<div class="isogrid" style="grid-template-columns:1fr 1fr"><div class="isofield"><div class="isoflab">Causa raiz identificada</div>{{osM.causa}}</div><div class="isofield"><div class="isoflab">Serviço executado / Ação corretiva</div>{{osM.servico}}</div></div>
+<div class="isosec">6. RECURSOS E INDICADORES</div>
+<div class="isogrid"><div class="isofield"><div class="isoflab">Responsável Execução</div>{{osM.resp}}</div><div class="isofield"><div class="isoflab">Tempo de Máquina Parada</div>{{osM.tempoParada}}</div><div class="isofield"><div class="isoflab">Tempo de Reparo</div>{{osM.reparo}}</div><div class="isofield"><div class="isoflab">Custo Total (R$)</div>{{osM.custo}}</div><div class="isofield"><div class="isoflab">Peças / Materiais utilizados</div>{{osM.pecas}}</div><div class="isofield"><div class="isoflab">Parada vinculada</div>{{osM.parRef}}</div></div>
+<sc-if value="{{osMEdit}}" hint-placeholder-val="{{false}}">
+<div class="isosec" style="background:var(--ac)">✏ EDIÇÃO DE CAMPOS</div>
+<div class="frm mt8" style="grid-template-columns:repeat(3,1fr)">
+<div class="fg"><label class="flab">Item / Componente</label><select class="inp" name="osm.item" value="{{fOsm.item}}" onChange="{{onF}}"><sc-for list="{{osmItemOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.v}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Motivo</label><select class="inp" name="osm.motivo" value="{{fOsm.motivo}}" onChange="{{onF}}"><sc-for list="{{motivoOsOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.v}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Responsável</label><select class="inp" name="osm.responsavel" value="{{fOsm.responsavel}}" onChange="{{onF}}"><option value="">—</option><sc-for list="{{tecOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
+<div class="fg" style="grid-column:span 3"><label class="flab">Descrição</label><input class="inp" name="osm.descricao" value="{{fOsm.descricao}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Tempo de máquina parada (min)</label><input class="inp" type="number" name="osm.tempoParadaMin" value="{{fOsm.tempoParadaMin}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Tempo de reparo (min)</label><input class="inp" type="number" name="osm.tempoReparoMin" value="{{fOsm.tempoReparoMin}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Custo (R$)</label><input class="inp" type="number" name="osm.custo" value="{{fOsm.custo}}" onChange="{{onF}}"></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Causa raiz</label><input class="inp" name="osm.causa" value="{{fOsm.causa}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Peças utilizadas</label><input class="inp" name="osm.pecas" value="{{fOsm.pecas}}" onChange="{{onF}}"></div>
+<div class="fg" style="grid-column:span 3"><label class="flab">Serviço executado</label><input class="inp" name="osm.servico" value="{{fOsm.servico}}" onChange="{{onF}}"></div>
+</div>
+<div class="fx mt12"><button class="btn btna" onClick="{{saveOsModal}}" style="margin-left:auto">Salvar alterações da OS</button></div>
+</sc-if>
+<div class="isosec">7. VERIFICAÇÃO E APROVAÇÃO (ISO 9001:2015 — 8.5.1 / 8.6)</div>
+<div class="isogrid"><div class="isofield" style="padding-bottom:26px"><div class="isoflab">Solicitante</div>{{osM.solicitante}}<div class="mt16" style="border-top:1px solid var(--ink);font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div><div class="isofield" style="padding-bottom:26px"><div class="isoflab">Executante</div>{{osM.resp}}<div class="mt16" style="border-top:1px solid var(--ink);font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div><div class="isofield" style="padding-bottom:26px"><div class="isoflab">Aprovação / Liberação da máquina</div>SGI<div class="mt16" style="border-top:1px solid var(--ink);font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div></div>
+<sc-if value="{{osM.fechando}}" hint-placeholder-val="{{false}}">
+<div class="isosec">8. FECHAMENTO</div>
+<div class="frm mt8" style="grid-template-columns:repeat(3,1fr)">
+<div class="fg"><label class="flab">Tempo de reparo (min)</label><input class="inp" type="number" name="fech.reparoMin" value="{{fFech.reparoMin}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Custo (R$)</label><input class="inp" type="number" name="fech.custo" value="{{fFech.custo}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Peças utilizadas</label><input class="inp" name="fech.pecas" value="{{fFech.pecas}}" onChange="{{onF}}"></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Causa raiz</label><input class="inp" name="fech.causa" value="{{fFech.causa}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Serviço executado</label><input class="inp" name="fech.servico" value="{{fFech.servico}}" onChange="{{onF}}"></div>
+</div>
+<div class="fx mt12"><button class="btn btna" onClick="{{confirmFechar}}" style="margin-left:auto">Confirmar fechamento</button></div>
+</sc-if>
+<div class="fx gap8 mt16 noprint"><sc-if value="{{osMCanEdit}}" hint-placeholder-val="{{true}}"><button class="btsm" onClick="{{toggleOsEdit}}">{{osEditLbl}}</button></sc-if><sc-if value="{{canPrintOs}}" hint-placeholder-val="{{false}}"><button class="btsm" onClick="{{printOs}}">🖨 Imprimir Relatório F-06</button></sc-if><sc-if value="{{noPrintOs}}" hint-placeholder-val="{{false}}"><span class="mini">Impressão restrita aos perfis Gestor, Líder e Manutenção</span></sc-if><button class="btsm" onClick="{{closeOs}}" style="margin-left:auto">Fechar</button></div>
+</div></div>
+</sc-if>
+<sc-if value="{{solicOpen}}" hint-placeholder-val="{{false}}">
+<div class="modal" onClick="{{closeSolic}}"><div class="mbox" onClick="{{stop}}" style="max-width:640px">
+<div class="ptit">Solicitação de Alteração de Programação</div>
+<div class="mini" style="margin-bottom:10px">A alteração só é aplicada após aprovação do Coordenador de Produção. Descreva o motivo — este registro alimenta o indicador de solicitações × aprovações.</div>
+<div class="scroll" style="margin-bottom:12px"><table class="tbl"><thead><tr><th>Pedido</th><th>Cliente</th><th>De</th><th>Para</th><th>Δ</th></tr></thead><tbody>
+<sc-for list="{{simRows}}" as="r" hint-placeholder-count="1"><tr><td class="fw6">{{r.nr}}</td><td>{{r.cliente}}</td><td>{{r.real}}</td><td class="fw6">{{r.novo}}</td><td class="num">{{r.delta}}</td></tr></sc-for>
+</tbody></table></div>
+<div class="fg"><label class="flab">Justificativa da alteração</label><textarea class="inp" rows="3" name="solic.motivo" value="{{fSolic.motivo}}" onChange="{{onF}}" placeholder="Ex.: cliente solicitou antecipação da entrega; falta de matéria-prima na data original…"></textarea></div>
+<div class="fx gap8 mt16"><button class="btsm" onClick="{{closeSolic}}">Cancelar</button><button class="btn btna" onClick="{{sendSolic}}" style="margin-left:auto">Enviar solicitação</button></div>
+</div></div>
+</sc-if>
+<sc-if value="{{progPrintOpen}}" hint-placeholder-val="{{false}}">
+<div class="modal" onClick="{{closeProgPrint}}"><div class="mbox" onClick="{{stop}}" style="max-width:1000px">
+<div class="isohead"><div class="isoc"><b style="font-size:13px">{{progPrint.empresa}}</b><span class="mini">Sistema de Gestão da Qualidade</span></div><div class="isoc isot">PROGRAMAÇÃO DIÁRIA DE PRODUÇÃO</div><div class="isoc" style="border-right:none"><div class="isor"><span>Código:</span><b>PCP-02</b></div><div class="isor"><span>Revisão:</span><b>01</b></div><div class="isor"><span>Página:</span><b>1 de 1</b></div></div></div>
+<div class="fx jb mini mt8"><span>Elaborado por: PWR Gestão</span><span>Aprovado por: Helder Gomes</span><span>Data da programação: {{progPrint.data}}</span><span>Emitido em: {{progPrint.emitido}}</span><span>Conforme ISO 9001:2015 — 8.1</span></div>
+<sc-for list="{{progPrint.maqs}}" as="pm" hint-placeholder-count="2">
+<div class="isosec">MÁQUINA: {{pm.maq}} — {{pm.n}} PEDIDO(S) · {{pm.tot}} PÇ</div>
+<div class="scroll"><table class="tbl"><thead><tr><th>Seq.</th><th>Nº Pedido</th><th>Cliente</th><th>Produto</th><th>Ø × Comp</th><th>Parede</th><th>Vel. Alvo</th><th>Peso Mín</th><th>Peso Padrão</th><th>Peso Máx</th><th>Qtd</th></tr></thead><tbody>
+<sc-for list="{{pm.itens}}" as="it" hint-placeholder-count="2"><tr><td class="num fw7">{{it.ordem}}</td><td class="fw6">{{it.nrCliente}}</td><td>{{it.cliente}}</td><td class="mini">{{it.produto}}</td><td class="num">{{it.dim}}</td><td class="num">{{it.parede}}</td><td class="num">{{it.vel}}</td><td class="num">{{it.pesoMin}}</td><td class="num fw6">{{it.pesoPad}}</td><td class="num">{{it.pesoMax}}</td><td class="num">{{it.qtd}}</td></tr></sc-for>
+</tbody></table></div></sc-for>
+<sc-if value="{{progPrint.vazio}}" hint-placeholder-val="{{false}}"><div class="empty">Nenhum pedido programado para esta data / máquina.</div></sc-if>
+<div class="fx gap24 mt16" style="border-top:1px solid var(--bd);padding-top:14px"><div class="f1"><div class="isoflab">Liberado por (PCP)</div><div style="border-top:1px solid var(--ink);margin-top:26px;font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div><div class="f1"><div class="isoflab">Recebido por (Produção)</div><div style="border-top:1px solid var(--ink);margin-top:26px;font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div></div>
+<div class="fx gap8 mt16 noprint"><button class="btsm" onClick="{{printOs}}">🖨 Imprimir</button><button class="btsm" onClick="{{closeProgPrint}}" style="margin-left:auto">Fechar</button></div>
+</div></div>
+</sc-if>
+<sc-if value="{{pwOpen}}" hint-placeholder-val="{{false}}">
+<div class="modal" onClick="{{closePw}}"><div class="mbox" onClick="{{stop}}" style="max-width:420px">
+<div class="ptit">🔒 Liberar visualização de valores</div>
+<div class="mini" style="margin-bottom:12px">Informe a senha do administrador para exibir os valores dos pedidos nesta sessão.</div>
+<input class="inp" type="password" value="{{pwInput}}" onChange="{{onPwInput}}" onKeyDown="{{onPwKey}}" placeholder="Senha do administrador" autofocus>
+<sc-if value="{{pwErr}}" hint-placeholder-val="{{false}}"><div class="mini kbad fw6" style="margin-top:6px">Senha incorreta.</div></sc-if>
+<div class="fx gap8 mt16"><button class="btsm" onClick="{{closePw}}">Cancelar</button><button class="btn btna" onClick="{{confirmPw}}" style="margin-left:auto">Liberar</button></div>
+<div class="mini" style="margin-top:12px;color:#9aa6b0">Senha padrão: <b>admin</b> — altere em Cadastros futuramente.</div>
+</div></div>
+</sc-if>
+<sc-if value="{{toastOn}}" hint-placeholder-val="{{false}}"><div class="toast">{{toastMsg}}</div></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;metaOee&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:75,&quot;min&quot;:50,&quot;max&quot;:95,&quot;step&quot;:1,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Metas&quot;},&quot;acento&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#E8862D&quot;,&quot;options&quot;:[&quot;#E8862D&quot;,&quot;#2A6FDB&quot;,&quot;#1F8A5B&quot;,&quot;#B03A3A&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Aparência&quot;},&quot;unidadePadrao&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;ALL&quot;,&quot;options&quot;:[&quot;ALL&quot;,&quot;NORD&quot;,&quot;CONE&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Comportamento&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const hoje=new Date().toISOString().slice(0,10);
+    const d0=new Date(); d0.setDate(d0.getDate()-30);
+    this.state = {
+      ready:false, loggedIn:false, loginId:'', loginSenha:'', loginErr:false,
+      view:'dash', unidade: props.unidadePadrao || 'ALL',
+      dataIni:d0.toISOString().slice(0,10), dataFim:hoje,
+      fMaq:'ALL', fTurno:'ALL', fOper:'ALL', user:'U01',
+      db:null, cadTab:'maquinas', cadEditId:null, osDetail:null, osFechando:false, osMEdit:false,
+      valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false,
+      sim:{}, simOver:null, solicOpen:false, tourOn:false, tourStep:0, tourPlaying:false,
+      chat:[], chatInput:'', chatBusy:false, toast:null,
+      forms:{ prod:this.blankProd(), os:this.blankOs(), par:this.blankPar(),
+        ped:this.blankPed(), aus:this.blankAus(),
+        fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:''}, osm:{}, solic:{motivo:''}, cad:{} }
+    };
+    this.nav = {}; ['dash','prod','par','manut','pcp','rh','cad','ia','man'].forEach(v=>{ this.nav[v]=()=>this.setState({view:v}); });
+    this.unid = { all:()=>this.setState({unidade:'ALL'}), nord:()=>this.setState({unidade:'NORD'}), cone:()=>this.setState({unidade:'CONE'}) };
+  }
+  blankProd(){ const d=new Date().toISOString().slice(0,10); return {editId:null,dataInicio:d,horaInicio:'06:00',dataFim:d,horaFim:'14:00',data:d,maquina:'',turno:'A',operador:'',pedido:'',produto:'',qtdPc:'',refugoKg:'',tempoTurnoMin:480,paradas:[]}; }
+  tempoBruto(a){
+    if(a.dataInicio&&a.horaInicio&&a.dataFim&&a.horaFim){
+      const ini=new Date(a.dataInicio+'T'+a.horaInicio+':00').getTime();
+      const fim=new Date(a.dataFim+'T'+a.horaFim+':00').getTime();
+      const min=Math.round((fim-ini)/60000);
+      if(min>0&&min<=1440) return min;
+    }
+    return +a.tempoTurnoMin||480;
+  }
+  blankOs(){ return {editId:null,tipo:'Corretiva',maquina:'',item:'',motivo:'Quebra',parou:'sim',tempoParadaMin:'',paradaId:'',responsavel:'',descricao:''}; }
+  osItemOpts(maqId){
+    const db=this.state.db; const comps=(db.componentes||[]).filter(c=>c.maquina===maqId).map(c=>({v:c.nome}));
+    const genericos=db.itensEquip.map(v=>({v}));
+    return comps.length?[...comps,...genericos]:genericos;
+  }
+  blankPar(){ return {editId:null,data:new Date().toISOString().slice(0,10),maquina:'',turno:'A',operador:'',motivo:'M01',min:'',apId:'',obs:''}; }
+  blankPed(){ return {editId:null,nrCliente:'',cliente:'',produto:'',maquina:'',qtd:'',valor:'',dataEntrega:'',dataProgramada:'',ordem:'',dataReplan:'',obsReplan:'',statusProd:'',statusLog:'',status:'A SER PRODUZIDO - DENTRO DO ESTADO'}; }
+  blankAus(){ return {editId:null,data:new Date().toISOString().slice(0,10),operador:'',tipo:'Falta Injustificada',dias:1}; }
+  componentDidMount(){
+    const tryInit = ()=>{
+      if(!window.TuboData){ setTimeout(tryInit,80); return; }
+      let db=null;
+      try{ const saved=localStorage.getItem('tubo_sys_v4_real'); db=saved?JSON.parse(saved):null; }catch(e){}
+      if(!db || !db.paradas){
+        const seed=JSON.parse(JSON.stringify(window.TuboData));
+        const paradas=[]; let pid=1;
+        for(const a of seed.apontamentos){
+          for(const p of (a.paradas||[])){
+            paradas.push({id:'PR'+String(pid++).padStart(4,'0'),data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador,motivo:p.motivo,min:p.min,obs:p.obs||'',apId:a.id,osId:null});
+          }
+          delete a.paradas;
+        }
+        seed.paradas=paradas;
+        db=seed;
+      }
+      db.pedidos=(db.pedidos||[]).map(p=>{
+        if(p.statusProd) return p;
+        const st=String(p.status||'');
+        let sp='Em Aberto',sl='—';
+        if(st==='CANCELADO') sp='Cancelado';
+        else if(st.startsWith('PRONTO')){ sp='Concluído'; sl=st==='PRONTO E ENTREGUE'?'Pronto e Entregue':'Pronto e Não Entregue'; }
+        return {...p,statusProd:sp,statusLog:sl};
+      });
+      if(!db.componentes) db.componentes=[
+        {id:'CP01',nome:'Rolamento do fuso 6204',maquina:'TUB03',criticidade:'A'},
+        {id:'CP02',nome:'Faca circular de corte',maquina:'CONE02',criticidade:'A'},
+        {id:'CP03',nome:'Correia dentada do coleiro',maquina:'TUB07',criticidade:'B'},
+        {id:'CP04',nome:'Bomba de cola',maquina:'TUB08',criticidade:'A'}];
+      // sessão de login: restaura usuário autenticado salvo neste navegador
+      let sessionUser=null;
+      try{ sessionUser=JSON.parse(localStorage.getItem('tubo_session_v1')||'null'); }catch(e){}
+      const validSession = sessionUser && db.usuarios.some(u=>u.id===sessionUser.id);
+      this.setState({db,ready:true,
+        loggedIn:!!validSession,
+        user: validSession ? sessionUser.id : this.state.user
+      });
+    };
+    tryInit();
+  }
+  onLoginId = (e)=>this.setState({loginId:e.target.value,loginErr:false});
+  onLoginSenha = (e)=>this.setState({loginSenha:e.target.value,loginErr:false});
+  onLoginKey = (e)=>{ if(e.key==='Enter') this.doLogin(); };
+  doLogin = ()=>{
+    const {db,loginId,loginSenha}=this.state;
+    const idv=(loginId||'').trim().toLowerCase();
+    const u=(db.usuarios||[]).find(x=>(x.login||'').toLowerCase()===idv || (x.email||'').toLowerCase()===idv);
+    if(u && (u.senha||'')===loginSenha){
+      try{ localStorage.setItem('tubo_session_v1', JSON.stringify({id:u.id})); }catch(e){}
+      this.setState({loggedIn:true,user:u.id,loginId:'',loginSenha:'',loginErr:false});
+    } else {
+      this.setState({loginErr:true});
+    }
+  };
+  doLogout = ()=>{
+    try{ localStorage.removeItem('tubo_session_v1'); }catch(e){}
+    this.setState({loggedIn:false,loginId:'',loginSenha:'',view:'dash'});
+  };
+  persist(db){ try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(db)); }catch(e){} this.setState({db}); }
+  toast(msg){ this.setState({toast:msg}); clearTimeout(this._tt); this._tt=setTimeout(()=>this.setState({toast:null}),3000); }
+  fmtD(iso){ if(!iso) return '—'; const [y,m,d]=iso.split('-'); return d+'/'+m+'/'+y.slice(2); }
+  fmtN(n){ return (Math.round(n)||0).toLocaleString('pt-BR'); }
+  maqsFiltered(){ const {db,unidade}=this.state; return db.maquinas.filter(m=>unidade==='ALL'||m.unidade===unidade); }
+  inRange(d){ return d>=this.state.dataIni && d<=this.state.dataFim; }
+  apsFiltered(){
+    const {db,fMaq,fTurno,fOper}=this.state; const maqIds=new Set(this.maqsFiltered().map(m=>m.id));
+    return db.apontamentos.filter(a=>this.inRange(a.data)&&maqIds.has(a.maquina)&&(fMaq==='ALL'||a.maquina===fMaq)&&(fTurno==='ALL'||a.turno===fTurno)&&(fOper==='ALL'||a.operador===fOper));
+  }
+  parsFiltered(){
+    const {db,fMaq,fTurno,fOper}=this.state; const maqIds=new Set(this.maqsFiltered().map(m=>m.id));
+    return db.paradas.filter(p=>this.inRange(p.data)&&maqIds.has(p.maquina)&&(fMaq==='ALL'||p.maquina===fMaq)&&(fTurno==='ALL'||p.turno===fTurno)&&(fOper==='ALL'||p.operador===fOper));
+  }
+  osFiltered(){
+    const {db,fMaq}=this.state; const maqIds=new Set(this.maqsFiltered().map(m=>m.id));
+    return db.osList.filter(o=>maqIds.has(o.maquina)&&(fMaq==='ALL'||o.maquina===fMaq)&&(this.inRange(o.dataAbertura)||o.status!=='Fechada'));
+  }
+  motivoDe(id){ return this.state.db.motivosParada.find(x=>x.id===id); }
+  calcMachine(aps, pars, osArr){
+    const db=this.state.db;
+    let tProg=0,tParNP=0,tParPR=0,qtd=0,teor=0,kg=0,ref=0,setupMin=0,nPar=0;
+    const parByAp={};
+    for(const p of pars){
+      const m=this.motivoDe(p.motivo); const t=m?m.tipo:'NP';
+      if(p.apId){ (parByAp[p.apId]=parByAp[p.apId]||[]).push({p,t}); }
+      if(t==='COR') continue;
+      nPar++; if(t==='NP')tParNP+=p.min; else tParPR+=p.min;
+      if(m&&m.setup)setupMin+=p.min;
+    }
+    for(const a of aps){
+      let cor=0,par=0;
+      for(const {p,t} of (parByAp[a.id]||[])){ if(t==='COR')cor+=p.min; else par+=p.min; }
+      const prog=this.tempoBruto(a)-cor; tProg+=prog;
+      const oper=Math.max(prog-par,1);
+      const prod=db.produtos.find(x=>x.id===a.produto);
+      if(prod){ teor+=prod.velAlvo*oper; }
+      qtd+=(+a.qtdPc||0); kg+=(+a.qtdKg||0); ref+=(+a.refugoKg||0);
+    }
+    const disp=tProg?Math.max(0,(tProg-tParNP-tParPR)/tProg):0;
+    const perf=teor?Math.min(1.15,qtd/teor):0;
+    const qual=kg?Math.max(0,(kg-ref)/kg):1;
+    const oee=disp*perf*qual;
+    const corrFech=osArr.filter(o=>o.tipo==='Corretiva'&&o.status==='Fechada'&&o.tempoReparoMin);
+    const nFalhas=osArr.filter(o=>o.tipo==='Corretiva').length;
+    const mttr=corrFech.length?corrFech.reduce((s,o)=>s+o.tempoReparoMin,0)/corrFech.length/60:0;
+    const operH=(tProg-tParNP-tParPR)/60;
+    const mtbf=nFalhas?Math.max(0,operH)/nFalhas:0;
+    return {tProg,tParNP,tParPR,qtd,kg,ref,setupMin,nPar,disp,perf,qual,oee,mttr,mtbf,nFalhas,operH};
+  }
+  pedidoCalc(p){
+    const db=this.state.db;
+    const aps=db.apontamentos.filter(a=>a.pedido===p.id);
+    const prodz=aps.reduce((x,a)=>x+(+a.qtdPc||0),0);
+    let status=p.status;
+    if(!status.startsWith('PRONTO')){
+      if(p.qtd&&prodz>=p.qtd) status='PRONTO E NÃO ENTREGUE';
+      else if(prodz>0) status='EM PRODUÇÃO';
+    }
+    const datas=aps.map(a=>a.data).sort();
+    const progReal=datas.length?datas[0]:null; // 1º apontamento
+    // ---- Status de Produção ----
+    const hj=new Date().toISOString().slice(0,10);
+    let statusProd;
+    if(p.statusProd==='Cancelado') statusProd='Cancelado';
+    else if(p.statusProd==='Concluído'||(p.qtd&&prodz>=p.qtd)) statusProd='Concluído';
+    else if(p.statusProd==='Não Concluído') statusProd='Não Concluído';
+    else if(prodz>0 && p.dataEntrega && p.dataEntrega!=='IMEDIATO' && p.dataEntrega<hj) statusProd='Não Concluído';
+    else statusProd='Em Aberto';
+    // ---- Status de Logística ----
+    let statusLog='—';
+    if(statusProd==='Concluído') statusLog=p.statusLog==='Pronto e Entregue'?'Pronto e Entregue':'Pronto e Não Entregue';
+    const concluido=statusProd==='Concluído';
+    const entregaFinal=(concluido&&datas.length)?datas[datas.length-1]:null;
+    return {prodz,status:concluido?(statusLog==='Pronto e Entregue'?'PRONTO E ENTREGUE':'PRONTO E NÃO ENTREGUE'):status,statusProd,statusLog,progReal,entregaFinal};
+  }
+  buildInsights(kpiRaw, maqStats, pareto, solK){
+    const db=this.state.db, out=[];
+    const meta=this.props.metaOee ?? 75;
+    const worst=[...maqStats].filter(m=>m.raw.tProg>0).sort((a,b)=>a.raw.oee-b.raw.oee)[0];
+    if(worst&&worst.raw.oee*100<meta) out.push({sev:'sevA',titulo:'OEE crítico: '+worst.nome+' ('+Math.round(worst.raw.oee*100)+'%)',
+      texto:'Disponibilidade '+Math.round(worst.raw.disp*100)+'% · Performance '+Math.round(worst.raw.perf*100)+'% · Qualidade '+Math.round(worst.raw.qual*100)+'%. Meta: '+meta+'%.',
+      sugestao: worst.raw.disp<worst.raw.perf?'O maior ofensor é a disponibilidade — priorize redução de paradas não programadas e agilize setups com preparação externa (SMED).':'O maior ofensor é a performance — revise a velocidade real vs. meta do produto e as condições de matéria-prima.'});
+    if(pareto[0]) out.push({sev:'sevB',titulo:'Maior ofensor de parada: '+pareto[0].nome,
+      texto:pareto[0].min+' min no período ('+pareto[0].pct+'% do total de paradas).',
+      sugestao: pareto[0].nome.includes('Setup')?'Implante checklist de setup externo: preparar matriz, facas e cola antes de parar a máquina. Potencial de reduzir 30–40% do tempo.':pareto[0].nome.includes('Manutenção')?'Aumente o rateio de preventivas nos itens com falha repetida para reduzir corretivas.':'Investigue causa-raiz com os operadores do turno mais afetado e padronize a correção.'});
+    const mttrBad=maqStats.filter(m=>m.raw.mttr>2).sort((a,b)=>b.raw.mttr-a.raw.mttr)[0];
+    if(mttrBad) out.push({sev:'sevB',titulo:'MTTR alto: '+mttrBad.nome+' ('+mttrBad.raw.mttr.toFixed(1)+'h)',
+      texto:'Tempo médio de reparo acima da meta de 2h nas corretivas fechadas.',
+      sugestao:'Verifique disponibilidade de peças no estoque (rolamentos, facas, correias) e crie kit de reparo rápido para os itens mais recorrentes.'});
+    const mtbfBad=maqStats.filter(m=>m.raw.nFalhas>=3).sort((a,b)=>a.raw.mtbf-b.raw.mtbf)[0];
+    if(mtbfBad) out.push({sev:'sevA',titulo:'MTBF baixo: '+mtbfBad.nome+' ('+Math.round(mtbfBad.raw.mtbf)+'h entre falhas)',
+      texto:mtbfBad.raw.nFalhas+' falhas corretivas no período.',
+      sugestao:'Máquina candidata a plano de manutenção preventiva dedicado — inspecione formação, coleiro e corte semanalmente.'});
+    if(kpiRaw.abs>3) out.push({sev:'sevB',titulo:'Absenteísmo acima da meta ('+kpiRaw.abs.toFixed(1)+'%)',
+      texto:'Meta ≤ 3%. Faltas injustificadas concentradas impactam o 3º turno.',
+      sugestao:'Implante diálogo de rotina com líderes de turno e programa de reconhecimento de assiduidade.'});
+    const hoje=new Date().toISOString().slice(0,10);
+    const atras=db.pedidos.filter(p=>p.dataEntrega!=='IMEDIATO'&&p.dataEntrega<hoje&&!this.pedidoCalc(p).status.startsWith('PRONTO'));
+    if(atras.length) out.push({sev:'sevA',titulo:atras.length+' pedido(s) com entrega atrasada',
+      texto:atras.map(p=>p.id+' ('+((db.clientes.find(c=>c.id===p.cliente)||{}).nome||'')+')').join(', ')+'.',
+      sugestao:'Reprograme o sequenciamento no PCP priorizando os atrasados e comunique os clientes sobre novas datas.'});
+    const abertas=db.osList.filter(o=>o.status==='Aberta');
+    if(abertas.length>2) out.push({sev:'sevB',titulo:abertas.length+' OS aguardando aprovação',
+      texto:'OS paradas na etapa de aprovação atrasam o reparo e aumentam o MTTR.',
+      sugestao:'Defina alçada de aprovação automática para OS corretivas com máquina parada.'});
+    if(solK&&solK.aprov>=2) out.push({sev:'sevB',titulo:solK.aprov+' alteração(ões) de programação aprovadas ('+solK.total+' solicitadas)',
+      texto:'Taxa de aprovação de '+solK.taxa+'%. Cada replanejamento gera setup extra e reduz a disponibilidade das máquinas.',
+      sugestao:'Congele a programação com 48h de antecedência e trate exceções em janela única — reduz setups não previstos e protege o OEE.'});
+    if(!out.length) out.push({sev:'sevC',titulo:'Operação dentro das metas',texto:'Nenhum desvio relevante detectado no período.',sugestao:'Mantenha os padrões atuais e considere elevar a meta de OEE.'});
+    return out;
+  }
+  // ---------- events ----------
+  onF = (e)=>{
+    const [form,field]=e.target.name.split('.');
+    const forms={...this.state.forms}; forms[form]={...forms[form],[field]:e.target.value};
+    if(form==='prod'&&field==='pedido'&&e.target.value){
+      const ped=this.state.db.pedidos.find(p=>p.id===e.target.value);
+      if(ped){ forms.prod.produto=ped.produto; if(ped.maquina)forms.prod.maquina=ped.maquina; }
+    }
+    if(form==='ped'&&field==='cliente'){ forms.ped.produto=''; }
+    if(form==='os'&&field==='maquina'){ const opts=this.osItemOpts(e.target.value); forms.os.item=opts[0]?opts[0].v:''; forms.os.paradaId=''; }
+    if(form==='os'&&field==='paradaId'&&e.target.value){
+      const par=this.state.db.paradas.find(p=>p.id===e.target.value);
+      if(par){ forms.os.maquina=par.maquina; forms.os.parou='sim'; forms.os.tempoParadaMin=par.min; if(par.obs&&!forms.os.descricao)forms.os.descricao=par.obs; }
+    }
+    this.setState({forms});
+  };
+  onDataIni = (e)=>this.setState({dataIni:e.target.value});
+  onDataFim = (e)=>this.setState({dataFim:e.target.value});
+  onFMaq = (e)=>this.setState({fMaq:e.target.value});
+  onFTurno = (e)=>this.setState({fTurno:e.target.value});
+  onFOper = (e)=>this.setState({fOper:e.target.value});
+  onUser = (e)=>this.setState({user:e.target.value});
+  curUser(){ return this.state.db.usuarios.find(u=>u.id===this.state.user)||this.state.db.usuarios[0]||{nome:'—',perfil:''}; }
+  // ----- produção -----
+  addParada = ()=>{ const forms={...this.state.forms}; forms.prod={...forms.prod,paradas:[...forms.prod.paradas,{motivo:'M01',min:''}]}; this.setState({forms}); };
+  rmParada = (e)=>{ const i=+e.currentTarget.dataset.i; const forms={...this.state.forms}; forms.prod={...forms.prod,paradas:forms.prod.paradas.filter((_,j)=>j!==i)}; this.setState({forms}); };
+  onParada = (e)=>{ const i=+e.target.dataset.i, f=e.target.dataset.f; const forms={...this.state.forms};
+    forms.prod={...forms.prod,paradas:forms.prod.paradas.map((p,j)=>j===i?{...p,[f]:e.target.value}:p)}; this.setState({forms}); };
+  nextId(list,prefix,pad){ let mx=0; for(const x of list){ const n=parseInt(String(x.id).replace(/\D/g,''),10); if(n>mx)mx=n; } return prefix+String(mx+1).padStart(pad,'0'); }
+  saveProd = ()=>{
+    const f=this.state.forms.prod, db={...this.state.db};
+    if(!f.maquina||!f.produto||!f.qtdPc){ this.toast('Preencha máquina, produto e quantidade.'); return; }
+    const prod=db.produtos.find(p=>p.id===f.produto);
+    const brutoMin=this.tempoBruto(f);
+    const base={data:f.dataInicio||f.data,dataInicio:f.dataInicio||f.data,horaInicio:f.horaInicio||'',dataFim:f.dataFim||f.dataInicio||f.data,horaFim:f.horaFim||'',
+      maquina:f.maquina,turno:f.turno,operador:f.operador,pedido:f.pedido||null,produto:f.produto,
+      qtdPc:+f.qtdPc,qtdKg:+((+f.qtdPc)*(prod?prod.pesoIdeal:0)).toFixed(1),refugoKg:+f.refugoKg||0,tempoTurnoMin:brutoMin};
+    let apId=f.editId;
+    if(f.editId){
+      db.apontamentos=db.apontamentos.map(a=>a.id===f.editId?{...a,...base}:a);
+      db.paradas=db.paradas.filter(p=>p.apId!==f.editId);
+    } else {
+      apId=this.nextId(db.apontamentos,'AP',4);
+      db.apontamentos=[...db.apontamentos,{id:apId,...base}];
+    }
+    let novasPar=[...db.paradas];
+    for(const p of f.paradas.filter(p=>+p.min>0)){
+      novasPar.push({id:this.nextId(novasPar,'PR',4),data:f.data,maquina:f.maquina,turno:f.turno,operador:f.operador,motivo:p.motivo,min:+p.min,obs:'',apId,osId:null});
+    }
+    db.paradas=novasPar;
+    this.persist(db);
+    this.setState({forms:{...this.state.forms,prod:this.blankProd()}});
+    this.toast(f.editId?'Apontamento atualizado ✓':'Apontamento salvo ✓');
+  };
+  editAp = (e)=>{
+    const a=this.state.db.apontamentos.find(x=>x.id===e.currentTarget.dataset.id); if(!a)return;
+    const pars=this.state.db.paradas.filter(p=>p.apId===a.id).map(p=>({motivo:p.motivo,min:p.min}));
+    this.setState({forms:{...this.state.forms,prod:{editId:a.id,dataInicio:a.dataInicio||a.data,horaInicio:a.horaInicio||'06:00',dataFim:a.dataFim||a.data,horaFim:a.horaFim||'14:00',data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador||'',pedido:a.pedido||'',produto:a.produto,qtdPc:a.qtdPc,refugoKg:a.refugoKg,tempoTurnoMin:a.tempoTurnoMin,paradas:pars}}});
+    window.scrollTo(0,0); const m=document.querySelector('.main'); if(m)m.scrollTop=0;
+  };
+  cancelProdEdit = ()=>this.setState({forms:{...this.state.forms,prod:this.blankProd()}});
+  delAp = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
+    db.apontamentos=db.apontamentos.filter(a=>a.id!==id); db.paradas=db.paradas.filter(p=>p.apId!==id);
+    this.persist(db); this.toast('Apontamento excluído'); };
+  // ----- paradas -----
+  savePar = ()=>{
+    const f=this.state.forms.par, db={...this.state.db};
+    if(!f.maquina||!+f.min){ this.toast('Preencha máquina e duração.'); return; }
+    const mot=this.motivoDe(f.motivo);
+    let osId=null, osMsg='';
+    if(f.editId){
+      const old=db.paradas.find(p=>p.id===f.editId);
+      osId=old?old.osId:null;
+      db.paradas=db.paradas.map(p=>p.id===f.editId?{...p,data:f.data,maquina:f.maquina,turno:f.turno,operador:f.operador,motivo:f.motivo,min:+f.min,obs:f.obs,apId:f.apId||null}:p);
+    } else {
+      const parId=this.nextId(db.paradas,'PR',4);
+      if(mot&&mot.manut){
+        osId=this.nextId(db.osList,'OS-',4);
+        const now=new Date();
+        const ap=f.apId?db.apontamentos.find(a=>a.id===f.apId):null;
+        db.osList=[...db.osList,{id:osId,tipo:mot.tipo==='PR'?'Preventiva':'Corretiva',maquina:f.maquina,item:'—',
+          motivo:mot.nome.includes('Elétrica')?'Elétrico':'Mecânico',descricao:'Gerada automaticamente pela parada '+parId+(f.obs?' — '+f.obs:''),
+          parouMaquina:true,solicitante:this.curUser().nome,responsavel:'',dataAbertura:f.data,horaAbertura:now.toTimeString().slice(0,5),
+          aprovacao:null,inicioReparo:null,tempoParadaMin:+f.min,tempoReparoMin:null,status:'Aberta',custo:null,pecas:'',paradaId:parId,apId:f.apId||null}];
+        osMsg=' — OS '+osId+' gerada automaticamente';
+      }
+      db.paradas=[...db.paradas,{id:parId,data:f.data,maquina:f.maquina,turno:f.turno,operador:f.operador,motivo:f.motivo,min:+f.min,obs:f.obs,apId:f.apId||null,osId}];
+    }
+    this.persist(db);
+    this.setState({forms:{...this.state.forms,par:this.blankPar()}});
+    this.toast((f.editId?'Parada atualizada ✓':'Parada registrada ✓')+osMsg);
+  };
+  editPar = (e)=>{
+    const p=this.state.db.paradas.find(x=>x.id===e.currentTarget.dataset.id); if(!p)return;
+    this.setState({forms:{...this.state.forms,par:{editId:p.id,data:p.data,maquina:p.maquina,turno:p.turno,operador:p.operador||'',motivo:p.motivo,min:p.min,apId:p.apId||'',obs:p.obs||''}}});
+    const m=document.querySelector('.main'); if(m)m.scrollTop=0;
+  };
+  cancelParEdit = ()=>this.setState({forms:{...this.state.forms,par:this.blankPar()}});
+  delPar = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
+    db.paradas=db.paradas.filter(p=>p.id!==id); this.persist(db); this.toast('Parada excluída'); };
+  // ----- manutenção -----
+  saveOs = ()=>{
+    const f=this.state.forms.os, db={...this.state.db};
+    if(!f.maquina||!f.descricao){ this.toast('Preencha máquina e descrição.'); return; }
+    const tParada=f.parou==='sim'?(+f.tempoParadaMin||0):0;
+    if(f.editId){
+      db.osList=db.osList.map(o=>o.id===f.editId?{...o,tipo:f.tipo,maquina:f.maquina,item:f.item,motivo:f.motivo,parouMaquina:f.parou==='sim',tempoParadaMin:tParada,paradaId:f.paradaId||o.paradaId||null,responsavel:f.responsavel,descricao:f.descricao}:o);
+      if(f.paradaId) db.paradas=db.paradas.map(p=>p.id===f.paradaId?{...p,osId:f.editId}:p);
+      this.persist(db); this.toast('OS atualizada ✓');
+    } else {
+      const id=this.nextId(db.osList,'OS-',4);
+      const now=new Date();
+      db.osList=[...db.osList,{id,tipo:f.tipo,maquina:f.maquina,item:f.item,motivo:f.motivo,descricao:f.descricao,
+        parouMaquina:f.parou==='sim',tempoParadaMin:tParada,paradaId:f.paradaId||null,solicitante:this.curUser().nome,responsavel:f.responsavel,
+        dataAbertura:now.toISOString().slice(0,10),horaAbertura:now.toTimeString().slice(0,5),
+        aprovacao:null,inicioReparo:null,tempoReparoMin:null,status:'Aberta',custo:null,pecas:''}];
+      if(f.paradaId) db.paradas=db.paradas.map(p=>p.id===f.paradaId?{...p,osId:id}:p);
+      this.persist(db); this.toast('OS '+id+' aberta ✓'+(f.paradaId?' e vinculada à parada '+f.paradaId:'')+' — aguardando aprovação');
+    }
+    this.setState({forms:{...this.state.forms,os:this.blankOs()}});
+  };
+  editOs = (e)=>{
+    const o=this.state.db.osList.find(x=>x.id===e.currentTarget.dataset.id); if(!o)return;
+    this.setState({forms:{...this.state.forms,os:{editId:o.id,tipo:o.tipo,maquina:o.maquina,item:o.item,motivo:o.motivo,parou:o.parouMaquina?'sim':'nao',tempoParadaMin:o.tempoParadaMin||'',paradaId:o.paradaId||'',responsavel:o.responsavel||'',descricao:o.descricao||''}}});
+    const m=document.querySelector('.main'); if(m)m.scrollTop=0;
+  };
+  cancelOsEdit = ()=>this.setState({forms:{...this.state.forms,os:this.blankOs()}});
+  delOs = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
+    db.osList=db.osList.filter(o=>o.id!==id);
+    db.paradas=db.paradas.map(p=>p.osId===id?{...p,osId:null}:p);
+    this.persist(db); this.toast('OS excluída'); };
+  osAct = (e)=>{
+    const {id,act}=e.currentTarget.dataset; const db={...this.state.db};
+    if(act==='fechar'){ this.setState({osDetail:id,osFechando:true}); return; }
+    db.osList=db.osList.map(o=>{ if(o.id!==id)return o;
+      if(act==='aprovar')return{...o,status:'Aprovada',aprovacao:new Date().toISOString().slice(0,10)};
+      if(act==='iniciar')return{...o,status:'Em Execução',inicioReparo:new Date().toISOString().slice(0,10)};
+      return o; });
+    this.persist(db); this.toast(act==='aprovar'?'OS aprovada ✓':'Execução iniciada ✓');
+  };
+  confirmFechar = ()=>{
+    const f=this.state.forms.fech, db={...this.state.db}, id=this.state.osDetail;
+    if(!f.reparoMin){ this.toast('Informe o tempo de reparo.'); return; }
+    db.osList=db.osList.map(o=>o.id===id?{...o,status:'Fechada',tempoReparoMin:+f.reparoMin,custo:+f.custo||0,pecas:f.pecas,causa:f.causa,servico:f.servico,dataFechamento:new Date().toISOString().slice(0,10)}:o);
+    this.persist(db); this.setState({osDetail:null,osFechando:false,forms:{...this.state.forms,fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:''}}}); this.toast('OS fechada ✓');
+  };
+  openOs = (e)=>{ this.setState({osDetail:e.currentTarget.dataset.id,osFechando:false,osMEdit:false}); };
+  closeOs = ()=>{ this.setState({osDetail:null,osFechando:false,osMEdit:false}); };
+  toggleOsEdit = ()=>{
+    if(this.state.osMEdit){ this.setState({osMEdit:false}); return; }
+    const o=this.state.db.osList.find(x=>x.id===this.state.osDetail); if(!o)return;
+    this.setState({osMEdit:true,forms:{...this.state.forms,osm:{item:o.item||'',motivo:o.motivo||'',responsavel:o.responsavel||'',descricao:o.descricao||'',
+      tempoParadaMin:o.tempoParadaMin||'',tempoReparoMin:o.tempoReparoMin||'',custo:o.custo!=null?o.custo:'',causa:o.causa||'',servico:o.servico||'',pecas:o.pecas||''}}});
+  };
+  saveOsModal = ()=>{
+    const f=this.state.forms.osm, db={...this.state.db}, id=this.state.osDetail;
+    db.osList=db.osList.map(o=>o.id===id?{...o,item:f.item,motivo:f.motivo,responsavel:f.responsavel,descricao:f.descricao,
+      parouMaquina:(+f.tempoParadaMin>0)||o.parouMaquina,tempoParadaMin:+f.tempoParadaMin||0,
+      tempoReparoMin:f.tempoReparoMin!==''?+f.tempoReparoMin:o.tempoReparoMin,custo:f.custo!==''?+f.custo:o.custo,
+      causa:f.causa,servico:f.servico,pecas:f.pecas}:o);
+    this.persist(db); this.setState({osMEdit:false}); this.toast('OS atualizada ✓');
+  };
+  stop = (e)=>{ e.stopPropagation(); };
+  printOs = ()=>{ window.print(); };
+  // ----- pcp -----
+  savePed = ()=>{
+    const f=this.state.forms.ped, db={...this.state.db};
+    if(!f.cliente||!f.produto||!f.qtd){ this.toast('Preencha cliente, produto e quantidade.'); return; }
+    if(f.editId){
+      db.pedidos=db.pedidos.map(p=>p.id===f.editId?{...p,nrCliente:f.nrCliente,cliente:f.cliente,produto:f.produto,maquina:f.maquina,qtd:+f.qtd,valor:+f.valor||p.valor||0,dataEntrega:f.dataEntrega||'IMEDIATO',dataProgramada:f.dataProgramada||'',ordem:+f.ordem||p.ordem||99,dataReplan:f.dataReplan||'',obsReplan:f.obsReplan||'',status:f.status,statusProd:f.statusProd||'',statusLog:f.statusLog||''}:p);
+      this.persist(db); this.toast('Pedido atualizado ✓');
+    } else {
+      const id=this.nextId(db.pedidos,'PD',3);
+      db.pedidos=[...db.pedidos,{id,nrCliente:f.nrCliente||id,cliente:f.cliente,produto:f.produto,maquina:f.maquina,qtd:+f.qtd,valor:+f.valor||0,unid:'pç',
+        dataPedido:new Date().toISOString().slice(0,10),dataEntrega:f.dataEntrega||'IMEDIATO',dataProgramada:f.dataProgramada||'',dataReplan:f.dataReplan||'',obsReplan:f.obsReplan||'',status:f.status,statusProd:f.statusProd||'',statusLog:f.statusLog||'',ordem:+f.ordem||99}];
+      this.persist(db); this.toast('Pedido '+id+' criado ✓');
+    }
+    this.setState({forms:{...this.state.forms,ped:this.blankPed()}});
+  };
+  editPed = (e)=>{
+    const p=this.state.db.pedidos.find(x=>x.id===e.currentTarget.dataset.id); if(!p)return;
+    this.setState({forms:{...this.state.forms,ped:{editId:p.id,nrCliente:p.nrCliente,cliente:p.cliente,produto:p.produto,maquina:p.maquina||'',qtd:p.qtd,valor:p.valor||'',dataEntrega:p.dataEntrega==='IMEDIATO'?'':p.dataEntrega,dataProgramada:p.dataProgramada||'',ordem:p.ordem&&p.ordem!==99?p.ordem:'',dataReplan:p.dataReplan||'',obsReplan:p.obsReplan||'',status:p.status,statusProd:p.statusProd||'',statusLog:p.statusLog||''}}});
+    const m=document.querySelector('.main'); if(m)m.scrollTop=0;
+  };
+  cancelPedEdit = ()=>this.setState({forms:{...this.state.forms,ped:this.blankPed()}});
+  delPed = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
+    db.pedidos=db.pedidos.filter(p=>p.id!==id); this.persist(db); this.toast('Pedido excluído'); };
+  entregarPed = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
+    db.pedidos=db.pedidos.map(p=>p.id===id?{...p,status:'PRONTO E ENTREGUE',statusProd:'Concluído',statusLog:'Pronto e Entregue'}:p); this.persist(db); this.toast('Pedido entregue ✓'); };
+  // ----- rh -----
+  saveAus = ()=>{
+    const f=this.state.forms.aus, db={...this.state.db};
+    if(!f.operador){ this.toast('Selecione o colaborador.'); return; }
+    if(f.editId){
+      db.ausencias=db.ausencias.map(a=>a.id===f.editId?{...a,data:f.data,operador:f.operador,tipo:f.tipo,dias:+f.dias||1}:a);
+      this.persist(db); this.toast('Ausência atualizada ✓');
+    } else {
+      db.ausencias=[...db.ausencias,{id:this.nextId(db.ausencias,'AUS',3),data:f.data,operador:f.operador,tipo:f.tipo,dias:+f.dias||1,obs:''}];
+      this.persist(db); this.toast('Ausência registrada ✓');
+    }
+    this.setState({forms:{...this.state.forms,aus:this.blankAus()}});
+  };
+  editAus = (e)=>{
+    const a=this.state.db.ausencias.find(x=>x.id===e.currentTarget.dataset.id); if(!a)return;
+    this.setState({forms:{...this.state.forms,aus:{editId:a.id,data:a.data,operador:a.operador,tipo:a.tipo,dias:a.dias}}});
+    const m=document.querySelector('.main'); if(m)m.scrollTop=0;
+  };
+  cancelAusEdit = ()=>this.setState({forms:{...this.state.forms,aus:this.blankAus()}});
+  delAus = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db}; db.ausencias=db.ausencias.filter(a=>a.id!==id); this.persist(db); };
+  // ----- cadastros -----
+  setCadTab = (e)=>{ this.setState({cadTab:e.currentTarget.dataset.tab,cadEditId:null,forms:{...this.state.forms,cad:{}}}); };
+  cadDefs(){
+    const db=this.state.db;
+    return {
+      maquinas:{label:'Máquinas',key:'maquinas',cols:['ID','Nome','Unidade','Setor','Tipo'],cells:m=>[m.id,m.nome,m.unidade==='NORD'?'Tubonord':'Tubocone',m.setor,m.tipo],
+        fields:[{name:'nome',label:'Nome',type:'text'},{name:'unidade',label:'Unidade',options:[{v:'NORD',l:'Tubonord'},{v:'CONE',l:'Tubocone'}]},{name:'setor',label:'Setor',type:'text'},{name:'tipo',label:'Tipo',options:['Tubeteira','Conicaleira','Flexográfica','Recortadeira','Acabamento'].map(v=>({v,l:v}))}],
+        make:f=>({nome:f.nome,unidade:f.unidade||'NORD',setor:f.setor||'Produção',tipo:f.tipo||'Tubeteira'}),idp:'MQ'},
+      produtos:{label:'Produtos',key:'produtos',cols:['ID','Produto','Cliente','Ø×Comp (mm)','Parede','Peso Pad.','Mín–Máx','Vel. Alvo'],cells:p=>[p.id,p.nome,(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',(p.diamMm||0)+'×'+(p.compMm||0),(p.paredeMm||0)+' mm',(p.pesoPadrao!=null?p.pesoPadrao:p.pesoIdeal)+' kg',(p.pesoMin||0)+'–'+(p.pesoMax||0),p.velAlvo+' '+p.unid],
+        fields:[{name:'nome',label:'Nome do produto',type:'text'},{name:'cliente',label:'Cliente',options:db.clientes.map(c=>({v:c.id,l:c.nome}))},{name:'maquinaTipo',label:'Tipo de máquina',options:['Tubeteira','Conicaleira','Flexográfica','Recortadeira','Acabamento'].map(v=>({v,l:v}))},{name:'diamMm',label:'Diâmetro Ø (mm)',type:'number'},{name:'compMm',label:'Comprimento (mm)',type:'number'},{name:'paredeMm',label:'Parede (mm)',type:'number'},{name:'pesoPadrao',label:'Peso padrão (kg/pç)',type:'number'},{name:'pesoMin',label:'Peso mínimo (kg)',type:'number'},{name:'pesoMax',label:'Peso máximo (kg)',type:'number'},{name:'velAlvo',label:'Velocidade alvo (pç/min)',type:'number'}],
+        make:f=>({nome:f.nome,cliente:f.cliente,maquinaTipo:f.maquinaTipo||'Tubeteira',diamMm:+f.diamMm||0,compMm:+f.compMm||0,paredeMm:+f.paredeMm||0,pesoIdeal:+f.pesoPadrao||+f.pesoIdeal||0,pesoPadrao:+f.pesoPadrao||0,pesoMin:+f.pesoMin||0,pesoMax:+f.pesoMax||0,velAlvo:+f.velAlvo||0,unid:'pç/min'}),idp:'P'},
+      clientes:{label:'Clientes',key:'clientes',cols:['ID','Nome','Cidade - UF'],cells:c=>[c.id,c.nome,c.cidade],
+        fields:[{name:'nome',label:'Nome',type:'text'},{name:'cidade',label:'Cidade - UF',type:'text'}],
+        make:f=>({nome:f.nome,cidade:f.cidade||''}),idp:'C'},
+      operadores:{label:'Operadores',key:'operadores',cols:['ID','Nome','Função','Turno','Unidade'],cells:o=>[o.id,o.nome,o.funcao,o.turno,o.unidade==='NORD'?'Tubonord':'Tubocone'],
+        fields:[{name:'nome',label:'Nome',type:'text'},{name:'funcao',label:'Função',options:['Operador','Líder de Produção','Técnico de Manutenção','PCP'].map(v=>({v,l:v}))},{name:'turno',label:'Turno',options:[{v:'A',l:'1º Turno'},{v:'B',l:'2º Turno'},{v:'C',l:'3º Turno'}]},{name:'unidade',label:'Unidade',options:[{v:'NORD',l:'Tubonord'},{v:'CONE',l:'Tubocone'}]}],
+        make:f=>({nome:f.nome,funcao:f.funcao||'Operador',turno:f.turno||'A',unidade:f.unidade||'NORD'}),idp:'OP'},
+      turnos:{label:'Turnos',key:'turnos',cols:['ID','Nome','Início','Fim','Horas'],cells:t=>[t.id,t.nome,t.inicio,t.fim,String(t.horas)],
+        fields:[{name:'nome',label:'Nome',type:'text'},{name:'inicio',label:'Início',type:'time'},{name:'fim',label:'Fim',type:'time'}],
+        make:f=>({nome:f.nome,inicio:f.inicio||'06:00',fim:f.fim||'14:00',horas:8}),idp:'T'},
+      motivosParada:{label:'Motivos de Parada',key:'motivosParada',cols:['ID','Motivo','Classificação'],cells:m=>[m.id,m.nome,m.tipo==='NP'?'Não Programada':m.tipo==='PR'?'Programada':'Correção (não conta)'],
+        fields:[{name:'nome',label:'Motivo',type:'text'},{name:'tipo',label:'Classificação',options:[{v:'NP',l:'Não Programada'},{v:'PR',l:'Programada'},{v:'COR',l:'Correção (não conta)'}]}],
+        make:f=>({nome:f.nome,tipo:f.tipo||'NP'}),idp:'M'},
+      componentes:{label:'Componentes de Máquinas',key:'componentes',cols:['ID','Componente','Máquina','Criticidade'],cells:c=>[c.id,c.nome,(db.maquinas.find(m=>m.id===c.maquina)||{}).nome||c.maquina,c.criticidade==='A'?'A - Crítico':c.criticidade==='B'?'B - Importante':'C - Normal'],
+        fields:[{name:'nome',label:'Nome do componente',type:'text'},{name:'maquina',label:'Máquina',options:db.maquinas.map(m=>({v:m.id,l:m.nome}))},{name:'criticidade',label:'Criticidade',options:[{v:'A',l:'A - Crítico'},{v:'B',l:'B - Importante'},{v:'C',l:'C - Normal'}]}],
+        make:f=>({nome:f.nome,maquina:f.maquina||'',criticidade:f.criticidade||'B'}),idp:'CP'},
+      usuarios:{label:'Usuários',key:'usuarios',cols:['ID','Nome','Perfil','Login','E-mail'],cells:u=>[u.id,u.nome,u.perfil,u.login||'—',u.email||''],
+        fields:[{name:'nome',label:'Nome',type:'text'},{name:'perfil',label:'Perfil de acesso',options:['Administrador','Usuário'].map(v=>({v,l:v}))},{name:'login',label:'Login (usuário)',type:'text'},{name:'senha',label:'Senha',type:'text'},{name:'email',label:'E-mail',type:'text'}],
+        make:f=>({nome:f.nome,perfil:f.perfil||'Usuário',login:(f.login||'').trim(),senha:f.senha||'',email:f.email||''}),idp:'U'},
+    };
+  }
+  cadSave = ()=>{
+    const def=this.cadDefs()[this.state.cadTab], f=this.state.forms.cad||{};
+    if(!f.nome){ this.toast('Preencha o nome.'); return; }
+    const db={...this.state.db};
+    if(this.state.cadEditId){
+      db[def.key]=db[def.key].map(x=>x.id===this.state.cadEditId?{...x,...def.make(f)}:x);
+      this.persist(db); this.toast('Registro atualizado ✓');
+    } else {
+      db[def.key]=[...db[def.key],{id:this.nextId(db[def.key],def.idp,2),...def.make(f)}];
+      this.persist(db); this.toast(def.label.replace(/s$/,'')+' cadastrado ✓');
+    }
+    this.setState({cadEditId:null,forms:{...this.state.forms,cad:{}}});
+  };
+  cadEdit = (e)=>{
+    const def=this.cadDefs()[this.state.cadTab];
+    const x=this.state.db[def.key].find(r=>r.id===e.currentTarget.dataset.id); if(!x)return;
+    const cad={}; for(const fld of def.fields){ cad[fld.name]=x[fld.name]!=null?String(x[fld.name]):''; }
+    this.setState({cadEditId:x.id,forms:{...this.state.forms,cad}});
+  };
+  cancelCadEdit = ()=>this.setState({cadEditId:null,forms:{...this.state.forms,cad:{}}});
+  cadDel = (e)=>{ const id=e.currentTarget.dataset.id; const def=this.cadDefs()[this.state.cadTab]; const db={...this.state.db};
+    db[def.key]=db[def.key].filter(x=>x.id!==id); this.persist(db); };
+  // ----- chat -----
+  openPw = ()=>this.setState({pwOpen:true,pwInput:'',pwErr:false});
+  closePw = ()=>this.setState({pwOpen:false,pwErr:false});
+  onPwInput = (e)=>this.setState({pwInput:e.target.value});
+  onPwKey = (e)=>{ if(e.key==='Enter') this.confirmPw(); };
+  confirmPw = ()=>{ const senha=(this.state.db&&this.state.db.config&&this.state.db.config.senhaValor)||'admin';
+    if(this.state.pwInput===senha){ this.setState({valorUnlocked:true,pwOpen:false,pwErr:false}); this.toast('Valores liberados 🔓'); }
+    else this.setState({pwErr:true}); };
+  lockValor = ()=>this.setState({valorUnlocked:false});
+  onProgDate = (e)=>this.setState({progDate:e.target.value});
+  onProgMaqFilter = (e)=>this.setState({progMaqFilter:e.target.value});
+  simDragStart = (e)=>{
+    this._simDrag=e.currentTarget.dataset.id; try{ e.dataTransfer.setData('text/plain',this._simDrag); e.dataTransfer.effectAllowed='move'; }catch(err){} };
+  simDragOver = (e)=>{ e.preventDefault();
+    const d=e.currentTarget.dataset.date; if(this.state.simOver!==d)this.setState({simOver:d}); };
+  simDragLeave = ()=>{ if(this.state.simOver)this.setState({simOver:null}); };
+  simDrop = (e)=>{
+    e.preventDefault();
+    let id=this._simDrag; try{ id=e.dataTransfer.getData('text/plain')||id; }catch(err){}
+    const data=e.currentTarget.dataset.date;
+    if(!id||!data){ this.setState({simOver:null}); return; }
+    const ped=this.state.db.pedidos.find(p=>p.id===id);
+    const sim={...this.state.sim};
+    if(ped&&ped.dataProgramada===data) delete sim[id]; else sim[id]=data;
+    this._simDrag=null;
+    this.setState({sim,simOver:null});
+  };
+  simReset = ()=>this.setState({sim:{},simOver:null});
+  tourSteps(){
+    return [
+      {view:'man',aba:'Manual',sel:'#tour-anchor',tit:'Bem-vindo ao Sistema de Gestão Industrial',txt:'Este tour mostra cada aba e cada indicador. O sistema cobre apontamento de produção, paradas, ordens de serviço, PCP e indicadores de OEE, MTTR, MTBF e absenteísmo das duas unidades — Tubonord e Tubocone.'},
+      {view:'dash',aba:'Dashboard',sel:'.tbar',tit:'Filtros globais',txt:'Tudo no sistema responde a estes filtros: unidade (Grupo / Tubonord / Tubocone), período por calendário (de/até), máquina, operador, turno e o usuário logado — que define as permissões.'},
+      {view:'dash',aba:'Dashboard',sel:'.cards',tit:'Cartões de indicadores',txt:'Onze indicadores calculados ao vivo: OEE, Disponibilidade, MTTR, MTBF, Absenteísmo, Produção, Horas Paradas, Setup, OS Abertas, Refugo e Alterações de Programação. As fórmulas estão detalhadas na aba Manual de Uso.'},
+      {view:'dash',aba:'Dashboard',sel:'#p-maquinas',tit:'Desempenho por máquina',txt:'Cada máquina com seu OEE decomposto em Disponibilidade × Performance × Qualidade, mais MTTR, MTBF, produção e horas paradas. O semáforo compara com a meta de OEE.'},
+      {view:'prod',aba:'Produção',sel:'#p-prod-form',tit:'Apontamento de produção',txt:'O operador informa início e fim (data e hora), máquina, turno, produto/pedido, quantidade em peças e refugo em kg. O sistema calcula o tempo bruto, o tempo rodando, a velocidade atingida e compara com a velocidade alvo do produto.'},
+      {view:'prod',aba:'Produção',sel:'#p-prod-lista',tit:'Histórico de apontamentos',txt:'Todo apontamento pode ser editado ou excluído. Ao editar, as paradas vinculadas são recarregadas junto. A velocidade real aparece em verde quando atinge pelo menos 85% da meta.'},
+      {view:'par',aba:'Paradas',sel:'#p-parada-form',tit:'Registro de paradas',txt:'Todas as paradas — operacionais e de manutenção — ficam aqui, classificadas em Programada, Não Programada ou Correção. Você vincula a parada à produção em curso e descreve a observação.'},
+      {view:'par',aba:'Paradas',sel:'.cards',tit:'Paradas geram OS automática',txt:'Quando o motivo é de manutenção, o sistema abre automaticamente uma Ordem de Serviço numerada e a vincula à parada. Paradas não programadas derrubam a disponibilidade e, portanto, o OEE.'},
+      {view:'manut',aba:'Manutenção',sel:'#p-os-form',tit:'Abertura de OS',txt:'A OS recebe número sequencial automático. Você escolhe tipo (Corretiva/Preventiva/Preditiva), o componente da máquina, o motivo, se parou a máquina e o tempo impactado, podendo vincular a uma parada já registrada.'},
+      {view:'manut',aba:'Manutenção',sel:'#p-os-lista',tit:'Fluxo e relatório F-06',txt:'O fluxo é Aberta → Aprovada → Em Execução → Fechada. No fechamento registram-se tempo de reparo, custo, peças, causa raiz e serviço executado. O botão F-06 abre o relatório no padrão ISO 9001:2015, editável e imprimível.'},
+      {view:'pcp',aba:'PCP',sel:'#p-sim',tit:'Simulador de programação',txt:'Qualquer usuário arrasta pedidos entre datas para simular cenários e ver o impacto em atrasos e aderência. Nada é salvo: para efetivar é preciso enviar uma solicitação com justificativa.'},
+      {view:'pcp',aba:'PCP',sel:'#p-solic',tit:'Solicitações de alteração',txt:'Cada solicitação registra quem pediu, os pedidos movidos, o deslocamento em dias e o motivo. Somente o Coordenador de Produção aprova ou reprova — e o indicador solicitadas × aprovadas vai para o Dashboard.'},
+      {view:'pcp',aba:'PCP',sel:'#p-progdia',tit:'Programação do dia',txt:'A sequência de produção por máquina, com Ø × comprimento, parede, velocidade alvo e pesos mínimo, padrão e máximo. Reordene com ↑↓ e imprima no padrão ISO 9001:2015 filtrando por máquina.'},
+      {view:'pcp',aba:'PCP',sel:'#p-gantt',tit:'Gantt de máquinas',txt:'Carga de cada máquina no tempo: verde em produção, cinza em espera, vermelho atrasado e azul pronto, com a linha HOJE marcando o presente.'},
+      {view:'pcp',aba:'PCP',sel:'#p-carteira',tit:'Carteira e valores',txt:'Quantidade produzida, avanço e status atualizam sozinhos conforme os apontamentos. Os valores financeiros ficam mascarados e só aparecem com a senha do administrador.'},
+      {view:'rh',aba:'RH',sel:'.cards',tit:'Absenteísmo e ausências',txt:'Faltas justificadas, injustificadas, atestados e férias. Férias não entram no cálculo do absenteísmo, que compara dias perdidos com os dias úteis disponíveis da equipe.'},
+      {view:'cad',aba:'Cadastros',sel:'.tabs',tit:'Cadastros base',txt:'Máquinas, produtos, clientes, operadores, turnos, motivos de parada, componentes de máquinas e usuários. Todos permitem criar, editar e excluir — e alimentam os campos de seleção do sistema.'},
+      {view:'ia',aba:'Agente IA',sel:'.duo',tit:'Agente de IA',txt:'À esquerda, o diagnóstico automático aponta os piores indicadores com sugestões práticas. À direita, você pergunta em linguagem natural e a IA responde analisando os dados do período filtrado.'},
+      {view:'man',aba:'Manual',sel:'#tour-anchor',tit:'Fim do tour',txt:'Role esta página para consultar a explicação detalhada de cada indicador, os campos editáveis de cada aba e a matriz de permissões por perfil.'}
+    ];
+  }
+  tourToggle = ()=>{
+    if(!this.state.tourOn){ this.setState({tourOn:true,tourStep:0,tourPlaying:true,view:'man'},this.tourApply); this.tourTimer(true); return; }
+    const playing=!this.state.tourPlaying;
+    this.setState({tourPlaying:playing}); this.tourTimer(playing);
+  };
+  tourTimer(on){ clearInterval(this._tourInt); if(on) this._tourInt=setInterval(()=>this.tourGo(1),8000); }
+  tourGo(dir){
+    const steps=this.tourSteps();
+    let n=this.state.tourStep+dir;
+    if(n>=steps.length){ n=steps.length-1; this.setState({tourPlaying:false}); this.tourTimer(false); }
+    if(n<0) n=0;
+    const st=steps[n];
+    this.setState({tourOn:true,tourStep:n,view:st.view},this.tourApply);
+  }
+  tourNext = ()=>this.tourGo(1);
+  tourPrev = ()=>this.tourGo(-1);
+  tourStop = ()=>{ this.tourTimer(false); this.tourClear(); this.setState({tourOn:false,tourPlaying:false,tourStep:0}); };
+  tourClear(){ document.querySelectorAll('.tourHL').forEach(el=>el.classList.remove('tourHL')); }
+  tourApply = ()=>{
+    setTimeout(()=>{
+      this.tourClear();
+      if(!this.state.tourOn) return;
+      const st=this.tourSteps()[this.state.tourStep]; if(!st) return;
+      const main=document.querySelector('.main');
+      const el=main?main.querySelector(st.sel):null;
+      if(el){ el.classList.add('tourHL');
+        if(main){ const top=el.getBoundingClientRect().top-main.getBoundingClientRect().top+main.scrollTop;
+          main.scrollTo({top:Math.max(0,top-90),behavior:'smooth'}); } }
+      else if(main) main.scrollTo({top:0,behavior:'smooth'});
+    },160);
+  };
+  componentWillUnmount(){ clearInterval(this._tourInt); clearTimeout(this._tt); }
+  manualIndic(){
+    const meta=this.props.metaOee??75;
+    return [
+      {tag:'Eficiência',nome:'OEE',texto:'Overall Equipment Effectiveness — eficiência global do equipamento. Multiplica os três fatores de perda: tempo perdido, ritmo perdido e produto perdido. É o indicador-mestre da operação.',formula:'OEE = Disponibilidade × Performance × Qualidade',meta:'Meta de '+meta+'%. Abaixo de '+(meta-10)+'% o cartão fica vermelho.'},
+      {tag:'Tempo',nome:'Disponibilidade',texto:'Percentual do tempo em que a máquina realmente produziu, dentro do tempo em que deveria estar produzindo. O tempo bruto vem dos horários de início e fim do apontamento; as paradas classificadas como Correção não contam.',formula:'Disp. = (Tempo bruto − Paradas prog. − Paradas não prog.) ÷ Tempo bruto',meta:'Meta ≥ 88%. Setups e paradas de manutenção são os principais ofensores.'},
+      {tag:'Ritmo',nome:'Performance',texto:'Compara o que foi produzido com o que a máquina deveria ter produzido rodando na velocidade alvo do produto durante o tempo em que ficou rodando.',formula:'Perf. = Qtd produzida ÷ (Velocidade alvo × Tempo rodando)',meta:'Meta ≥ 85%. Abaixo disso, revise velocidade alvo, matéria-prima e regulagens.'},
+      {tag:'Qualidade',nome:'Qualidade',texto:'Fração do que foi produzido que saiu conforme, descontando o refugo apontado em quilos.',formula:'Qual. = (Peso produzido − Refugo) ÷ Peso produzido',meta:'Meta ≥ 98%.'},
+      {tag:'Manutenção',nome:'MTTR',texto:'Mean Time To Repair — tempo médio de reparo das ordens corretivas já fechadas. Mede a agilidade da manutenção, incluindo o tempo de espera por peças e aprovação.',formula:'MTTR = Σ tempo de reparo ÷ nº de corretivas fechadas',meta:'Meta ≤ 2h. MTTR alto indica falta de peças ou de padronização do reparo.'},
+      {tag:'Manutenção',nome:'MTBF',texto:'Mean Time Between Failures — tempo médio de operação entre duas falhas. Mede a confiabilidade do equipamento.',formula:'MTBF = Horas em operação ÷ nº de falhas corretivas',meta:'Meta ≥ 80h. MTBF baixo pede plano de preventiva dedicado.'},
+      {tag:'Pessoas',nome:'Absenteísmo',texto:'Percentual de dias de trabalho perdidos por ausências no período. Faltas justificadas, injustificadas e atestados entram no cálculo; férias são excluídas por serem programadas.',formula:'Absent. = Dias perdidos ÷ (Nº de colaboradores × Dias úteis)',meta:'Meta ≤ 3%.'},
+      {tag:'Volume',nome:'Produção',texto:'Total produzido no período em quilos e em peças, conforme os apontamentos. Os dois gráficos diários mostram a evolução separadamente em kg e em peças.',formula:'Σ Peso apontado  ·  Σ Peças apontadas',meta:'Compare com a capacidade teórica das metas de velocidade.'},
+      {tag:'Perdas',nome:'Horas Paradas / Setup',texto:'Total de horas paradas e número de eventos, além do tempo gasto especificamente em setup (setup, troca de matriz e troca de facas) e seu peso sobre o tempo programado.',formula:'Setup % = Minutos de setup ÷ Tempo programado',meta:'Reduza o setup com preparação externa (SMED) antes de parar a máquina.'},
+      {tag:'Manutenção',nome:'OS Abertas',texto:'Ordens de serviço que ainda não foram fechadas, somando Aberta, Aprovada e Em Execução. O subtexto mostra quantas foram fechadas no período filtrado.',formula:'Nº de OS com status ≠ Fechada',meta:'Acima de 4 o cartão alerta: fila de manutenção acumulando.'},
+      {tag:'Perdas',nome:'Refugo',texto:'Percentual de desperdício sobre o peso produzido, alimentando diretamente o fator Qualidade do OEE.',formula:'Refugo % = Refugo (kg) ÷ Peso produzido (kg)',meta:'Meta ≤ 2%.'},
+      {tag:'PCP',nome:'Alterações de Programação',texto:'Número de solicitações de alteração de programação feitas versus aprovadas. Cada alteração aprovada normalmente gera setup extra e desorganiza a fila, impactando diretamente a disponibilidade e o OEE.',formula:'Taxa = Solicitações aprovadas ÷ Solicitações feitas',meta:'Quanto menor o volume, mais estável a programação. Congelamento de 48h é a boa prática.'},
+      {tag:'PCP',nome:'Status da Carteira',texto:'A carteira tem duas dimensões independentes. Status de Produção: Em Aberto (fila), Concluído (quantidade atingida), Não Concluído (iniciado e com entrega vencida) e Cancelado. Status de Logística, válido só para concluídos: Pronto e Não Entregue e Pronto e Entregue.',formula:'Conclusão = Concluídos ÷ Carteira ativa  ·  Entrega = Entregues ÷ Concluídos',meta:'Ambos os status são automáticos pelos apontamentos, com possibilidade de forçar manualmente no cadastro do pedido.'},
+      {tag:'PCP',nome:'Aderência à Programação',texto:'Compara a data planejada de início com a data real do primeiro apontamento de cada pedido, com abertura semanal.',formula:'Aderência = Pedidos iniciados na data planejada ÷ Total programado',meta:'Meta ≥ 90%.'},
+      {tag:'PCP',nome:'Aderência de Entrega',texto:'Compara a entrega prevista com a entrega final apurada pelo último apontamento do pedido, separando no prazo, atrasadas e em aberto.',formula:'Aderência = Entregas no prazo ÷ Entregas concluídas',meta:'Meta ≥ 90%.'}
+    ];
+  }
+  manualAbas(){
+    const L=a=>a.map(t=>({t}));
+    return [
+      {tag:'Visão geral',nome:'Dashboard',texto:'Painel executivo com todos os indicadores do período, desempenho por máquina, Pareto de paradas, tendência de OEE, produção diária em kg e peças, mapa de calor de pedidos por estado, aderências e os principais alertas.',
+        campos:[{n:'Filtros do topo',d:'unidade, período (calendário de/até), máquina, operador, turno e usuário logado.'},{n:'Meta de OEE',d:'ajustável nas propriedades do sistema (Tweaks); recalcula os semáforos.'}],
+        autos:L(['Todos os indicadores e gráficos derivam dos apontamentos, paradas, OS, pedidos e ausências.','Os alertas são gerados por regras sobre os piores indicadores do período.'])},
+      {tag:'Apontamento',nome:'Produção',texto:'Onde o operador ou o líder lança a produção de cada turno e as paradas ocorridas nele.',
+        campos:[{n:'Início / Fim (data e hora)',d:'define o tempo bruto de máquina disponível.'},{n:'Máquina, Turno, Operador',d:'listas alimentadas pelos cadastros.'},{n:'Pedido / OP',d:'ao selecionar, puxa automaticamente o produto e a máquina do pedido.'},{n:'Produto',d:'traz a velocidade alvo e o peso padrão.'},{n:'Qtd produzida (pç)',d:'quantidade boa apontada.'},{n:'Refugo (kg)',d:'desperdício do turno.'},{n:'Paradas do turno',d:'motivo + duração; podem ser adicionadas e removidas linha a linha.'}],
+        autos:L(['Peso em kg = quantidade × peso padrão do produto.','Tempo bruto, tempo rodando, disponibilidade e velocidade atingida (% da meta).','As paradas lançadas aqui aparecem também na aba Paradas.'])},
+      {tag:'Perdas',nome:'Paradas',texto:'Registro único de todas as paradas, operacionais e de manutenção, com vínculo à produção que estava em curso.',
+        campos:[{n:'Data, Máquina, Turno, Operador',d:'identificação do evento.'},{n:'Motivo da parada',d:'cadastrado com classificação Programada, Não Programada ou Correção.'},{n:'Duração (min)',d:'tempo impactado.'},{n:'Produção em curso',d:'vincula a parada ao apontamento e, por ele, ao pedido.'},{n:'Observação',d:'detalhe do que ocorreu.'}],
+        autos:L(['Motivos de manutenção abrem uma OS automaticamente, já vinculada à parada.','A classificação define se a parada derruba a disponibilidade.'])},
+      {tag:'Ativos',nome:'Manutenção',texto:'Gestão das ordens de serviço no fluxo Aberta → Aprovada → Em Execução → Fechada, com relatório F-06 no padrão ISO 9001:2015.',
+        campos:[{n:'Tipo',d:'Corretiva, Preventiva ou Preditiva.'},{n:'Máquina e Item/Componente',d:'o item lista primeiro os componentes cadastrados daquela máquina.'},{n:'Motivo e Descrição',d:'natureza e relato do problema.'},{n:'Parou a máquina? / Tempo impactado',d:'minutos de máquina parada.'},{n:'Vincular a uma parada',d:'associa a OS a uma parada já registrada e herda seus dados.'},{n:'Responsável',d:'técnico executante.'},{n:'Fechamento',d:'tempo de reparo, custo, peças, causa raiz e serviço executado.'},{n:'F-06',d:'campos editáveis dentro do próprio relatório.'}],
+        autos:L(['Número da OS sequencial automático.','Cronologia de rastreabilidade (abertura, aprovação, início, fechamento).','MTTR e MTBF calculados a partir das OS corretivas.'])},
+      {tag:'Planejamento',nome:'PCP / Pedidos',texto:'Carteira, programação, simulador de cenários, Gantt de máquinas e metas de velocidade por produto e cliente.',
+        campos:[{n:'Nº do pedido, Cliente, Produto, Máquina, Quantidade',d:'dados comerciais e destino de produção.'},{n:'Valor (R$)',d:'mascarado; exige senha do administrador para visualizar.'},{n:'Data de entrega prevista',d:'compromisso com o cliente.'},{n:'Data programada na produção',d:'quando entra na máquina.'},{n:'Ordem na fila',d:'sequência dentro da máquina naquela data (também pelos botões ↑↓).'},{n:'Data de replanejamento e Observação',d:'registro manual do motivo da mudança.'},{n:'Status',d:'situação comercial do pedido.'},{n:'Simulador',d:'arraste pedidos entre datas — livre para todos, não salva.'},{n:'Solicitação de alteração',d:'justificativa obrigatória; aprovação só do Coordenador de Produção.'}],
+        autos:L(['Quantidade produzida, % de avanço e status atualizam pelos apontamentos.','Programação real = data do 1º apontamento; entrega final = data do último apontamento quando concluído.','Gantt, aderências e indicador de alterações de programação.'])},
+      {tag:'Pessoas',nome:'RH / Ausências',texto:'Controle de ausências da equipe e cálculo do absenteísmo.',
+        campos:[{n:'Data e Colaborador',d:'quem faltou e quando.'},{n:'Tipo',d:'Falta Injustificada, Falta Justificada, Atestado ou Férias.'},{n:'Dias',d:'duração da ausência.'}],
+        autos:L(['Absenteísmo do período, excluindo férias.','Totais de faltas justificadas, injustificadas e colaboradores em férias.'])},
+      {tag:'Base',nome:'Cadastros',texto:'Todos os dados-mestre do sistema. Cada aba permite criar, editar e excluir registros.',
+        campos:[{n:'Máquinas',d:'nome, unidade, setor e tipo.'},{n:'Produtos',d:'cliente, tipo de máquina, Ø, comprimento, parede, peso padrão/mín/máx e velocidade alvo.'},{n:'Clientes',d:'nome e cidade-UF (a UF alimenta o mapa de calor).'},{n:'Operadores',d:'nome, função, turno e unidade.'},{n:'Turnos',d:'nome, início e fim.'},{n:'Motivos de parada',d:'nome e classificação (Programada / Não Programada / Correção).'},{n:'Componentes de máquinas',d:'componente, máquina e criticidade A/B/C.'},{n:'Usuários',d:'nome, perfil e e-mail — o perfil define as permissões.'}],
+        autos:L(['Os cadastros alimentam todas as listas de seleção e as metas usadas nos cálculos.'])},
+      {tag:'Inteligência',nome:'Agente IA',texto:'Diagnóstico automático dos piores indicadores com sugestões de ação, mais um chat que responde perguntas analisando os dados do período filtrado.',
+        campos:[{n:'Pergunta livre',d:'digite a dúvida — ex.: por que o OEE da Tubeteira 07 caiu?'}],
+        autos:L(['As sugestões são geradas por regras sobre OEE, Pareto de paradas, MTTR, MTBF, absenteísmo, atrasos e replanejamentos.'])}
+    ];
+  }
+  openSolic = ()=>this.setState({solicOpen:true,forms:{...this.state.forms,solic:{motivo:''}}});
+  closeSolic = ()=>this.setState({solicOpen:false});
+  sendSolic = ()=>{
+    const motivo=(this.state.forms.solic.motivo||'').trim();
+    if(!motivo){ this.toast('Descreva a justificativa da alteração.'); return; }
+    const db={...this.state.db};
+    db.solicitacoes=db.solicitacoes||[];
+    const u=this.curUser();
+    const now=new Date();
+    const itens=Object.keys(this.state.sim).map(pid=>{
+      const p=db.pedidos.find(x=>x.id===pid); if(!p)return null;
+      const de=p.dataProgramada||(p.dataEntrega&&p.dataEntrega!=='IMEDIATO'?p.dataEntrega:now.toISOString().slice(0,10));
+      const para=this.state.sim[pid];
+      if(de===para)return null;
+      return{pedidoId:pid,de,para,dias:Math.round((new Date(para+'T12:00:00')-new Date(de+'T12:00:00'))/86400000)};
+    }).filter(Boolean);
+    if(!itens.length){ this.toast('Nenhuma alteração para solicitar.'); return; }
+    db.solicitacoes=[...db.solicitacoes,{id:this.nextId(db.solicitacoes,'SOL',3),data:now.toISOString().slice(0,10),hora:now.toTimeString().slice(0,5),
+      solicitante:u.nome,perfil:u.perfil,motivo,itens,status:'Pendente',decididoPor:null,dataDecisao:null}];
+    this.persist(db);
+    this.setState({solicOpen:false,sim:{},forms:{...this.state.forms,solic:{motivo:''}}});
+    this.toast('Solicitação enviada ✓ — aguardando aprovação da coordenação');
+  };
+  solAct = (e)=>{
+    const {id,act}=e.currentTarget.dataset; const db={...this.state.db};
+    const sol=(db.solicitacoes||[]).find(x=>x.id===id); if(!sol)return;
+    if(act==='aprovar'){
+      db.pedidos=db.pedidos.map(p=>{ const it=sol.itens.find(i=>i.pedidoId===p.id);
+        return it?{...p,dataProgramada:it.para,dataReplan:it.para,obsReplan:sol.motivo}:p; });
+    }
+    db.solicitacoes=db.solicitacoes.map(x=>x.id===id?{...x,status:act==='aprovar'?'Aprovada':'Reprovada',
+      decididoPor:this.curUser().nome,dataDecisao:new Date().toISOString().slice(0,10)}:x);
+    this.persist(db);
+    this.toast(act==='aprovar'?'Alteração aprovada e aplicada à programação ✓':'Solicitação reprovada');
+  };
+  diasProducao(p){
+    const pr=this.state.db.produtos.find(x=>x.id===p.produto);
+    if(!pr||!pr.velAlvo) return 1;
+    const capDia=pr.velAlvo*480*0.85;
+    return Math.max(1,Math.ceil((+p.qtd||0)/capDia));
+  }
+  addDias(iso,n){ const d=new Date(iso+'T12:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+  openProgPrint = ()=>this.setState({progPrintOpen:true});
+  closeProgPrint = ()=>this.setState({progPrintOpen:false});
+  moveOrdem = (e)=>{
+    const {id,dir}=e.currentTarget.dataset; const db={...this.state.db};
+    const alvo=db.pedidos.find(p=>p.id===id); if(!alvo)return;
+    const grupo=db.pedidos.filter(p=>p.maquina===alvo.maquina&&p.dataProgramada===alvo.dataProgramada)
+      .sort((a,b)=>(+a.ordem||99)-(+b.ordem||99)||a.id.localeCompare(b.id));
+    const i=grupo.findIndex(p=>p.id===id); const j=dir==='up'?i-1:i+1;
+    if(j<0||j>=grupo.length)return;
+    const a=grupo[i],b=grupo[j]; const oa=+a.ordem||i+1, ob=+b.ordem||j+1;
+    db.pedidos=db.pedidos.map(p=>p.id===a.id?{...p,ordem:ob}:p.id===b.id?{...p,ordem:oa}:p);
+    // renumera sequência para garantir consistência
+    const g2=db.pedidos.filter(p=>p.maquina===alvo.maquina&&p.dataProgramada===alvo.dataProgramada).sort((x,y)=>(+x.ordem||99)-(+y.ordem||99));
+    g2.forEach((p,k)=>{ db.pedidos=db.pedidos.map(q=>q.id===p.id?{...q,ordem:k+1}:q); });
+    this.persist(db);
+  };
+  onChatInput = (e)=>this.setState({chatInput:e.target.value});
+  onChatKey = (e)=>{ if(e.key==='Enter') this.sendChat(); };
+  sendChat = async ()=>{
+    const q=this.state.chatInput.trim(); if(!q||this.state.chatBusy) return;
+    this.setState({chat:[...this.state.chat,{role:'user',text:q}],chatInput:'',chatBusy:true},()=>{const el=document.getElementById('chatbox');if(el)el.scrollTop=el.scrollHeight;});
+    try{
+      const text=await window.claude.complete({
+        system:'Você é o agente de análise industrial do grupo Tubonord & Tubocone (fábricas de tubos e cones de papelão). Responda em português do Brasil, de forma direta e prática, com base APENAS nos dados fornecidos. Dê sugestões acionáveis de melhoria quando fizer sentido. Máximo 150 palavras.',
+        messages:[{role:'user',content:'DADOS DO PERÍODO ATUAL:\n'+(this._iaCtx||'')+'\n\nPERGUNTA: '+q}],
+        max_tokens:600
+      });
+      this.setState({chat:[...this.state.chat,{role:'ai',text}],chatBusy:false},()=>{const el=document.getElementById('chatbox');if(el)el.scrollTop=el.scrollHeight;});
+    }catch(err){
+      this.setState({chat:[...this.state.chat,{role:'ai',text:'Não consegui consultar a IA agora. Consulte o Diagnóstico Automático ao lado.'}],chatBusy:false});
+    }
+  };
+  // ---------- render ----------
+  renderVals(){
+    const s=this.state;
+    if(!s.ready||!s.db){ return {vDash:false,vProd:false,vPar:false,vManut:false,vPcp:false,vRh:false,vCad:false,vIa:false,vMan:false,cMan:'',tourOn:false,osMOpen:false,toastOn:false,
+      showLoading:true,showLogin:false,showApp:false,
+      viewTitle:'Carregando…',nav:this.nav,unid:this.unid,uAll:'segon',uNord:'',uCone:'',maqFilterOpts:[],operFilterOpts:[],userOpts:[],userNome:'',userPerfil:'',
+      dataIniV:s.dataIni,dataFimV:s.dataFim,fMaqV:'ALL',fTurnoV:'ALL',fOperV:'ALL',userV:'U01',
+      onDataIni:this.onDataIni,onDataFim:this.onDataFim,onFMaq:this.onFMaq,onFTurno:this.onFTurno,onFOper:this.onFOper,onUser:this.onUser,
+      cDash:'nion',cProd:'',cPar:'',cManut:'',cPcp:'',cRh:'',cCad:'',cIa:'',metaOeeV:this.props.metaOee??75}; }
+    if(!s.loggedIn){
+      return {showLoading:false,showLogin:true,showApp:false,
+        loginId:s.loginId||'',loginSenha:s.loginSenha||'',loginErr:!!s.loginErr,
+        onLoginId:this.onLoginId,onLoginSenha:this.onLoginSenha,onLoginKey:this.onLoginKey,doLogin:this.doLogin,
+        toastOn:!!s.toast,toastMsg:s.toast||''};
+    }
+    const db=s.db, metaOee=this.props.metaOee??75;
+    if(this._acLast!==(this.props.acento||'')){ this._acLast=this.props.acento||''; if(this.props.acento) document.documentElement.style.setProperty('--ac',this.props.acento); }
+    const maqs=this.maqsFiltered();
+    const aps=this.apsFiltered();
+    const pars=this.parsFiltered();
+    const osArr=this.osFiltered();
+    const maqStats=maqs.filter(m=>s.fMaq==='ALL'||m.id===s.fMaq).map(m=>{
+      const raw=this.calcMachine(aps.filter(a=>a.maquina===m.id),pars.filter(p=>p.maquina===m.id),osArr.filter(o=>o.maquina===m.id));
+      return {id:m.id,nome:m.nome,unid:m.unidade==='NORD'?'Tubonord':'Tubocone',raw};
+    });
+    const g=this.calcMachine(aps,pars,osArr);
+    // absenteísmo
+    const ops=db.operadores.filter(o=>s.unidade==='ALL'||o.unidade===s.unidade);
+    const ausP=db.ausencias.filter(a=>this.inRange(a.data)&&ops.some(o=>o.id===a.operador)&&(s.fOper==='ALL'||a.operador===s.fOper));
+    const nDias=Math.max(1,Math.round((new Date(s.dataFim)-new Date(s.dataIni))/86400000));
+    const diasUteis=Math.max(1,Math.round(nDias*6/7));
+    const diasPerdidos=ausP.filter(a=>a.tipo!=='Férias').reduce((x,a)=>x+a.dias,0);
+    const absPct=ops.length?diasPerdidos/(ops.length*diasUteis)*100:0;
+    const feriasN=new Set(ausP.filter(a=>a.tipo==='Férias').map(a=>a.operador)).size;
+    // pareto
+    const parMap={};
+    for(const p of pars){ const m=this.motivoDe(p.motivo); if(!m||m.tipo==='COR')continue; parMap[m.nome]=(parMap[m.nome]||0)+p.min; }
+    const totPar=Object.values(parMap).reduce((a,b)=>a+b,0)||1;
+    const maxPar=Math.max(1,...Object.values(parMap));
+    const pareto=Object.entries(parMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([nome,min])=>({nome,min:this.fmtN(min),pct:Math.round(min/totPar*100),style:{width:Math.max(2,Math.round(min/maxPar*100))+'%'}}));
+    // trend semanal
+    const trend=[];
+    const fim=new Date(s.dataFim+'T12:00:00');
+    const nW=Math.min(8,Math.max(1,Math.ceil(nDias/7)));
+    for(let w=nW-1;w>=0;w--){
+      const d1=new Date(fim);d1.setDate(d1.getDate()-w*7);const d0=new Date(d1);d0.setDate(d0.getDate()-7);
+      const i0=d0.toISOString().slice(0,10),i1=d1.toISOString().slice(0,10);
+      const wa=aps.filter(a=>a.data>=i0&&a.data<i1);
+      const wp=pars.filter(p=>p.data>=i0&&p.data<i1);
+      const v=Math.round(this.calcMachine(wa,wp,[]).oee*100);
+      trend.push({label:this.fmtD(i0),val:v,style:{height:Math.max(3,v)+'%',background:v>=metaOee?'var(--ok)':'#31465a'}});
+    }
+    // produção diária
+    const dayMap={},dayMapPc={};
+    for(const a of aps){ dayMap[a.data]=(dayMap[a.data]||0)+(+a.qtdKg||0); dayMapPc[a.data]=(dayMapPc[a.data]||0)+(+a.qtdPc||0); }
+    const days=Object.keys(dayMap).sort();
+    const maxDay=Math.max(1,...Object.values(dayMap));
+    const maxDayPc=Math.max(1,...Object.values(dayMapPc));
+    const prodDia=days.map(d=>({style:{height:Math.max(2,Math.round(dayMap[d]/maxDay*100))+'%'},tip:this.fmtD(d)+': '+this.fmtN(dayMap[d])+' kg'}));
+    const prodDiaPc=days.map(d=>({style:{height:Math.max(2,Math.round(dayMapPc[d]/maxDayPc*100))+'%'},tip:this.fmtD(d)+': '+this.fmtN(dayMapPc[d])+' pç'}));
+    // mapa por UF
+    const ufCoords={BA:[163,95],PE:[184,69],SE:[187,81],AL:[192,74],CE:[176,53],RN:[192,58],PB:[190,64],MA:[153,52],PI:[166,66],SP:[130,141],RJ:[161,141],MG:[157,120],ES:[172,127],PR:[119,155],SC:[128,167],RS:[106,181],GO:[131,106],DF:[140,103],MT:[95,96],MS:[101,133],TO:[143,80],PA:[118,46],AM:[52,52],RO:[57,82],AC:[22,71],RR:[62,22],AP:[117,16]};
+    const ufMap={};
+    for(const p of db.pedidos){
+      const cl=db.clientes.find(c=>c.id===p.cliente); if(!cl)continue;
+      const m=/([A-Z]{2})\s*\)?\s*$/.exec((cl.cidade||'').toUpperCase().replace(/[^A-Z)\s]/g,' ').trim());
+      const uf=m?m[1]:null; if(!uf||!ufCoords[uf])continue;
+      if(!ufMap[uf])ufMap[uf]={n:0,qtd:0};
+      ufMap[uf].n++; ufMap[uf].qtd+=(+p.qtd||0);
+    }
+    const ufArr=Object.entries(ufMap).sort((a,b)=>b[1].n-a[1].n);
+    const maxUf=Math.max(1,...ufArr.map(([,v])=>v.n));
+    const mapaUf=ufArr.map(([uf,v])=>{const [cx,cy]=ufCoords[uf];const r=6+Math.round(v.n/maxUf*14);return{uf,cx:String(cx),cy:String(cy),ty:String(cy+3),r:String(r)};});
+    const mapaList=ufArr.slice(0,8).map(([uf,v])=>({uf,n:v.n,qtd:this.fmtN(v.qtd),barStyle:{width:Math.round(v.n/maxUf*120)+'px'},dotStyle:{opacity:0.4+v.n/maxUf*0.6}}));
+    // aderência à programação (data programada x data real de início) e de entrega
+    const pedsUnid=db.pedidos.filter(p=>{const mq=db.maquinas.find(m=>m.id===p.maquina);return s.unidade==='ALL'||!mq||mq.unidade===s.unidade;});
+    const comProg=pedsUnid.map(p=>({p,calc:this.pedidoCalc(p)})).filter(x=>x.p.dataProgramada&&x.calc.progReal);
+    const aderNoPrazo=comProg.filter(x=>x.calc.progReal<=x.p.dataProgramada).length;
+    const aderPct=comProg.length?Math.round(aderNoPrazo/comProg.length*100):0;
+    const ader={total:comProg.length,noPrazo:aderNoPrazo,pct:aderPct,vazio:comProg.length===0,cls:aderPct>=90?'kok':aderPct>=70?'kwarn':'kbad'};
+    // aderência semanal (por semana da data programada)
+    const wkMap={};
+    for(const x of comProg){ const d=new Date(x.p.dataProgramada+'T12:00:00'); const monday=new Date(d); monday.setDate(d.getDate()-((d.getDay()+6)%7)); const key=monday.toISOString().slice(0,10);
+      (wkMap[key]=wkMap[key]||{n:0,ok:0}); wkMap[key].n++; if(x.calc.progReal<=x.p.dataProgramada)wkMap[key].ok++; }
+    const aderWk=Object.keys(wkMap).sort().slice(-6).map(k=>{const v=wkMap[k];const pct=Math.round(v.ok/v.n*100);return{label:this.fmtD(k),n:v.n,pct,style:{width:pct+'%',background:pct>=90?'var(--ok)':pct>=70?'var(--warn)':'var(--bad)'}};});
+    // aderência de entrega
+    let entrOk=0,entrBad=0,entrOpen=0;
+    for(const p of pedsUnid){ if(p.dataEntrega==='IMEDIATO'||!p.dataEntrega)continue; const c=this.pedidoCalc(p);
+      if(c.entregaFinal){ if(c.entregaFinal<=p.dataEntrega)entrOk++; else entrBad++; } else entrOpen++; }
+    const entrTot=entrOk+entrBad;
+    const entrPct=entrTot?Math.round(entrOk/entrTot*100):0;
+    const entrMax=Math.max(1,entrOk,entrBad,entrOpen);
+    const entr={total:entrTot,noPrazo:entrOk,atras:entrBad,aberto:entrOpen,pct:entrPct,cls:entrPct>=90?'kok':entrPct>=70?'kwarn':'kbad',
+      styleOk:{width:Math.round(entrOk/entrMax*100)+'%'},styleBad:{width:Math.round(entrBad/entrMax*100)+'%'},styleOpen:{width:Math.round(entrOpen/entrMax*100)+'%'}};
+    const oeeP=Math.round(g.oee*100);
+    const kpi={
+      oee:oeeP,oeeCls:oeeP>=metaOee?'kok':oeeP>=metaOee-10?'kwarn':'kbad',
+      disp:Math.round(g.disp*100),perf:Math.round(g.perf*100),qual:(g.qual*100).toFixed(1),
+      mttr:g.mttr?g.mttr.toFixed(1):'—',mtbf:g.mtbf?Math.round(g.mtbf):'—',nFalhas:g.nFalhas,
+      abs:absPct.toFixed(1),absCls:absPct<=3?'kok':'kbad',
+      prodKg:this.fmtN(g.kg)+' kg',prodPc:this.fmtN(g.qtd),
+      hParadas:this.fmtN((g.tParNP+g.tParPR)/60),nParadas:g.nPar,
+      setupH:(g.setupMin/60).toFixed(1),setupPct:g.tProg?(g.setupMin/g.tProg*100).toFixed(1):'0',
+      osAbertas:db.osList.filter(o=>o.status!=='Fechada').length,osCls:db.osList.filter(o=>o.status!=='Fechada').length>4?'kbad':'',
+      osFechadas:osArr.filter(o=>o.status==='Fechada').length,
+      refugo:g.kg?(g.ref/g.kg*100).toFixed(1):'0',refugoKg:this.fmtN(g.ref)
+    };
+    const maqRows=maqStats.map(m=>{const o=Math.round(m.raw.oee*100);return{
+      nome:m.nome,unid:m.unid,oee:o,disp:Math.round(m.raw.disp*100),perf:Math.round(m.raw.perf*100),qual:(m.raw.qual*100).toFixed(1),
+      mttr:m.raw.mttr?m.raw.mttr.toFixed(1)+'h':'—',mtbf:m.raw.mtbf?Math.round(m.raw.mtbf)+'h':'—',
+      prod:this.fmtN(m.raw.qtd),paradas:this.fmtN((m.raw.tParNP+m.raw.tParPR)/60),
+      barStyle:{width:Math.min(100,o)+'%'},barCls:o>=metaOee?'':o>=metaOee-10?'ofw':'ofb',
+      dotCls:o>=metaOee?'dg':o>=metaOee-10?'dy':'dr'};});
+    const solsAll=(db.solicitacoes||[]);
+    const solAprovAll=solsAll.filter(x=>x.status==='Aprovada').length;
+    const insights=this.buildInsights({abs:absPct},maqStats,pareto,{total:solsAll.length,aprov:solAprovAll,taxa:solsAll.length?Math.round(solAprovAll/solsAll.length*100):0});
+    this._iaCtx='Período: '+this.fmtD(s.dataIni)+' a '+this.fmtD(s.dataFim)+'. Unidade: '+(s.unidade==='ALL'?'Grupo (Tubonord+Tubocone)':s.unidade==='NORD'?'Tubonord':'Tubocone')+'.\n'
+      +'OEE global: '+oeeP+'% (meta '+metaOee+'%) | Disp '+kpi.disp+'% | Perf '+kpi.perf+'% | Qual '+kpi.qual+'%\n'
+      +'MTTR: '+kpi.mttr+'h | MTBF: '+kpi.mtbf+'h | Falhas corretivas: '+g.nFalhas+'\n'
+      +'Absenteísmo: '+kpi.abs+'% | Produção: '+kpi.prodPc+' pç / '+kpi.prodKg+' | Refugo: '+kpi.refugo+'%\n'
+      +'Horas paradas: '+kpi.hParadas+'h em '+g.nPar+' eventos | Setup: '+kpi.setupH+'h\n'
+      +'Por máquina: '+maqRows.map(m=>m.nome+' OEE '+m.oee+'% (D'+m.disp+'/P'+m.perf+'/Q'+m.qual+') MTTR '+m.mttr+' MTBF '+m.mtbf).join('; ')+'\n'
+      +'Pareto paradas: '+pareto.map(p=>p.nome+' '+p.min+'min').join('; ')+'\n'
+      +'OS: '+kpi.osAbertas+' abertas, '+kpi.osFechadas+' fechadas no período.\n'
+      +'Alterações de programação: '+solsAll.length+' solicitadas / '+solAprovAll+' aprovadas.\n'
+      +'Pedidos por estado: '+ufArr.map(([uf,v])=>uf+':'+v.n).join(', ')+'\n'
+      +'Alertas: '+insights.map(i=>i.titulo).join(' | ');
+    // produção view
+    const prodSel=db.produtos.find(p=>p.id===s.forms.prod.produto);
+    const parMinByAp={};
+    for(const p of db.paradas){ if(p.apId) parMinByAp[p.apId]=(parMinByAp[p.apId]||0)+p.min; }
+    const apRows=[...aps].sort((a,b)=>b.data.localeCompare(a.data)||b.id.localeCompare(a.id)).slice(0,40).map(a=>{
+      const mq=db.maquinas.find(m=>m.id===a.maquina)||{};
+      const op=db.operadores.find(o=>o.id===a.operador)||{};
+      const pr=db.produtos.find(p=>p.id===a.produto)||{};
+      const cl=pr.cliente?(db.clientes.find(c=>c.id===pr.cliente)||{}).nome:'—';
+      const parMin=parMinByAp[a.id]||0;
+      const bruto=this.tempoBruto(a);
+      const operMin=Math.max(1,bruto-parMin);
+      const vReal=(+a.qtdPc||0)/operMin;
+      const vAlvo=pr.velAlvo||0;
+      const fmtHM=m=>{const h=Math.floor(m/60);return (h?h+'h':'')+(m%60)+'m';};
+      const iniLbl=this.fmtD(a.dataInicio||a.data)+(a.horaInicio?' '+a.horaInicio:'');
+      const fimLbl=(a.dataFim&&a.dataFim!==(a.dataInicio||a.data)?this.fmtD(a.dataFim)+' ':'')+(a.horaFim||'—');
+      return{id:a.id,inicio:iniLbl,fim:fimLbl,maq:mq.nome||a.maquina,turno:a.turno,op:op.nome?op.nome.split(' ')[0]:'—',prod:(pr.nome||'—').slice(0,28),
+        bruto:fmtHM(bruto),rodando:fmtHM(Math.max(0,bruto-parMin)),
+        velReal:vReal.toFixed(1)+' pç/min',velCls:vAlvo?(vReal>=vAlvo*0.85?'kok':'kbad'):'',
+        qtd:this.fmtN(a.qtdPc),kg:this.fmtN(a.qtdKg),refugo:a.refugoKg,paradaMin:parMin};});
+    // cálculos ao vivo do formulário de produção
+    let velAtingida='—',tempoBrutoSel='—',tempoRodandoSel='—';
+    {
+      const fp=s.forms.prod;
+      const bruto=this.tempoBruto(fp);
+      const pMin=fp.paradas.reduce((x,p)=>x+(+p.min||0),0);
+      const oMin=Math.max(1,bruto-pMin);
+      const fmtHM=m=>{const h=Math.floor(m/60);return (h?h+'h ':'')+(m%60)+'min ('+m+' min)';};
+      tempoBrutoSel=fmtHM(bruto);
+      tempoRodandoSel=fmtHM(Math.max(0,bruto-pMin))+(bruto?' · '+Math.round((bruto-pMin)/bruto*100)+'% disp.':'');
+      if(+fp.qtdPc>0){
+        const v=(+fp.qtdPc)/oMin;
+        velAtingida=v.toFixed(1)+' pç/min';
+        if(prodSel&&prodSel.velAlvo) velAtingida+=' ('+Math.round(v/prodSel.velAlvo*100)+'% da meta)';
+      }
+    }
+    // paradas view
+    const parRows=[...pars].sort((a,b)=>b.data.localeCompare(a.data)||b.id.localeCompare(a.id)).slice(0,60).map(p=>{
+      const mq=db.maquinas.find(m=>m.id===p.maquina)||{};
+      const op=db.operadores.find(o=>o.id===p.operador)||{};
+      const mot=this.motivoDe(p.motivo)||{};
+      let vinculo='—';
+      if(p.apId){ const a=db.apontamentos.find(x=>x.id===p.apId);
+        if(a){ const ped=a.pedido?db.pedidos.find(x=>x.id===a.pedido):null;
+          const pr=db.produtos.find(x=>x.id===a.produto)||{};
+          vinculo=a.id+(ped?' · '+ped.id:'')+' · '+(pr.nome||'').slice(0,22); } else vinculo=p.apId; }
+      return{id:p.id,data:this.fmtD(p.data),maq:mq.nome||p.maquina,turno:p.turno||'—',op:op.nome?op.nome.split(' ')[0]:'—',
+        motivo:mot.nome||p.motivo,tipo:mot.tipo==='NP'?'Não Prog.':mot.tipo==='PR'?'Programada':'Correção',
+        tipoCls:mot.tipo==='NP'?'stNP':mot.tipo==='PR'?'stPR':'stCOR',min:p.min,vinculo,obsTxt:(p.obs||'—').slice(0,30),os:p.osId||'—'};});
+    let parNp=0,parPr=0,parMan=0,parManOs=0;
+    for(const p of pars){ const m=this.motivoDe(p.motivo); if(!m||m.tipo==='COR')continue;
+      if(m.tipo==='NP')parNp+=p.min; else parPr+=p.min;
+      if(m.manut){ parMan++; if(p.osId)parManOs++; } }
+    const parK={n:pars.length,h:this.fmtN((parNp+parPr)/60),np:this.fmtN(parNp/60),npPct:parNp+parPr?Math.round(parNp/(parNp+parPr)*100):0,pr:this.fmtN(parPr/60),man:parMan,manOs:parManOs};
+    const apLinkOpts=[...db.apontamentos].filter(a=>!s.forms.par.maquina||a.maquina===s.forms.par.maquina).sort((a,b)=>b.data.localeCompare(a.data)).slice(0,30).map(a=>{
+      const pr=db.produtos.find(x=>x.id===a.produto)||{};
+      return{id:a.id,label:a.id+' · '+this.fmtD(a.data)+' T'+a.turno+' · '+(pr.nome||'').slice(0,28)+(a.pedido?' · '+a.pedido:'')};});
+    // manutenção
+    const stCls=st=>st==='Aberta'?'stAberta':st==='Aprovada'?'stAprovada':st==='Em Execução'?'stExec':'stFechada';
+    const osRows=[...osArr].sort((a,b)=>b.dataAbertura.localeCompare(a.dataAbertura)||b.id.localeCompare(a.id)).slice(0,50).map(o=>{
+      const mq=db.maquinas.find(m=>m.id===o.maquina)||{};
+      const tec=db.operadores.find(t=>t.id===o.responsavel);
+      return{id:o.id,abertura:this.fmtD(o.dataAbertura),tipo:o.tipo,maq:mq.nome||o.maquina,item:o.item,motivo:o.motivo,
+        parRef:o.paradaId||(o.parouMaquina?'Sim':'Não'),resp:tec?tec.nome.split(' ')[0]:(o.responsavel||'—'),
+        reparo:o.tempoReparoMin?Math.round(o.tempoReparoMin)+' min':'—',status:o.status,stCls:stCls(o.status),
+        canAprovar:o.status==='Aberta',canIniciar:o.status==='Aprovada',canFechar:o.status==='Em Execução',canEdit:o.status!=='Fechada'};});
+    const osK={aberta:db.osList.filter(o=>o.status==='Aberta').length,aprovada:db.osList.filter(o=>o.status==='Aprovada').length,
+      exec:db.osList.filter(o=>o.status==='Em Execução').length,fechada:osArr.filter(o=>o.status==='Fechada').length};
+    // valores ocultos até liberar por senha
+    const canVerValor=s.valorUnlocked;
+    const perfilAtual=this.curUser().perfil;
+    const canPrintOs=perfilAtual==='Gestor'||perfilAtual==='Líder'||perfilAtual==='Manutenção';
+    // pcp
+    const hoje=new Date().toISOString().slice(0,10);
+    const pedRows=db.pedidos.filter(p=>{const mq=db.maquinas.find(m=>m.id===p.maquina);return s.unidade==='ALL'||!mq||mq.unidade===s.unidade;}).map(p=>{
+      const cl=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—';
+      const pr=(db.produtos.find(x=>x.id===p.produto)||{});
+      const mq=(db.maquinas.find(m=>m.id===p.maquina)||{}).nome||'—';
+      const calc=this.pedidoCalc(p);
+      const pct=p.qtd?Math.min(100,Math.round(calc.prodz/p.qtd*100)):0;
+      const pronto=calc.status.startsWith('PRONTO');
+      const valorFmt=p.valor?'R$ '+(+p.valor).toLocaleString('pt-BR',{minimumFractionDigits:2}):'—';
+      return{id:p.id,nr:p.nrCliente,cliente:cl,produto:(pr.nome||'—').slice(0,34),maq:mq,qtd:this.fmtN(p.qtd)+' '+p.unid,
+        valorShow:canVerValor?valorFmt:'R$ ••••••',prodz:this.fmtN(calc.prodz),
+        pct,pctStyle:{width:pct+'%'},entrega:p.dataEntrega==='IMEDIATO'?'IMEDIATO':this.fmtD(p.dataEntrega),
+        atrasado:p.dataEntrega!=='IMEDIATO'&&p.dataEntrega<hoje&&!pronto,
+        progProd:p.dataProgramada?this.fmtD(p.dataProgramada):'—',
+        progReal:calc.progReal?this.fmtD(calc.progReal):'—',
+        entregaFinal:calc.entregaFinal?this.fmtD(calc.entregaFinal):'—',
+        replan:p.dataReplan?this.fmtD(p.dataReplan):'—',obsReplan:p.obsReplan||'',
+        status:calc.status,stCls:pronto?'stPronto':calc.status==='EM PRODUÇÃO'?'stProd':'stFila',
+        statusProd:calc.statusProd,statusLog:calc.statusLog,
+        spCls:calc.statusProd==='Concluído'?'stPronto':calc.statusProd==='Não Concluído'?'stAtras':calc.statusProd==='Cancelado'?'stCOR':'stFila',
+        slCls:calc.statusLog==='Pronto e Entregue'?'stPronto':calc.statusLog==='Pronto e Não Entregue'?'stAprovada':'stCOR',
+        canEntregar:calc.statusLog==='Pronto e Não Entregue'};});
+    // indicadores de status da carteira
+    const cAll=pedsUnid.map(p=>({p,c:this.pedidoCalc(p)}));
+    const cnt=f=>cAll.filter(f).length;
+    const sumQ=f=>cAll.filter(f).reduce((x,o)=>x+(+o.p.qtd||0),0);
+    const nAtivos=cnt(o=>o.c.statusProd!=='Cancelado')||1;
+    const nConc=cnt(o=>o.c.statusProd==='Concluído');
+    const nPe=cnt(o=>o.c.statusLog==='Pronto e Entregue');
+    const concPct=Math.round(nConc/nAtivos*100);
+    const entrPctCart=nConc?Math.round(nPe/nConc*100):0;
+    const stK={aberto:cnt(o=>o.c.statusProd==='Em Aberto'),abertoQtd:this.fmtN(sumQ(o=>o.c.statusProd==='Em Aberto')),
+      concluido:nConc,naoConc:cnt(o=>o.c.statusProd==='Não Concluído'),cancelado:cnt(o=>o.c.statusProd==='Cancelado'),
+      pne:cnt(o=>o.c.statusLog==='Pronto e Não Entregue'),pneQtd:this.fmtN(sumQ(o=>o.c.statusLog==='Pronto e Não Entregue')),
+      pe:nPe,peQtd:this.fmtN(sumQ(o=>o.c.statusLog==='Pronto e Entregue')),
+      concPct,cancPct:Math.round(cnt(o=>o.c.statusProd==='Cancelado')/(cAll.length||1)*100),
+      entrPct:entrPctCart,taxaCls:concPct>=70?'kok':concPct>=40?'kwarn':'kbad',entrCls:entrPctCart>=80?'kok':entrPctCart>=50?'kwarn':'kbad'};
+    this._iaCtx+='\nCarteira: '+stK.aberto+' em aberto, '+stK.concluido+' concluídos, '+stK.naoConc+' não concluídos, '+stK.cancelado+' cancelados; logística: '+stK.pne+' pronto e não entregue, '+stK.pe+' entregues. Conclusão '+concPct+'%, entrega '+entrPct+'%.';
+    const metaRows=db.produtos.map(p=>({nome:p.nome,cliente:(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',tipo:p.maquinaTipo,
+      peso:String(p.pesoIdeal),vel:p.velAlvo+' '+p.unid,cap:this.fmtN(p.velAlvo*480*0.85)}));
+    // ---- Simulador de Programação ----
+    const simCanDrag=perfilAtual==='Coordenador de Produção';
+    const simPeds=pedsUnid.filter(p=>!this.pedidoCalc(p).status.startsWith('PRONTO E ENTREGUE'));
+    const simBaseReal=p=>p.dataProgramada||(p.dataEntrega&&p.dataEntrega!=='IMEDIATO'?p.dataEntrega:hoje)||hoje;
+    const simBase=p=>s.sim[p.id]||simBaseReal(p);
+    const simFim=(p,ini)=>this.addDias(ini,this.diasProducao(p)-1);
+    const simLate=(p,ini)=>{ if(!p.dataEntrega||p.dataEntrega==='IMEDIATO')return false; return simFim(p,ini)>p.dataEntrega; };
+    // janela ancorada em hoje, estendida até cobrir todos os pedidos do cenário
+    let colIni=hoje,colFim=this.addDias(hoje,13);
+    for(const p of simPeds){ const b=simBase(p),r=simBaseReal(p);
+      if(b<colIni)colIni=b; if(r<colIni)colIni=r;
+      if(b>colFim)colFim=b; if(r>colFim)colFim=r; }
+    const nCols=Math.min(90,Math.max(14,Math.round((new Date(colFim+'T12:00:00')-new Date(colIni+'T12:00:00'))/86400000)+1));
+    const simDias=[]; for(let i=0;i<nCols;i++) simDias.push(this.addDias(colIni,i));
+    const dowN=['dom','seg','ter','qua','qui','sex','sáb'];
+    const simCols=simDias.map(iso=>{
+      const inCol=simPeds.filter(p=>simBase(p)===iso);
+      const cards=inCol.map(p=>{
+        const cl=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—';
+        const mq=(db.maquinas.find(m=>m.id===p.maquina)||{}).nome||'—';
+        const real=simBaseReal(p); const moved=!!s.sim[p.id]&&s.sim[p.id]!==real;
+        const dif=Math.round((new Date(iso+'T12:00:00')-new Date(real+'T12:00:00'))/86400000);
+        const late=simLate(p,iso);
+        return{id:p.id,nr:p.nrCliente||p.id,cliente:cl.split(' ')[0],maq:mq,qtd:this.fmtN(p.qtd)+' '+p.unid,
+          entrega:p.dataEntrega==='IMEDIATO'?'IMED.':this.fmtD(p.dataEntrega),
+          cls:(moved?'simMoved ':'')+(late?'simLate':'simOk'),moved,delta:(dif>0?'+':'')+dif+'d',
+          tip:p.id+' · '+cl+' · '+mq+' · fim previsto '+this.fmtD(simFim(p,iso))};
+      });
+      const d=new Date(iso+'T12:00:00');
+      return{iso,label:dowN[d.getDay()]+' '+this.fmtD(iso).slice(0,5),qtd:cards.length?cards.length+' ped.':'',
+        cls:(s.simOver===iso?'simcolOver ':'')+(iso===hoje?'simcolHoje':''),cards,vazio:cards.length===0};
+    });
+    let lateB=0,lateA=0,adTotB=0,adOkB=0,adTotA=0,adOkA=0;
+    for(const p of simPeds){
+      const r=simBaseReal(p),n=simBase(p);
+      if(simLate(p,r))lateB++; if(simLate(p,n))lateA++;
+      if(p.dataEntrega&&p.dataEntrega!=='IMEDIATO'){ adTotB++;adTotA++; if(!simLate(p,r))adOkB++; if(!simLate(p,n))adOkA++; }
+    }
+    const adB=adTotB?Math.round(adOkB/adTotB*100):100, adA=adTotA?Math.round(adOkA/adTotA*100):100;
+    const movedIds=Object.keys(s.sim).filter(id=>{const p=simPeds.find(x=>x.id===id);return p&&s.sim[id]!==simBaseReal(p);});
+    const dLate=lateA-lateB;
+    const sim={lateBefore:lateB,lateAfter:lateA,lateCls:dLate>0?'kbad':dLate<0?'kok':'',
+      adBefore:adB,adAfter:adA,adCls:adA<adB?'kbad':adA>adB?'kok':'',
+      nMoved:movedIds.length,movedTxt:movedIds.length?'cenário não salvo':'nenhuma alteração',
+      hasMoved:movedIds.length>0,
+      impacto:'—',impCls:'',impactoSub:'mova um pedido para simular'};
+    if(movedIds.length){
+      const movLate=movedIds.filter(id=>{const p=simPeds.find(x=>x.id===id);return p&&simLate(p,s.sim[id]);});
+      const slip=movedIds.reduce((x,id)=>{const p=simPeds.find(y=>y.id===id);if(!p)return x;
+        return x+Math.max(0,Math.round((new Date(s.sim[id]+'T12:00:00')-new Date(simBaseReal(p)+'T12:00:00'))/86400000));},0);
+      if(movLate.length){
+        sim.impacto=movLate.length+' pedido(s) atrasam';
+        sim.impCls='kbad';
+        sim.impactoSub='+'+slip+'d de deslocamento · comunicar o comercial';
+      } else if(dLate<0){
+        sim.impacto=dLate+' atraso(s)';sim.impCls='kok';sim.impactoSub='cenário melhora o prazo';
+      } else {
+        sim.impacto='Sem impacto';sim.impCls='';sim.impactoSub='entregas movidas seguem no prazo';
+      }
+    }
+    const simRows=movedIds.map(id=>{
+      const p=simPeds.find(x=>x.id===id); const r=simBaseReal(p),n=s.sim[id];
+      const dif=Math.round((new Date(n+'T12:00:00')-new Date(r+'T12:00:00'))/86400000);
+      const late=simLate(p,n);
+      return{nr:p.nrCliente||p.id,cliente:(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',
+        maq:(db.maquinas.find(m=>m.id===p.maquina)||{}).nome||'—',real:this.fmtD(r),novo:this.fmtD(n),
+        delta:(dif>0?'+':'')+dif+'d',entrega:p.dataEntrega==='IMEDIATO'?'IMEDIATO':this.fmtD(p.dataEntrega),
+        situacao:late?'ATRASA A ENTREGA':'ENTREGA NO PRAZO',stCls:late?'stAtras':'stPronto'};
+    });
+    // ---- Solicitações de alteração de programação ----
+    const sols=(db.solicitacoes||[]).filter(x=>this.inRange(x.data)||x.status==='Pendente');
+    const solAprov=sols.filter(x=>x.status==='Aprovada').length;
+    const solTaxa=sols.length?Math.round(solAprov/sols.length*100):0;
+    const solK={total:sols.length,aprov:solAprov,taxa:solTaxa,cls:sols.length&&solTaxa>60?'kbad':''};
+    const solRows=[...sols].sort((a,b)=>(b.data+b.hora).localeCompare(a.data+a.hora)).map(x=>{
+      const peds=x.itens.map(i=>{const p=db.pedidos.find(y=>y.id===i.pedidoId);return p?(p.nrCliente||p.id):i.pedidoId;}).join(', ');
+      const tot=x.itens.reduce((a,i)=>a+i.dias,0);
+      return{id:x.id,data:this.fmtD(x.data)+' '+(x.hora||''),solicitante:x.solicitante,perfil:x.perfil,pedidos:peds,
+        desloc:(tot>0?'+':'')+tot+'d',motivo:x.motivo,motivoCurto:(x.motivo||'').slice(0,44)+((x.motivo||'').length>44?'…':''),
+        status:x.status,stCls:x.status==='Pendente'?'stAprovada':x.status==='Aprovada'?'stFechada':'stAberta',
+        decisao:x.decididoPor?x.decididoPor+' · '+this.fmtD(x.dataDecisao):'—',
+        canDecide:x.status==='Pendente'&&perfilAtual==='Coordenador de Produção',
+        aguardando:x.status==='Pendente'&&perfilAtual!=='Coordenador de Produção'};});
+    // ---- Programação do Dia ----
+    const progPeds=pedsUnid.filter(p=>p.dataProgramada===s.progDate&&(s.progMaqFilter==='ALL'||p.maquina===s.progMaqFilter));
+    const progByMaq={};
+    for(const p of progPeds){ (progByMaq[p.maquina]=progByMaq[p.maquina]||[]).push(p); }
+    const progMaqs=Object.keys(progByMaq).map(mid=>{
+      const mq=db.maquinas.find(m=>m.id===mid)||{};
+      const itens=progByMaq[mid].sort((a,b)=>(+a.ordem||99)-(+b.ordem||99)||a.id.localeCompare(b.id)).map((p,idx)=>{
+        const pr=db.produtos.find(x=>x.id===p.produto)||{};
+        const cl=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—';
+        return{id:p.id,ordem:(+p.ordem&&p.ordem!==99)?p.ordem:idx+1,nrCliente:p.nrCliente,cliente:cl,produto:(pr.nome||'—').slice(0,30),
+          dim:pr.diamMm?('Ø'+pr.diamMm+'×'+pr.compMm):'—',parede:pr.paredeMm?pr.paredeMm+'mm':'—',
+          vel:pr.velAlvo?pr.velAlvo+' pç/min':'—',pesoMin:pr.pesoMin?pr.pesoMin+' kg':'—',
+          pesoPad:(pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)?((pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)+' kg'):'—',
+          pesoMax:pr.pesoMax?pr.pesoMax+' kg':'—',qtd:this.fmtN(p.qtd)+' '+p.unid};});
+      return{maq:mq.nome||mid,n:itens.length,tot:this.fmtN(progByMaq[mid].reduce((x,p)=>x+(+p.qtd||0),0)),itens};
+    });
+    // ---- Gantt de máquinas ----
+    const DAY=86400000;
+    const gStart=(p)=>p.dataProgramada||this.pedidoCalc(p).progReal||p.dataPedido||p.dataEntrega;
+    const gEnd=(p)=>{ const c=this.pedidoCalc(p); if(c.entregaFinal)return c.entregaFinal; if(p.dataEntrega&&p.dataEntrega!=='IMEDIATO')return p.dataEntrega; const st=gStart(p); const d=new Date(st+'T12:00:00'); d.setDate(d.getDate()+3); return d.toISOString().slice(0,10); };
+    const gPeds=pedsUnid.filter(p=>gStart(p)&&!this.pedidoCalc(p).status.startsWith('PRONTO E ENTREGUE'));
+    let ganttRows=[],ganttTicks=[],ganttToday={};
+    if(gPeds.length){
+      let minD=Infinity,maxD=-Infinity;
+      for(const p of gPeds){ const a=new Date(gStart(p)+'T12:00:00').getTime(); const b=new Date(gEnd(p)+'T12:00:00').getTime(); if(a<minD)minD=a; if(b>maxD)maxD=b; }
+      const todayT=new Date(hoje+'T12:00:00').getTime();
+      minD=Math.min(minD,todayT); maxD=Math.max(maxD,todayT);
+      minD-=2*DAY; maxD+=2*DAY;
+      const span=Math.max(DAY,maxD-minD);
+      const pctX=t=>((t-minD)/span*100);
+      // ticks semanais
+      const first=new Date(minD); first.setHours(12,0,0,0); first.setDate(first.getDate()-((first.getDay()+6)%7));
+      for(let t=first.getTime();t<=maxD;t+=7*DAY){ const x=pctX(t); if(x<-2||x>100)continue; ganttTicks.push({style:{left:x+'%'},labStyle:{left:x+'%'},label:this.fmtD(new Date(t).toISOString().slice(0,10))}); }
+      ganttToday={left:pctX(todayT)+'%'};
+      const maqList=maqs;
+      ganttRows=maqList.map(m=>{
+        const bars=gPeds.filter(p=>p.maquina===m.id).sort((a,b)=>gStart(a).localeCompare(gStart(b))).map(p=>{
+          const c=this.pedidoCalc(p);
+          const st=gStart(p),en=gEnd(p);
+          const x0=pctX(new Date(st+'T12:00:00').getTime()); const x1=pctX(new Date(en+'T12:00:00').getTime());
+          const pronto=c.status.startsWith('PRONTO');
+          const atras=!pronto&&p.dataEntrega&&p.dataEntrega!=='IMEDIATO'&&p.dataEntrega<hoje;
+          const cls=atras?'gbAtras':pronto?'gbPronto':c.status==='EM PRODUÇÃO'?'gbProd':'gbFila';
+          const cl=(db.clientes.find(x=>x.id===p.cliente)||{}).nome||'';
+          return{cls,style:{left:Math.max(0,x0)+'%',width:Math.max(2.5,x1-Math.max(0,x0))+'%'},
+            label:p.id+' · '+cl.split(' ')[0],tip:p.id+' — '+cl+' | '+this.fmtD(st)+' a '+this.fmtD(en)+' | '+c.status};
+        });
+        return{maq:m.nome,bars};
+      }).filter(r=>r.bars.length);
+    }
+    // rh
+    const ausRows=[...ausP].sort((a,b)=>b.data.localeCompare(a.data)).map(a=>{
+      const op=db.operadores.find(o=>o.id===a.operador)||{};
+      return{id:a.id,data:this.fmtD(a.data),nome:op.nome||'—',funcao:op.funcao||'—',turno:op.turno||'—',tipo:a.tipo,dias:a.dias,
+        cls:a.tipo==='Falta Injustificada'?'stAberta':a.tipo==='Férias'?'stProd':'stAprovada'};});
+    const rhK={just:ausP.filter(a=>a.tipo==='Falta Justificada'||a.tipo==='Atestado').reduce((x,a)=>x+a.dias,0),
+      injust:ausP.filter(a=>a.tipo==='Falta Injustificada').reduce((x,a)=>x+a.dias,0),ferias:feriasN};
+    // cadastros
+    const defs=this.cadDefs();
+    const def=defs[s.cadTab];
+    const cadTabs=Object.entries(defs).map(([key,d])=>({key,label:d.label,cls:key===s.cadTab?'tabon':''}));
+    const cadFields=def.fields.map(f=>({label:f.label,fname:'cad.'+f.name,type:f.type||'text',isSelect:!!f.options,isInput:!f.options,
+      options:f.options||[],value:(s.forms.cad||{})[f.name]||''}));
+    const cadRows=db[def.key].map(x=>({id:x.id,cells:def.cells(x)}));
+    // os modal
+    let osM=null;
+    if(s.osDetail){ const o=db.osList.find(x=>x.id===s.osDetail);
+      if(o){ const mq=db.maquinas.find(m=>m.id===o.maquina)||{};
+        const tec=db.operadores.find(t=>t.id===o.responsavel);
+        osM={id:o.id,tipo:o.tipo,status:o.status,abertura:this.fmtD(o.dataAbertura)+' '+(o.horaAbertura||''),parou:o.parouMaquina?'Sim':'Não',
+          solicitante:o.solicitante,unidade:mq.unidade==='CONE'?'Tubocone':'Tubonord',empresa:mq.unidade==='CONE'?'TUBOCONE':'TUBONORD',
+          maqId:o.maquina,maq:mq.nome||o.maquina,item:o.item,motivo:o.motivo,descricao:o.descricao,resp:tec?tec.nome:(o.responsavel||'—'),
+          reparo:o.tempoReparoMin?Math.round(o.tempoReparoMin)+' min':'—',custo:o.custo!=null?o.custo.toFixed(2):'—',pecas:o.pecas||'—',
+          parRef:o.paradaId||'—',aprovadoEm:o.aprovacao?this.fmtD(o.aprovacao):'—',inicioEm:o.inicioReparo?this.fmtD(o.inicioReparo):'—',
+          fechadoEm:o.dataFechamento?this.fmtD(o.dataFechamento):(o.status==='Fechada'?this.fmtD(o.dataAbertura):'—'),
+          tempoParada:o.parouMaquina?(o.tempoParadaMin?Math.round(o.tempoParadaMin)+' min':'sim (não medido)'):'não parou',
+          causa:o.causa||'—',servico:o.servico||(o.status==='Fechada'?o.descricao:'—'),
+          fechando:s.osFechando&&o.status==='Em Execução'};}}
+    const u=this.curUser();
+    const titles={dash:'Dashboard de Indicadores',prod:'Apontamento de Produção',par:'Paradas — Manutenção e Operacionais',manut:'Manutenção — Ordens de Serviço',pcp:'PCP — Pedidos e Metas',rh:'RH — Ausências e Absenteísmo',cad:'Cadastros',ia:'Agente IA — Análise e Sugestões',man:'Manual de Uso'};
+    const tSteps=this.tourSteps();
+    const tSt=tSteps[s.tourStep]||tSteps[0];
+    const fProd=s.forms.prod, fPar=s.forms.par, fOs=s.forms.os, fPed=s.forms.ped, fAus=s.forms.aus;
+    return {
+      nav:this.nav,unid:this.unid,onDataIni:this.onDataIni,onDataFim:this.onDataFim,onFMaq:this.onFMaq,onFTurno:this.onFTurno,onFOper:this.onFOper,onUser:this.onUser,onF:this.onF,
+      addParada:this.addParada,rmParada:this.rmParada,onParada:this.onParada,saveProd:this.saveProd,delAp:this.delAp,editAp:this.editAp,cancelProdEdit:this.cancelProdEdit,
+      savePar:this.savePar,editPar:this.editPar,delPar:this.delPar,cancelParEdit:this.cancelParEdit,
+      saveOs:this.saveOs,editOs:this.editOs,delOs:this.delOs,cancelOsEdit:this.cancelOsEdit,osAct:this.osAct,openOs:this.openOs,closeOs:this.closeOs,stop:this.stop,printOs:this.printOs,confirmFechar:this.confirmFechar,
+      savePed:this.savePed,editPed:this.editPed,delPed:this.delPed,cancelPedEdit:this.cancelPedEdit,entregarPed:this.entregarPed,
+      saveAus:this.saveAus,editAus:this.editAus,delAus:this.delAus,cancelAusEdit:this.cancelAusEdit,
+      setCadTab:this.setCadTab,cadSave:this.cadSave,cadEdit:this.cadEdit,cadDel:this.cadDel,cancelCadEdit:this.cancelCadEdit,
+      onChatInput:this.onChatInput,onChatKey:this.onChatKey,sendChat:this.sendChat,
+      openPw:this.openPw,closePw:this.closePw,onPwInput:this.onPwInput,onPwKey:this.onPwKey,confirmPw:this.confirmPw,lockValor:this.lockValor,
+      pwOpen:s.pwOpen,pwInput:s.pwInput,pwErr:s.pwErr,valorUnlocked:s.valorUnlocked,valorLocked:!s.valorUnlocked,
+      valorInpType:canVerValor?'number':'password',valorPh:canVerValor?'':'•••• (libere para ver)',
+      ganttRows,ganttTicks,ganttToday,
+      simCols,sim,simRows,simCanDrag:true,simLocked:false,
+      solK,solRows,solVazio:solRows.length===0,solAct:this.solAct,
+      openSolic:this.openSolic,closeSolic:this.closeSolic,sendSolic:this.sendSolic,solicOpen:s.solicOpen,fSolic:s.forms.solic,
+      simDragStart:this.simDragStart,simDragOver:this.simDragOver,simDragLeave:this.simDragLeave,simDrop:this.simDrop,simReset:this.simReset,
+      progDateV:s.progDate,onProgDate:this.onProgDate,moveOrdem:this.moveOrdem,progMaqs,progVazio:progMaqs.length===0,
+      progMaqFilterV:s.progMaqFilter,onProgMaqFilter:this.onProgMaqFilter,openProgPrint:this.openProgPrint,closeProgPrint:this.closeProgPrint,
+      progPrintOpen:s.progPrintOpen,progPrint:{empresa:s.unidade==='CONE'?'TUBOCONE':s.unidade==='NORD'?'TUBONORD':'TUBONORD & TUBOCONE',data:this.fmtD(s.progDate),emitido:this.fmtD(hoje),maqs:progMaqs,vazio:progMaqs.length===0},
+      vDash:s.view==='dash',vProd:s.view==='prod',vPar:s.view==='par',vManut:s.view==='manut',vPcp:s.view==='pcp',vRh:s.view==='rh',vCad:s.view==='cad'&&u.perfil==='Administrador',vIa:s.view==='ia',vMan:s.view==='man',
+      cDash:s.view==='dash'?'nion':'',cProd:s.view==='prod'?'nion':'',cPar:s.view==='par'?'nion':'',cManut:s.view==='manut'?'nion':'',cPcp:s.view==='pcp'?'nion':'',cRh:s.view==='rh'?'nion':'',cCad:s.view==='cad'?'nion':'',cIa:s.view==='ia'?'nion':'',cMan:s.view==='man'?'nion':'',
+      manIndic:this.manualIndic(),manAbas:this.manualAbas(),
+      manPerm:[
+        {acao:'Apontar produção e paradas',quem:'Operador, Líder, Coordenador de Produção, Gestor',obs:'edição e exclusão liberadas no histórico'},
+        {acao:'Abrir e executar OS',quem:'Manutenção, Líder, Coordenador de Produção, Gestor',obs:'fluxo com aprovação antes da execução'},
+        {acao:'Imprimir relatório F-06',quem:'Gestor, Líder, Manutenção',obs:'demais perfis visualizam sem imprimir'},
+        {acao:'Ver valores dos pedidos',quem:'Qualquer perfil com a senha do administrador',obs:'valores mascarados por padrão; liberação válida na sessão'},
+        {acao:'Simular programação',quem:'Todos os perfis',obs:'cenário não é salvo'},
+        {acao:'Aprovar alteração de programação',quem:'Coordenador de Produção',obs:'exige justificativa registrada na solicitação'},
+        {acao:'Manter cadastros',quem:'Gestor, PCP, Coordenador de Produção',obs:'criar, editar e excluir'}
+      ],
+      tourOn:s.tourOn,tourStep:s.tourStep,tourN:s.tourStep+1,tourTot:tSteps.length,
+      tourTit:tSt.tit,tourTxt:tSt.txt,tourAba:tSt.aba,
+      tourBtnLbl:!s.tourOn?'▶ Iniciar tour':(s.tourPlaying?'⏸ Pausar':'▶ Continuar'),
+      tourFill:{width:Math.round((s.tourStep+1)/tSteps.length*100)+'%'},
+      tourDots:tSteps.map((_,i)=>({cls:i===s.tourStep?'tdotOn':i<s.tourStep?'tdotDone':''})),
+      tourToggle:this.tourToggle,tourNext:this.tourNext,tourPrev:this.tourPrev,tourStop:this.tourStop,
+      viewTitle:titles[s.view],uAll:s.unidade==='ALL'?'segon':'',uNord:s.unidade==='NORD'?'segon':'',uCone:s.unidade==='CONE'?'segon':'',
+      dataIniV:s.dataIni,dataFimV:s.dataFim,fMaqV:s.fMaq,fTurnoV:s.fTurno,fOperV:s.fOper,userV:s.user,userNome:u.nome,userPerfil:u.perfil,
+      maqFilterOpts:maqs,operFilterOpts:db.operadores,userOpts:db.usuarios,metaOeeV:metaOee,
+      kpi,maqRows,pareto,trend,insTop:insights.slice(0,3),insights,
+      prodDia,prodDiaPc,prodDiaIni:days.length?this.fmtD(days[0]):'—',prodDiaFim:days.length?this.fmtD(days[days.length-1]):'—',prodDiaMax:this.fmtN(maxDay),prodDiaMaxPc:this.fmtN(maxDayPc),
+      mapaUf,mapaList,ader,aderWk,entr,
+      fProd,fProdParadas:fProd.paradas.map((p,i)=>({...p,i})),prodEditing:!!fProd.editId,prodFormTit:fProd.editId?'Editar Apontamento':'Novo Apontamento de Produção',prodSaveLbl:fProd.editId?'Salvar alterações':'Salvar apontamento',
+      maqOpts:maqs,opOpts:ops.filter(o=>o.funcao!=='Técnico de Manutenção'),opTodosOpts:db.operadores,
+      pedOpts:db.pedidos.filter(p=>!this.pedidoCalc(p).status.startsWith('PRONTO')).map(p=>({id:p.id,label:p.id+' · '+((db.clientes.find(c=>c.id===p.cliente)||{}).nome||'')+' · '+((db.produtos.find(x=>x.id===p.produto)||{}).nome||'').slice(0,30)})),
+      prodOpts:db.produtos.map(p=>({id:p.id,label:p.nome+' — '+((db.clientes.find(c=>c.id===p.cliente)||{}).nome||'')})),
+      motivoOpts:db.motivosParada,apRows,apCount:aps.length,velAtingida,tempoBrutoSel,tempoRodandoSel,
+      canVerValor,canPrintOs,noPrintOs:!canPrintOs,
+      metaProdSel:prodSel?prodSel.velAlvo+' '+prodSel.unid+' · '+prodSel.pesoIdeal+' kg/pç':'—',
+      fPar,parEditing:!!fPar.editId,parFormTit:fPar.editId?'Editar Parada':'Registrar Parada',parSaveLbl:fPar.editId?'Salvar alterações':'Registrar parada',
+      parRows,parCount:pars.length,parK,apLinkOpts,
+      fOs,osEditing:!!fOs.editId,osFormTit:fOs.editId?'Editar OS':'Abrir Ordem de Serviço',osSaveLbl:fOs.editId?'Salvar alterações':'Abrir OS',
+      osParou:fOs.parou==='sim',
+      itemOpts:fOs.maquina?this.osItemOpts(fOs.maquina):db.itensEquip.map(v=>({v})),motivoOsOpts:db.motivosOS.map(v=>({v})),
+      osParadaOpts:db.paradas.filter(p=>!p.osId&&(!fOs.maquina||p.maquina===fOs.maquina)).sort((a,b)=>b.data.localeCompare(a.data)).slice(0,20).map(p=>{
+        const mq=db.maquinas.find(m=>m.id===p.maquina)||{}; const mot=this.motivoDe(p.motivo)||{};
+        return{id:p.id,label:p.id+' · '+this.fmtD(p.data)+' · '+(mq.nome||p.maquina)+' · '+(mot.nome||'').slice(0,22)+' · '+p.min+'min'};}),
+      osMEdit:s.osMEdit,toggleOsEdit:this.toggleOsEdit,saveOsModal:this.saveOsModal,fOsm:s.forms.osm,
+      osmItemOpts:osM?this.osItemOpts(osM.maqId||''):db.itensEquip.map(v=>({v})),
+      osMCanEdit:osM&&!osM.fechando,osEditLbl:s.osMEdit?'✕ Cancelar edição':'✏ Editar campos',
+      tecOpts:db.operadores.filter(o=>o.funcao==='Técnico de Manutenção'),osRows,osK,
+      fPed,pedEditing:!!fPed.editId,pedFormTit:fPed.editId?'Editar Pedido':'Novo Pedido',pedSaveLbl:fPed.editId?'Salvar alterações':'Criar pedido',
+      cliOpts:db.clientes,prodCliOpts:db.produtos.filter(p=>!fPed.cliente||p.cliente===fPed.cliente).map(p=>({id:p.id,label:p.nome})),
+      pedRows,metaRows,stK,
+      fAus,ausEditing:!!fAus.editId,ausFormTit:fAus.editId?'Editar Ausência':'Registrar Ausência',ausSaveLbl:fAus.editId?'Salvar alterações':'Registrar',
+      ausRows,rhK,
+      cadTabs,cadLabel:def.label,cadFields,cadCols:def.cols,cadRows,cadEditing:!!s.cadEditId,cadEditId:s.cadEditId||'',cadFormTit:s.cadEditId?'Editar registro':'Novo registro',cadSaveLbl:s.cadEditId?'Salvar alterações':'Adicionar',
+      chatMsgs:s.chat.map(m=>({cls:m.role==='user'?'mu':'ma',text:m.text})),chatInput:s.chatInput,chatBusy:s.chatBusy,
+      osMOpen:!!osM,osM:osM||{},fFech:s.forms.fech,
+      toastOn:!!s.toast,toastMsg:s.toast||'',
+      showLoading:false,showLogin:false,showApp:true,
+      isAdmin:u.perfil==='Administrador',doLogout:this.doLogout
+    };
+  }
+}
+</script>
+</body>
+</html>
