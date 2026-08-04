@@ -41,6 +41,15 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 .cardclick:hover{border-color:var(--ac)}
 .cardOn{border-color:var(--ac);box-shadow:0 0 0 2px rgba(232,134,45,.25)}
 .colf{width:100%;max-width:160px;box-sizing:border-box;font-size:11px;padding:4px 6px;border:1px solid var(--bd);border-radius:6px;font-family:inherit;background:#fff}
+.colfbtn{width:100%;text-align:left;box-sizing:border-box;font-size:11px;padding:5px 8px;border:1px solid var(--bd);border-radius:6px;font-family:inherit;background:#fff;cursor:pointer;color:var(--ink)}
+.colfbtn:hover{border-color:var(--ac)}
+.colfbtn.colfActive{border-color:var(--ac);background:#fff4ea;color:var(--ac);font-weight:600}
+.colfbtn::after{content:' ▾';color:var(--mut);float:right}
+.filterpop{max-width:320px;max-height:70vh;display:flex;flex-direction:column}
+.filterlist{overflow-y:auto;max-height:340px;border:1px solid var(--bd);border-radius:8px;padding:6px 10px}
+.filterrow2{display:block;padding:5px 2px;font-size:13px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.filterrow2:hover{background:#f6f8fa}
+.filterrow2 input{margin-right:8px}
 select.colf[multiple]{height:64px;padding:2px}
 select.sel[multiple]{height:80px}
 .chevbtn{background:none;border:none;cursor:pointer;font-size:13px;color:var(--mut);padding:2px 6px 2px 0;line-height:1}
@@ -577,7 +586,7 @@ select.sel[multiple]{height:80px}
 <div class="scroll"><table class="tbl"><thead><tr><th>Ordem</th><th>Nº Pedido</th><th>Cliente</th><th>Produto</th><th>Ø × Comp</th><th>Parede</th><th>Vel. Alvo</th><th>Peso Mín</th><th>Peso Padrão</th><th>Peso Máx</th><th>Qtd</th><th></th></tr></thead><tbody>
 <sc-for list="{{pm.itens}}" as="it" hint-placeholder-count="2"><tr><td class="num fw7">{{it.ordem}}</td><td class="fw6">{{it.nrCliente}}</td><td>{{it.cliente}}</td><td class="mini">{{it.produto}}</td><td class="num">{{it.dim}}</td><td class="num">{{it.parede}}</td><td class="num">{{it.vel}}</td><td class="num">{{it.pesoMin}}</td><td class="num fw6">{{it.pesoPad}}</td><td class="num">{{it.pesoMax}}</td><td class="num">{{it.qtd}}</td><td class="fx gap8"><button class="btsm" data-id="{{it.id}}" data-dir="up" onClick="{{moveOrdem}}">↑</button><button class="btsm" data-id="{{it.id}}" data-dir="down" onClick="{{moveOrdem}}">↓</button></td></tr></sc-for>
 </tbody></table></div></div></sc-for>
-<sc-if value="{{progVazio}}" hint-placeholder-val="{{false}}"><div class="empty">Nenhum pedido programado para esta data. Defina a "Data Programada na Produção" nos pedidos.</div></sc-if>
+<sc-if value="{{progVazio}}" hint-placeholder-val="{{false}}"><div class="empty">Nenhum pedido com entrega prevista (ou Data Programada) nesta data. Troque a data acima ou defina a "Data Programada na Produção" nos pedidos para um controle mais preciso.</div></sc-if>
 </div>
 <div class="panel" id="p-gantt"><div class="ptit">Gantt de Máquinas <span class="mini fw5">— carga e sequenciamento da produção</span></div>
 <div class="gantt"><div class="gwrap">
@@ -606,20 +615,12 @@ select.sel[multiple]{height:80px}
 </div>
 <div class="panel" id="p-carteira"><div class="ptit"><button class="chevbtn" data-k="carteira" onClick="{{togglePanel}}">{{carteiraChev}}</button>Carteira de Pedidos <span class="mini fw5">quantidade e status atualizados automaticamente pelos apontamentos de produção · {{pedRowsResumo}}</span>
 <div class="pwbox" style="margin-left:auto;gap:8px">
-<select class="sel" multiple onChange="{{onPedStatusFilter}}">
-<option value="aberto">Em Aberto</option>
-<option value="concluido">Concluído</option>
-<option value="naoConc">Não Concluído</option>
-<option value="cancelado">Cancelado</option>
-<option value="pne">Pronto e Não Entregue</option>
-<option value="pe">Pronto e Entregue</option>
-</select>
-<span class="mini" style="color:var(--mut)">{{pedStatusResumo}}</span>
+<button class="colfbtn {{pedStatusBtnCls}}" onClick="{{openStatusFilter}}">{{pedStatusBtnLabel}}</button>
 <sc-if value="{{pedFiltroAtivo}}" hint-placeholder-val="{{false}}"><button class="btsm" onClick="{{clearPedFilters}}">✕ Limpar filtros</button></sc-if>
 <sc-if value="{{valorLocked}}" hint-placeholder-val="{{true}}"><button class="btsm" onClick="{{openPw}}">🔒 Mostrar valores (senha)</button></sc-if><sc-if value="{{valorUnlocked}}" hint-placeholder-val="{{false}}"><span class="mini kok fw6">🔓 Valores visíveis</span><button class="btsm" onClick="{{lockValor}}">Ocultar</button></sc-if></div></div>
 <sc-if value="{{carteiraOpen}}" hint-placeholder-val="{{true}}">
 <div class="scroll scrollcap"><table class="tbl"><thead><tr><th>OP</th><th>Nº Cliente</th><th>Cliente</th><th>Produto</th><th>Máquina</th><th>Qtd</th><th>Valor (R$)</th><th>Produzido</th><th>Avanço</th><th>Entrega Prev.</th><th>Prog. Prod.</th><th>Prog. Real</th><th>Entrega Final</th><th>Replan.</th><th>Status Produção</th><th>Status Logística</th><th></th></tr>
-<tr class="filterrow"><th></th><th><select class="colf" multiple data-col="nr" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.nr}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="cliente" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.cliente}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="produto" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.produto}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="maq" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.maq}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="qtd" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.qtd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th><th><select class="colf" multiple data-col="prodz" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.prodz}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th><th><select class="colf" multiple data-col="entrega" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.entrega}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="progProd" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.progProd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="progReal" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.progReal}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="entregaFinal" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.entregaFinal}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="replan" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.replan}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="statusProd" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.statusProd}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th><select class="colf" multiple data-col="statusLog" onChange="{{onPedColFilter}}"><sc-for list="{{pedColOptions.statusLog}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></th><th></th></tr>
+<tr class="filterrow"><th></th><th><button class="colfbtn {{pedColBtnCls.nr}}" data-col="nr" onClick="{{openColFilter}}">{{pedColBtnLabel.nr}}</button></th><th><button class="colfbtn {{pedColBtnCls.cliente}}" data-col="cliente" onClick="{{openColFilter}}">{{pedColBtnLabel.cliente}}</button></th><th><button class="colfbtn {{pedColBtnCls.produto}}" data-col="produto" onClick="{{openColFilter}}">{{pedColBtnLabel.produto}}</button></th><th><button class="colfbtn {{pedColBtnCls.maq}}" data-col="maq" onClick="{{openColFilter}}">{{pedColBtnLabel.maq}}</button></th><th><button class="colfbtn {{pedColBtnCls.qtd}}" data-col="qtd" onClick="{{openColFilter}}">{{pedColBtnLabel.qtd}}</button></th><th></th><th><button class="colfbtn {{pedColBtnCls.prodz}}" data-col="prodz" onClick="{{openColFilter}}">{{pedColBtnLabel.prodz}}</button></th><th></th><th><button class="colfbtn {{pedColBtnCls.entrega}}" data-col="entrega" onClick="{{openColFilter}}">{{pedColBtnLabel.entrega}}</button></th><th><button class="colfbtn {{pedColBtnCls.progProd}}" data-col="progProd" onClick="{{openColFilter}}">{{pedColBtnLabel.progProd}}</button></th><th><button class="colfbtn {{pedColBtnCls.progReal}}" data-col="progReal" onClick="{{openColFilter}}">{{pedColBtnLabel.progReal}}</button></th><th><button class="colfbtn {{pedColBtnCls.entregaFinal}}" data-col="entregaFinal" onClick="{{openColFilter}}">{{pedColBtnLabel.entregaFinal}}</button></th><th><button class="colfbtn {{pedColBtnCls.replan}}" data-col="replan" onClick="{{openColFilter}}">{{pedColBtnLabel.replan}}</button></th><th><button class="colfbtn {{pedColBtnCls.statusProd}}" data-col="statusProd" onClick="{{openColFilter}}">{{pedColBtnLabel.statusProd}}</button></th><th><button class="colfbtn {{pedColBtnCls.statusLog}}" data-col="statusLog" onClick="{{openColFilter}}">{{pedColBtnLabel.statusLog}}</button></th><th></th></tr>
 </thead><tbody>
 <sc-for list="{{pedRows}}" as="p" hint-placeholder-count="8"><tr><td class="fw6">{{p.id}}</td><td>{{p.nr}}</td><td class="fw6">{{p.cliente}}</td><td class="mini">{{p.produto}}</td><td>{{p.maq}}</td><td class="num">{{p.qtd}}</td><td class="num">{{p.valorShow}}</td><td class="num">{{p.prodz}}</td><td><div class="obar"><div class="ofill" style="{{p.pctStyle}}"></div></div><span class="mini">{{p.pct}}%</span></td><td>{{p.entrega}} <sc-if value="{{p.atrasado}}" hint-placeholder-val="{{false}}"><span class="chip stAtras">ATRASADO</span></sc-if></td><td>{{p.progProd}}</td><td class="fw6">{{p.progReal}}</td><td class="fw6">{{p.entregaFinal}}</td><td class="mini" title="{{p.obsReplan}}">{{p.replan}}</td><td><span class="chip {{p.spCls}}">{{p.statusProd}}</span></td><td><span class="chip {{p.slCls}}">{{p.statusLog}}</span></td><td class="fx gap8">
 <sc-if value="{{p.canEntregar}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{p.id}}" onClick="{{entregarPed}}">Entregar</button></sc-if>
@@ -627,6 +628,25 @@ select.sel[multiple]{height:80px}
 </tbody></table></div>
 </sc-if>
 </div>
+<sc-if value="{{pedColPopoverOpen}}" hint-placeholder-val="{{false}}">
+<div class="modal" onClick="{{closeColFilter}}"><div class="mbox filterpop" onClick="{{stop}}">
+<div class="ptit">Filtrar: {{pedColPopoverTitle}} <button class="btsm" style="margin-left:auto" onClick="{{closeColFilter}}">✕</button></div>
+<div class="fx gap8" style="margin-bottom:10px"><button class="btsm" onClick="{{colFilterSelectAll}}">☑ Marcar todos</button><button class="btsm" onClick="{{colFilterSelectNone}}">☐ Desmarcar todos</button></div>
+<div class="filterlist">
+<sc-for list="{{pedColPopoverOptions}}" as="o" hint-placeholder-count="8"><label class="filterrow2"><input type="checkbox" data-val="{{o.v}}" checked="{{o.checked}}" onChange="{{colFilterToggleValue}}"> {{o.v}}</label></sc-for>
+</div>
+<div class="mini" style="margin-top:10px;color:var(--mut)">Desmarque tudo para não mostrar nenhum registro nessa coluna.</div>
+</div></div>
+</sc-if>
+<sc-if value="{{pedStatusPopoverOpen}}" hint-placeholder-val="{{false}}">
+<div class="modal" onClick="{{closeStatusFilter}}"><div class="mbox filterpop" onClick="{{stop}}">
+<div class="ptit">Filtrar: Status <button class="btsm" style="margin-left:auto" onClick="{{closeStatusFilter}}">✕</button></div>
+<div class="fx gap8" style="margin-bottom:10px"><button class="btsm" onClick="{{statusFilterSelectAll}}">☑ Marcar todos</button><button class="btsm" onClick="{{statusFilterSelectNone}}">☐ Desmarcar todos</button></div>
+<div class="filterlist">
+<sc-for list="{{pedStatusPopoverOptions}}" as="o" hint-placeholder-count="6"><label class="filterrow2"><input type="checkbox" data-val="{{o.k}}" checked="{{o.checked}}" onChange="{{statusFilterToggleValue}}"> {{o.l}}</label></sc-for>
+</div>
+</div></div>
+</sc-if>
 <div class="panel"><div class="ptit"><button class="chevbtn" data-k="metas" onClick="{{togglePanel}}">{{metasChev}}</button>Metas de Velocidade por Produto × Cliente <span class="mini fw5">(edite em Cadastros → Produtos) · {{metaRowsResumo}}</span></div>
 <sc-if value="{{metasOpen}}" hint-placeholder-val="{{true}}">
 <div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Produto</th><th>Cliente</th><th>Tipo de Máquina</th><th>Peso Ideal (kg/pç)</th><th>Velocidade Alvo</th><th>Capacidade/turno (8h)</th></tr></thead><tbody>
@@ -854,7 +874,7 @@ class Component extends DCLogic {
       panelOpen:{carteira:false, metas:false, atrasados:true},
       pedCardFilter:[], pedColFilters:{},
       importF23File:null, importPcpFile:null, importF23Name:'Nenhum arquivo selecionado', importPcpName:'Nenhum arquivo selecionado', importBusy:false, importMsg:'', importMsgErr:false,
-      mobFiltersOpen:false, mobNavOpen:false,
+      mobFiltersOpen:false, mobNavOpen:false, pedOpenFilterCol:null, pedStatusPopoverOpen:false,
       forms:{ prod:this.blankProd(), os:this.blankOs(), par:this.blankPar(),
         ped:this.blankPed(), aus:this.blankAus(),
         fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:''}, osm:{}, solic:{motivo:''}, cad:{} }
@@ -988,7 +1008,32 @@ class Component extends DCLogic {
     this.setState({pedCardFilter: cur.includes(k)?cur.filter(x=>x!==k):[...cur,k]}); };
   onPedStatusFilter = (e)=>{ const vals=Array.from(e.target.selectedOptions).map(o=>o.value); this.setState({pedCardFilter:vals}); };
   onPedColFilter = (e)=>{ const col=e.target.dataset.col; const vals=Array.from(e.target.selectedOptions).map(o=>o.value); this.setState({pedColFilters:{...this.state.pedColFilters,[col]:vals}}); };
-  clearPedFilters = ()=>{ this.setState({pedCardFilter:[], pedColFilters:{}}); };
+  clearPedFilters = ()=>{ this.setState({pedCardFilter:[], pedColFilters:{}, pedOpenFilterCol:null}); };
+  openColFilter = (e)=>{ const col=e.currentTarget.dataset.col; this.setState({pedOpenFilterCol: this.state.pedOpenFilterCol===col?null:col}); };
+  closeColFilter = ()=>this.setState({pedOpenFilterCol:null});
+  colFilterSelectAll = ()=>{ const col=this.state.pedOpenFilterCol; if(!col) return; this.setState({pedColFilters:{...this.state.pedColFilters,[col]:null}}); };
+  colFilterSelectNone = ()=>{ const col=this.state.pedOpenFilterCol; if(!col) return; this.setState({pedColFilters:{...this.state.pedColFilters,[col]:[]}}); };
+  colFilterToggleValue = (e)=>{
+    const col=this.state.pedOpenFilterCol; if(!col) return;
+    const val=e.currentTarget.dataset.val;
+    const allOpts=(this._lastPedColOptions&&this._lastPedColOptions[col])||[];
+    let cur=this.state.pedColFilters[col];
+    cur = cur==null ? [...allOpts] : [...cur];
+    const idx=cur.indexOf(val);
+    if(idx>=0) cur.splice(idx,1); else cur.push(val);
+    this.setState({pedColFilters:{...this.state.pedColFilters,[col]:cur}});
+  };
+  statusFilterSelectAll = ()=>this.setState({pedCardFilter:[]});
+  statusFilterSelectNone = ()=>this.setState({pedCardFilter:['__none__']});
+  statusFilterToggleValue = (e)=>{
+    const val=e.currentTarget.dataset.val;
+    let cur=this.state.pedCardFilter||[];
+    if(cur.includes('__none__')) cur=[];
+    cur=cur.includes(val)?cur.filter(x=>x!==val):[...cur,val];
+    this.setState({pedCardFilter:cur});
+  };
+  openStatusFilter = ()=>this.setState({pedStatusPopoverOpen:true});
+  closeStatusFilter = ()=>this.setState({pedStatusPopoverOpen:false});
   togglePanel = (e)=>{ const k=e.currentTarget.dataset.k; this.setState({panelOpen:{...this.state.panelOpen,[k]:!this.state.panelOpen[k]}}); };
   toggleMobFilters = ()=>this.setState({mobFiltersOpen:!this.state.mobFiltersOpen});
   toggleMobNav = ()=>this.setState({mobNavOpen:!this.state.mobNavOpen});
@@ -2122,6 +2167,7 @@ class Component extends DCLogic {
     const cardStatusMap={aberto:c=>c.statusProd==='Em Aberto',concluido:c=>c.statusProd==='Concluído',naoConc:c=>c.statusProd==='Não Concluído',
       cancelado:c=>c.statusProd==='Cancelado',pne:c=>c.statusLog==='Pronto e Não Entregue',pe:c=>c.statusLog==='Pronto e Entregue'};
     const matchesCardFilter=(c)=>{
+      if(pedCardFilter.includes('__none__')) return false;
       if(!pedCardFilter.length) return true;
       return pedCardFilter.some(k=>cardStatusMap[k]&&cardStatusMap[k](c));
     };
@@ -2146,7 +2192,7 @@ class Component extends DCLogic {
         spCls:calc.statusProd==='Concluído'?'stPronto':calc.statusProd==='Não Concluído'?'stAtras':calc.statusProd==='Cancelado'?'stCOR':'stFila',
         slCls:calc.statusLog==='Pronto e Entregue'?'stPronto':calc.statusLog==='Pronto e Não Entregue'?'stAprovada':'stCOR',
         canEntregar:calc.statusLog==='Pronto e Não Entregue', _calc:calc};});
-    const colOk=(v,arr)=>!arr||!arr.length||arr.includes(String(v==null?'':v));
+    const colOk=(v,arr)=>arr==null||arr.includes(String(v==null?'':v));
     const uniqOpts=(arr,key)=>[...new Set(arr.map(r=>r[key]).filter(v=>v!=null&&v!==''))].sort((a,b)=>String(a).localeCompare(String(b),'pt-BR'));
     const pedColOptions={
       nr:uniqOpts(pedRowsAll,'nr'), cliente:uniqOpts(pedRowsAll,'cliente'), produto:uniqOpts(pedRowsAll,'produto'),
@@ -2155,6 +2201,26 @@ class Component extends DCLogic {
       entregaFinal:uniqOpts(pedRowsAll,'entregaFinal'), replan:uniqOpts(pedRowsAll,'replan'),
       statusProd:uniqOpts(pedRowsAll,'statusProd'), statusLog:uniqOpts(pedRowsAll,'statusLog')
     };
+    this._lastPedColOptions=pedColOptions;
+    const pedColLabels={nr:'Nº Cliente',cliente:'Cliente',produto:'Produto',maq:'Máquina',qtd:'Qtd',prodz:'Produzido',
+      entrega:'Entrega Prev.',progProd:'Prog. Prod.',progReal:'Prog. Real',entregaFinal:'Entrega Final',replan:'Replan.',
+      statusProd:'Status Produção',statusLog:'Status Logística'};
+    const pedColBtnLabel={}, pedColBtnCls={};
+    for(const k of Object.keys(pedColLabels)){
+      const arr=pedColFilters[k];
+      pedColBtnLabel[k]=arr==null?'Todos':(!arr.length?'Nenhum':arr.length+' sel.');
+      pedColBtnCls[k]=arr==null?'':'colfActive';
+    }
+    const openCol=s.pedOpenFilterCol;
+    const pedColPopoverOpen=!!openCol;
+    const pedColPopoverTitle=openCol?(pedColLabels[openCol]||openCol):'';
+    const curColArr=openCol?pedColFilters[openCol]:null;
+    const pedColPopoverOptions=openCol?(pedColOptions[openCol]||[]).map(v=>({v,checked:curColArr==null||curColArr.includes(v)})):[];
+    const statusDefs=[{k:'aberto',l:'Em Aberto'},{k:'concluido',l:'Concluído'},{k:'naoConc',l:'Não Concluído'},{k:'cancelado',l:'Cancelado'},{k:'pne',l:'Pronto e Não Entregue'},{k:'pe',l:'Pronto e Entregue'}];
+    const statusNone=pedCardFilter.includes('__none__');
+    const pedStatusPopoverOptions=statusDefs.map(d=>({k:d.k,l:d.l,checked:!statusNone&&(!pedCardFilter.length||pedCardFilter.includes(d.k))}));
+    const pedStatusBtnLabel=statusNone?'Nenhum':(!pedCardFilter.length?'Todos':pedCardFilter.length+' sel.');
+    const pedStatusBtnCls=(statusNone||pedCardFilter.length)?'colfActive':'';
     const pedRowsFiltered=pedRowsAll.filter(r=>matchesCardFilter(r._calc)
       && colOk(r.nr,pedColFilters.nr) && colOk(r.cliente,pedColFilters.cliente) && colOk(r.produto,pedColFilters.produto)
       && colOk(r.maq,pedColFilters.maq) && colOk(r.qtd,pedColFilters.qtd) && colOk(r.prodz,pedColFilters.prodz)
@@ -2267,8 +2333,9 @@ class Component extends DCLogic {
         decisao:x.decididoPor?x.decididoPor+' · '+this.fmtD(x.dataDecisao):'—',
         canDecide:x.status==='Pendente'&&perfilAtual==='Coordenador de Produção',
         aguardando:x.status==='Pendente'&&perfilAtual!=='Coordenador de Produção'};});
-    // ---- Programação do Dia ----
-    const progPeds=pedsUnid.filter(p=>p.dataProgramada===s.progDate&&(s.progMaqFilter==='ALL'||p.maquina===s.progMaqFilter));
+    // ---- Programação do Dia ---- (usa Data Programada quando definida; senão usa a Data de Entrega como aproximação, já que nenhum pedido real ainda tem Data Programada preenchida)
+    const progRefDate=(p)=>p.dataProgramada||(p.dataEntrega&&p.dataEntrega!=='IMEDIATO'?p.dataEntrega:null);
+    const progPeds=pedsUnid.filter(p=>progRefDate(p)===s.progDate&&(s.progMaqFilter==='ALL'||p.maquina===s.progMaqFilter));
     const progByMaq={};
     for(const p of progPeds){ (progByMaq[p.maquina]=progByMaq[p.maquina]||[]).push(p); }
     const progMaqs=Object.keys(progByMaq).map(mid=>{
@@ -2425,7 +2492,11 @@ class Component extends DCLogic {
       pedRows,metaRows,stK,
       pedRowsResumo:pedRowsFiltered.length>300?('mostrando 300 de '+pedRowsFiltered.length+' — refine os filtros para ver outros'):(pedRowsFiltered.length+' pedido(s)'),
       metaRowsResumo:metaRowsAll.length>300?('mostrando 300 de '+metaRowsAll.length):(metaRowsAll.length+' produto(s)'),
-      pedCardFilter,pedColOptions,pedColFilters:{nr:[],cliente:[],produto:[],maq:[],qtd:[],prodz:[],entrega:[],progProd:[],progReal:[],entregaFinal:[],replan:[],statusProd:[],statusLog:[],...pedColFilters},pedCardClick:this.pedCardClick,onPedStatusFilter:this.onPedStatusFilter,
+      pedCardFilter,pedColOptions,pedColFilters:{nr:null,cliente:null,produto:null,maq:null,qtd:null,prodz:null,entrega:null,progProd:null,progReal:null,entregaFinal:null,replan:null,statusProd:null,statusLog:null,...pedColFilters},pedCardClick:this.pedCardClick,onPedStatusFilter:this.onPedStatusFilter,
+      pedColBtnLabel,pedColBtnCls,pedColPopoverOpen,pedColPopoverTitle,pedColPopoverOptions,
+      openColFilter:this.openColFilter,closeColFilter:this.closeColFilter,colFilterSelectAll:this.colFilterSelectAll,colFilterSelectNone:this.colFilterSelectNone,colFilterToggleValue:this.colFilterToggleValue,
+      pedStatusBtnLabel,pedStatusBtnCls,pedStatusPopoverOpen:s.pedStatusPopoverOpen,pedStatusPopoverOptions,
+      openStatusFilter:this.openStatusFilter,closeStatusFilter:this.closeStatusFilter,statusFilterSelectAll:this.statusFilterSelectAll,statusFilterSelectNone:this.statusFilterSelectNone,statusFilterToggleValue:this.statusFilterToggleValue,stop:this.stop,
       onPedColFilter:this.onPedColFilter,clearPedFilters:this.clearPedFilters,pedFiltroAtivo:!!(pedCardFilter.length||Object.values(pedColFilters).some(v=>v&&v.length)),
       pedStatusResumo:pedCardFilter.length?pedCardFilter.length+' selecionado(s)':'todos',
       togglePanel:this.togglePanel,carteiraOpen:s.panelOpen.carteira!==false,metasOpen:s.panelOpen.metas!==false,
