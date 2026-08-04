@@ -12,7 +12,7 @@ const CORS_HEADERS = {
   'access-control-allow-headers': 'content-type',
 };
 
-const MODEL = 'gemini-2.5-flash';
+const MODELS = ['gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-2.5-flash'];
 
 export default async (req, context) => {
   if (req.method === 'OPTIONS') {
@@ -33,22 +33,33 @@ export default async (req, context) => {
       return new Response(JSON.stringify({ error: 'missing_question' }), { status: 400, headers: CORS_HEADERS });
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
     const body = {
       systemInstruction: { parts: [{ text: system || 'Você é um assistente de análise industrial. Responda em português do Brasil.' }] },
       contents: [{ role: 'user', parts: [{ text: 'DADOS DO PERÍODO ATUAL:\n' + (dataContext || '') + '\n\nPERGUNTA: ' + question }] }],
       generationConfig: { maxOutputTokens: 700, temperature: 0.4 },
     };
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
-      body: JSON.stringify(body),
-    });
+    let data = null, lastErr = null;
+    for (const model of MODELS) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
+          body: JSON.stringify(body),
+        });
+        const json = await res.json();
+        if (res.ok) { data = json; break; }
+        lastErr = json && json.error ? json.error.message : ('http ' + res.status);
+        // se o modelo não existe/não está disponível, tenta o próximo da lista; qualquer outro erro (ex.: chave inválida) já retorna
+        if (!/not found|no longer available|not supported/i.test(lastErr)) break;
+      } catch (e) {
+        lastErr = String(e && e.message || e);
+      }
+    }
 
-    const data = await res.json();
-    if (!res.ok) {
-      return new Response(JSON.stringify({ error: 'gemini_error', message: data && data.error ? data.error.message : ('http ' + res.status) }), { status: 502, headers: CORS_HEADERS });
+    if (!data) {
+      return new Response(JSON.stringify({ error: 'gemini_error', message: lastErr || 'falha desconhecida' }), { status: 502, headers: CORS_HEADERS });
     }
 
     const text = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts
