@@ -33,15 +33,20 @@ export default async (req, context) => {
       return new Response(JSON.stringify({ error: 'missing_question' }), { status: 400, headers: CORS_HEADERS });
     }
 
-    const body = {
+    const baseBody = {
       systemInstruction: { parts: [{ text: system || 'Você é um assistente de análise industrial. Responda em português do Brasil.' }] },
       contents: [{ role: 'user', parts: [{ text: 'IMPORTANTE: responda sempre em português do Brasil, nunca em inglês, independente do idioma dos dados abaixo.\n\nDADOS DO PERÍODO ATUAL:\n' + (dataContext || '') + '\n\nPERGUNTA: ' + question }] }],
-      generationConfig: { maxOutputTokens: 1400 },
     };
+    // Modelos 2.5+/3.x têm "thinking" ligado por padrão, e esses tokens consomem o mesmo maxOutputTokens da resposta visível.
+    // gemini-3.x usa thinkingLevel; gerações anteriores usam o campo legado thinkingBudget. Nunca enviar os dois juntos.
+    const genConfigFor = (model) => model.startsWith('gemini-3.')
+      ? { maxOutputTokens: 1400, thinkingConfig: { thinkingLevel: 'low' } }
+      : { maxOutputTokens: 1400, thinkingConfig: { thinkingBudget: 0 } };
 
     let data = null, lastErr = null;
     for (const model of MODELS) {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+      const body = { ...baseBody, generationConfig: genConfigFor(model) };
       try {
         const res = await fetch(url, {
           method: 'POST',
