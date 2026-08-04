@@ -10,6 +10,7 @@
 <helmet data-dc-atomics>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="data.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{--ac:#E8862D;--ink:#16232E;--mut:#66727d;--bd:#dde3e8;--bg:#eef1f4;--side:#0f1d28;--ok:#1F8A5B;--warn:#C77E14;--bad:#C23A3A}
 html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--ink);background:var(--bg)}
@@ -564,6 +565,18 @@ html,body{margin:0;height:100%}body{font-family:'Barlow',sans-serif;color:var(--
 </sc-if>
 
 <sc-if value="{{vCad}}" hint-placeholder-val="{{false}}">
+<div class="panel">
+<div class="ptit">📥 Importar planilhas reais (F-23 e PCP)</div>
+<div class="mini" style="margin-bottom:12px">Envie a planilha F-23 (Controle de Produção Diária) e/ou a PCP Tubonord mais recentes para atualizar produção, paradas, clientes e pedidos. <b>Isso substitui</b> os dados de produção/pedidos atuais pelos da planilha enviada — máquinas, usuários e motivos de parada cadastrados manualmente não são afetados.</div>
+<div class="frm" style="grid-template-columns:1fr 1fr">
+<div class="fg"><label class="flab">F-23 — Controle de Produção Diária (.xlsx)</label><input class="inp" type="file" accept=".xlsx,.xls" onChange="{{onImportF23File}}"><span class="mini">{{importF23Name}}</span></div>
+<div class="fg"><label class="flab">PCP Tubonord (.xlsx)</label><input class="inp" type="file" accept=".xlsx,.xls" onChange="{{onImportPcpFile}}"><span class="mini">{{importPcpName}}</span></div>
+</div>
+<div class="fx gap8 mt16" style="align-items:center">
+<button class="btn btna" onClick="{{processImport}}">{{importBtnLbl}}</button>
+<sc-if value="{{importMsg}}" hint-placeholder-val="{{false}}"><span class="mini fw6" style="{{importMsgStyle}}">{{importMsg}}</span></sc-if>
+</div>
+</div>
 <div class="tabs"><sc-for list="{{cadTabs}}" as="t" hint-placeholder-count="7"><button class="tab {{t.cls}}" data-tab="{{t.key}}" onClick="{{setCadTab}}">{{t.label}}</button></sc-for></div>
 <div class="panel"><div class="ptit">{{cadFormTit}} — {{cadLabel}}
 <sc-if value="{{cadEditing}}" hint-placeholder-val="{{false}}"><span class="editing">Editando {{cadEditId}} <button class="btsm" onClick="{{cancelCadEdit}}">Cancelar</button></span></sc-if></div>
@@ -741,6 +754,7 @@ class Component extends DCLogic {
       valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false,
       sim:{}, simOver:null, solicOpen:false, tourOn:false, tourStep:0, tourPlaying:false,
       chat:[], chatInput:'', chatBusy:false, toast:null,
+      importF23File:null, importPcpFile:null, importF23Name:'Nenhum arquivo selecionado', importPcpName:'Nenhum arquivo selecionado', importBusy:false, importMsg:'', importMsgErr:false,
       forms:{ prod:this.blankProd(), os:this.blankOs(), par:this.blankPar(),
         ped:this.blankPed(), aus:this.blankAus(),
         fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:''}, osm:{}, solic:{motivo:''}, cad:{} }
@@ -825,6 +839,197 @@ class Component extends DCLogic {
   doLogout = ()=>{
     try{ localStorage.removeItem('tubo_session_v1'); }catch(e){}
     this.setState({loggedIn:false,loginId:'',loginSenha:'',view:'dash'});
+  };
+  onImportF23File = (e)=>{ const f=e.target.files&&e.target.files[0]; this.setState({importF23File:f||null, importMsg:''}); };
+  onImportPcpFile = (e)=>{ const f=e.target.files&&e.target.files[0]; this.setState({importPcpFile:f||null, importMsg:''}); };
+  processImport = async ()=>{
+    if(this.state.importBusy) return;
+    const {importF23File, importPcpFile} = this.state;
+    if(!importF23File && !importPcpFile){ this.setState({importMsg:'Selecione ao menos um arquivo.', importMsgErr:true}); return; }
+    if(typeof XLSX==='undefined'){ this.setState({importMsg:'Biblioteca de leitura de planilhas não carregou. Verifique sua conexão e recarregue a página.', importMsgErr:true}); return; }
+    this.setState({importBusy:true, importMsg:'Processando…', importMsgErr:false});
+    try{
+      const db=JSON.parse(JSON.stringify(this.state.db));
+      const norm=(s)=>(s==null?'':String(s)).replace(/\s+/g,' ').trim();
+      const normKey=(s)=>norm(s).toLowerCase().replace(/\s*-\s*$/,'');
+      const findHeaderRow=(rows,mustHave)=>{ for(let r=0;r<Math.min(rows.length,20);r++){ const row=rows[r]||[]; if(row.some(c=>norm(c)===mustHave)) return r; } return -1; };
+      const headerMap=(row)=>{ const m={}; (row||[]).forEach((c,i)=>{ const h=norm(c); if(h && !(h in m)) m[h]=i; }); return m; };
+      const fmtDateCell=(v)=>{
+        if(v==null||v==='') return null;
+        if(v instanceof Date && !isNaN(v)) return v.toISOString().slice(0,10);
+        const s=norm(v); const low=s.toLowerCase();
+        if(low.indexOf('imediat')>=0) return 'IMEDIATO';
+        const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+        if(m){ let [,dd,mm,yy]=m; if(yy.length===2) yy='20'+yy; if(yy.length===4){ const dt=new Date(+yy,+mm-1,+dd); if(!isNaN(dt)) return dt.toISOString().slice(0,10); } }
+        return null;
+      };
+
+      // ---------- PCP ----------
+      let pcpByKey={};
+      if(importPcpFile){
+        const buf=await importPcpFile.arrayBuffer();
+        const wb=XLSX.read(buf,{type:'array',cellDates:true});
+        const sheetToMach={Tub3:'TUB03',Tub7:'TUB07',Tub8:'TUB08',Cone:'CONE02'};
+        for(const sn of Object.keys(sheetToMach)){
+          const ws=wb.Sheets[sn]; if(!ws) continue;
+          const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true});
+          const hr=findHeaderRow(rows,'NRO CONTROLE PEDIDO'); if(hr<0) continue;
+          const hm=headerMap(rows[hr]);
+          const cKey=hm['NRO CONTROLE PEDIDO'], cNr=hm['Nº PEDIDO\nCLIENTE'], cCli=hm['CLIENTE'], cProd=hm['PRODUTO'],
+                cPesoI=hm['PESO \nIDEAL (Kg)'], cQtd=hm['QUANT. \nSOLICITADA'], cUnid=hm['UNID'],
+                cVel=hm['VELOCIDADE ALVO\nPRODUÇÃO'], cStatus=hm['STATUS PEDIDO'], cDPed=hm['DATA\nPEDIDO'], cDEnt=hm['DATA \nENTREGA'];
+          for(let r=hr+2;r<rows.length;r++){
+            const row=rows[r]; if(!row) continue;
+            const key=norm(cKey!=null?row[cKey]:null); if(!key) continue;
+            pcpByKey[key]={ maquina:sheetToMach[sn], nrCliente:norm(cNr!=null?row[cNr]:null), cliente:norm(cCli!=null?row[cCli]:null),
+              produto:norm(cProd!=null?row[cProd]:null),
+              pesoIdeal: cPesoI!=null && typeof row[cPesoI]==='number'?row[cPesoI]:null,
+              qtd: cQtd!=null? (typeof row[cQtd]==='number'?row[cQtd]:(parseFloat(row[cQtd])||0)) : 0,
+              unid: norm(cUnid!=null?row[cUnid]:null)||'pç',
+              velAlvo: cVel!=null && typeof row[cVel]==='number'?row[cVel]:null,
+              status: norm(cStatus!=null?row[cStatus]:null),
+              dataPedido: cDPed!=null?row[cDPed]:null, dataEntrega: cDEnt!=null?row[cDEnt]:null };
+          }
+        }
+      }
+
+      // ---------- F-23 ----------
+      let apontamentosNovos=[];
+      if(importF23File){
+        const buf=await importF23File.arrayBuffer();
+        const wb=XLSX.read(buf,{type:'array',cellDates:true});
+        const ws=wb.Sheets['F-23']||wb.Sheets[wb.SheetNames[0]];
+        const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true});
+        const hr=findHeaderRow(rows,'Máquina');
+        if(hr>=0){
+          const hm=headerMap(rows[hr]);
+          const machMap={'TUBETEIRA 03':'TUB03','TUBETEIRA 07':'TUB07','TUBETEIRA 08':'TUB08','CONICALEIRA 02':'CONE02'};
+          const motivoNomes=['1. Setup','2. Troca de Matriz','3. Troca de Facas','4. Limpeza','5. Problemas Corte',
+            '6. Problemas Matéria Prima','7. Falta de Material','8. Manutenção - Mecânica | Programada',
+            '8. Manutenção - Mecânica | Não Programada','9. Manutenção - Elétrica | Programada',
+            '9. Manutenção - Elétrica | Não Programada','10. Regulagem / Alinhamento | Programada',
+            '10. Regulagem / Alinhamento | Não Programada','11. Alimentação','12. Outros | Programada',
+            '12. Outros | Não Programada','13. Início de Produção','14. Reunião','15. Cola na Matriz',
+            '16. Ajustes Pós Setup','Horário Especial'];
+          const motivoIds=db.motivosParada.map(m=>m.id);
+          const motivoCols=motivoNomes.map(n=>hm[n]);
+          const cKey=hm['NR Controle do Pedido'], cMaq=hm['Máquina'], cEquipe=hm['Equipe'], cData=hm['Data'],
+                cOper=hm['Operador'], cTempoMin=hm['Tempo Total (min)'], cQtdPc=hm['Quantidade Produzida (pc)'],
+                cQtdKg=hm['Quantidade Produzida (kg)'], cDesp=hm['Desperdício Total'];
+          let apid=1;
+          for(let r=hr+1;r<rows.length;r++){
+            const row=rows[r]; if(!row) continue;
+            const mach=machMap[norm(cMaq!=null?row[cMaq]:null)]; if(!mach) continue;
+            const dcell=cData!=null?row[cData]:null;
+            if(!(dcell instanceof Date) || isNaN(dcell)) continue;
+            const dataIso=dcell.toISOString().slice(0,10);
+            const key=cKey!=null && row[cKey]!=null?String(row[cKey]).trim():'';
+            const paradas=[];
+            motivoCols.forEach((ci,idx)=>{ if(ci==null) return; const v=row[ci]; if(typeof v==='number' && v>0) paradas.push({motivo:motivoIds[idx], min:Math.round(v*10)/10}); });
+            apontamentosNovos.push({ id:'AP'+String(apid++).padStart(5,'0'), data:dataIso, maquina:mach, turno:norm(cEquipe!=null?row[cEquipe]:null)||'A',
+              operadorRaw:norm(cOper!=null?row[cOper]:null)||null, pedidoKey:key||null,
+              qtdPc: cQtdPc!=null?(typeof row[cQtdPc]==='number'?row[cQtdPc]:(parseFloat(row[cQtdPc])||0)):0,
+              qtdKg: cQtdKg!=null && typeof row[cQtdKg]==='number'?Math.round(row[cQtdKg]*100)/100:0,
+              refugoKg: cDesp!=null && typeof row[cDesp]==='number'?Math.round(row[cDesp]*100)/100:0,
+              tempoTurnoMin: cTempoMin!=null && typeof row[cTempoMin]==='number'?Math.round(row[cTempoMin]*10)/10:0,
+              paradas });
+          }
+        }
+      }
+
+      // ---------- clientes / operadores (dedupe) ----------
+      const cliMap=new Map(); let cliSeq=1;
+      const getCliente=(rawName)=>{
+        if(!rawName) return '';
+        const nk=normKey(rawName);
+        if(cliMap.has(nk)) return cliMap.get(nk).id;
+        const id='C'+String(cliSeq++).padStart(3,'0');
+        let nome=rawName, cidade='';
+        let m=rawName.match(/^(.*?)\s*-?\s*\(([^)]+)\)\s*-?$/);
+        if(m){ nome=m[1].replace(/-\s*$/,'').trim(); cidade=m[2].trim(); }
+        else { let m2=rawName.match(/^(.*?)\s*-\s*Viagem\s*(.*)$/i); if(m2){ nome=m2[1].trim(); cidade=(m2[2]||'Viagem').replace(/[()]/g,'').trim(); } }
+        cliMap.set(nk,{id,nome,cidade}); return id;
+      };
+      const opMap=new Map(); let opSeq=1;
+      const getOperador=(rawName,turno)=>{
+        if(!rawName) return null;
+        const nk=normKey(rawName);
+        if(!opMap.has(nk)){ const nome=rawName.charAt(0).toUpperCase()+rawName.slice(1).toLowerCase(); opMap.set(nk,{id:'OP'+String(opSeq++).padStart(2,'0'),nome,turnoCount:{}}); }
+        const o=opMap.get(nk); o.turnoCount[turno]=(o.turnoCount[turno]||0)+1; return o.id;
+      };
+      for(const a of apontamentosNovos){ a.operador=a.operadorRaw?getOperador(a.operadorRaw,a.turno):null; }
+      const operadoresNovos=[...opMap.values()].map(o=>({ id:o.id, nome:o.nome, unidade:'NORD', funcao:'Operador',
+        turno:Object.entries(o.turnoCount).sort((x,y)=>y[1]-x[1])[0]?.[0]||'A' }));
+
+      // ---------- produtos / pedidos ----------
+      const existingKeys=new Set((db.apontamentos||[]).map(a=>a.pedido).filter(Boolean).map(id=>id.replace(/^PD-/,'')));
+      const newlyLinkedKeys=new Set(apontamentosNovos.filter(a=>a.pedidoKey && pcpByKey[a.pedidoKey]).map(a=>a.pedidoKey));
+      const linkedKeys=new Set([...existingKeys,...newlyLinkedKeys]);
+      const openStatuses=new Set(['Em aberto','EM ABERTO','A SER PRODUZIDO - DENTRO DO ESTADO','A SER PRODUZIDO - FORA DO ESTADO','EM PRODUÇÃO']);
+      const openKeys=new Set(Object.keys(pcpByKey).filter(k=>openStatuses.has((pcpByKey[k].status||'').trim())));
+      const finalKeys=importPcpFile? new Set([...linkedKeys,...openKeys]) : null;
+
+      let produtosNovos=null, pedidosNovos=null, keyToProdId={}, keyToPedId={};
+      if(finalKeys){
+        produtosNovos=[]; pedidosNovos=[];
+        for(const key of finalKeys){
+          const rec=pcpByKey[key]; if(!rec) continue;
+          const prodId='PR-'+key, pedId='PD-'+key;
+          keyToProdId[key]=prodId; keyToPedId[key]=pedId;
+          const clienteId=getCliente(rec.cliente);
+          const tipo=rec.maquina==='CONE02'?'Conicaleira':'Tubeteira';
+          produtosNovos.push({ id:prodId, nome:(rec.produto||key).slice(0,90), cliente:clienteId, maquinaTipo:tipo,
+            diamMm:0, compMm:0, paredeMm:0, pesoIdeal:rec.pesoIdeal||0, pesoPadrao:rec.pesoIdeal||0,
+            pesoMin:rec.pesoIdeal?+(rec.pesoIdeal*0.96).toFixed(4):0, pesoMax:rec.pesoIdeal?+(rec.pesoIdeal*1.04).toFixed(4):0,
+            velAlvo:rec.velAlvo||null, unid:rec.unid||'pç' });
+          let de=fmtDateCell(rec.dataEntrega); if(!de) de='IMEDIATO';
+          let dp=fmtDateCell(rec.dataPedido); if(!dp) dp=(de!=='IMEDIATO'?de:'2025-08-01');
+          pedidosNovos.push({ id:pedId, nrCliente:rec.nrCliente||key, cliente:clienteId, produto:prodId, maquina:rec.maquina,
+            qtd:rec.qtd||0, unid:rec.unid||'pç', valor:0, dataPedido:dp, dataEntrega:de, status:rec.status||'Em aberto', ordem:1 });
+        }
+      }
+      for(const a of apontamentosNovos){
+        if(a.pedidoKey && keyToPedId[a.pedidoKey]){ a.pedido=keyToPedId[a.pedidoKey]; a.produto=keyToProdId[a.pedidoKey]; }
+        else { a.pedido=null; a.produto=null; }
+        delete a.pedidoKey; delete a.operadorRaw;
+      }
+      if(pedidosNovos){
+        const aptsForCalc=importF23File?apontamentosNovos:db.apontamentos;
+        const prodzByPed={};
+        for(const a of aptsForCalc){ if(a.pedido) prodzByPed[a.pedido]=(prodzByPed[a.pedido]||0)+(+a.qtdPc||0); }
+        for(const p of pedidosNovos){
+          const prodz=prodzByPed[p.id]||0; const raw=(p.status||'').trim().toUpperCase();
+          if(raw.startsWith('CANCELADO')){ p.status='CANCELADO'; continue; }
+          if(p.qtd>0 && prodz>=0.9*p.qtd) p.status='PRONTO E ENTREGUE';
+          else if(prodz>0) p.status='EM PRODUÇÃO';
+          else if(!['A SER PRODUZIDO - DENTRO DO ESTADO','A SER PRODUZIDO - FORA DO ESTADO','EM ABERTO'].includes(p.status)) p.status='Em aberto';
+        }
+      }
+
+      if(importF23File){
+        db.apontamentos=apontamentosNovos;
+        if(operadoresNovos.length) db.operadores=operadoresNovos;
+        const paradasFlat=[]; let pid=1;
+        for(const a of db.apontamentos){ for(const p of (a.paradas||[])){
+          paradasFlat.push({id:'PR'+String(pid++).padStart(5,'0'),data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador,motivo:p.motivo,min:p.min,obs:'',apId:a.id,osId:null});
+        }}
+        db.paradas=paradasFlat;
+      }
+      if(pedidosNovos){
+        db.clientes=[...cliMap.values()];
+        db.produtos=produtosNovos;
+        db.pedidos=pedidosNovos.map(p=>({...p,
+          statusProd:p.status==='CANCELADO'?'Cancelado':(String(p.status).startsWith('PRONTO')?'Concluído':'Em Aberto'),
+          statusLog:String(p.status).startsWith('PRONTO')?(p.status==='PRONTO E ENTREGUE'?'Pronto e Entregue':'Pronto e Não Entregue'):'—'}));
+      }
+      this.persist(db);
+      this.setState({importBusy:false, importMsgErr:false,
+        importMsg:'Importado: '+apontamentosNovos.length+' apontamentos'+(pedidosNovos?', '+pedidosNovos.length+' pedidos':'')+'.',
+        importF23File:null, importPcpFile:null});
+    }catch(err){
+      console.error(err);
+      this.setState({importBusy:false, importMsg:'Erro ao importar: '+(err&&err.message?err.message:String(err)), importMsgErr:true});
+    }
   };
   persist(db){ try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(db)); }catch(e){} this.setState({db}); }
   toast(msg){ this.setState({toast:msg}); clearTimeout(this._tt); this._tt=setTimeout(()=>this.setState({toast:null}),3000); }
@@ -1886,7 +2091,12 @@ class Component extends DCLogic {
       osMOpen:!!osM,osM:osM||{},fFech:s.forms.fech,
       toastOn:!!s.toast,toastMsg:s.toast||'',
       showLoading:false,showLogin:false,showApp:true,
-      isAdmin:u.perfil==='Administrador',doLogout:this.doLogout
+      isAdmin:u.perfil==='Administrador',doLogout:this.doLogout,
+      onImportF23File:this.onImportF23File,onImportPcpFile:this.onImportPcpFile,processImport:this.processImport,
+      importBusy:s.importBusy,importMsg:s.importMsg||'',importMsgStyle:s.importMsgErr?'color:var(--bad)':'color:var(--ok)',
+      importF23Name:s.importF23File?s.importF23File.name:'Nenhum arquivo selecionado',
+      importPcpName:s.importPcpFile?s.importPcpFile.name:'Nenhum arquivo selecionado',
+      importBtnLbl:s.importBusy?'Processando…':'Processar e atualizar'
     };
   }
 }
