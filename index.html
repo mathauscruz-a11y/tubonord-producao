@@ -483,7 +483,7 @@ select.sel[multiple]{height:80px}
 </div>
 </div>
 <div class="panel" id="p-prod-lista"><div class="ptit">Apontamentos <span class="mini fw5">{{apCount}} registros no período filtrado</span></div>
-<div class="scroll"><table class="tbl"><thead><tr><th>Início</th><th>Fim</th><th>Máquina</th><th>Turno</th><th>Operador</th><th>Produto</th><th>Bruto</th><th>Rodando</th><th>Vel. Real</th><th>Qtd (pç)</th><th>Peso (kg)</th><th>Refugo</th><th></th></tr></thead><tbody>
+<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Início</th><th>Fim</th><th>Máquina</th><th>Turno</th><th>Operador</th><th>Produto</th><th>Bruto</th><th>Rodando</th><th>Vel. Real</th><th>Qtd (pç)</th><th>Peso (kg)</th><th>Refugo</th><th></th></tr></thead><tbody>
 <sc-for list="{{apRows}}" as="a" hint-placeholder-count="8"><tr><td>{{a.inicio}}</td><td>{{a.fim}}</td><td class="fw6">{{a.maq}}</td><td>{{a.turno}}</td><td>{{a.op}}</td><td class="mini">{{a.prod}}</td><td class="num">{{a.bruto}}</td><td class="num">{{a.rodando}}</td><td class="num {{a.velCls}}">{{a.velReal}}</td><td class="num">{{a.qtd}}</td><td class="num">{{a.kg}}</td><td class="num">{{a.refugo}} kg</td><td class="fx gap8"><button class="btsm" data-id="{{a.id}}" onClick="{{editAp}}">Editar</button><button class="btsm btdel" data-id="{{a.id}}" onClick="{{delAp}}">Excluir</button></td></tr></sc-for>
 </tbody></table></div></div>
 </sc-if>
@@ -510,7 +510,7 @@ select.sel[multiple]{height:80px}
 <div class="fx mt12"><button class="btn btna" onClick="{{savePar}}" style="margin-left:auto">{{parSaveLbl}}</button></div>
 </div>
 <div class="panel" id="p-parada-lista"><div class="ptit">Registro de Paradas <span class="mini fw5">{{parCount}} no período filtrado</span></div>
-<div class="scroll"><table class="tbl"><thead><tr><th>ID</th><th>Data</th><th>Máquina</th><th>Turno</th><th>Operador</th><th>Motivo</th><th>Classif.</th><th>Min</th><th>Produção vinculada</th><th>Observação</th><th>OS</th><th></th></tr></thead><tbody>
+<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>ID</th><th>Data</th><th>Máquina</th><th>Turno</th><th>Operador</th><th>Motivo</th><th>Classif.</th><th>Min</th><th>Produção vinculada</th><th>Observação</th><th>OS</th><th></th></tr></thead><tbody>
 <sc-for list="{{parRows}}" as="p" hint-placeholder-count="8"><tr><td class="fw6">{{p.id}}</td><td>{{p.data}}</td><td class="fw6">{{p.maq}}</td><td>{{p.turno}}</td><td>{{p.op}}</td><td class="mini">{{p.motivo}}</td><td><span class="chip {{p.tipoCls}}">{{p.tipo}}</span></td><td class="num">{{p.min}}</td><td class="mini">{{p.vinculo}}</td><td class="mini">{{p.obsTxt}}</td><td class="fw6">{{p.os}}</td><td class="fx gap8"><button class="btsm" data-id="{{p.id}}" onClick="{{editPar}}">Editar</button><button class="btsm btdel" data-id="{{p.id}}" onClick="{{delPar}}">Excluir</button></td></tr></sc-for>
 </tbody></table></div></div>
 </sc-if>
