@@ -332,7 +332,7 @@ select.sel[multiple]{height:80px}
 <div class="card"><div class="klab">Horas Paradas</div><div class="kval">{{kpi.hParadas}}h</div><div class="ksub">{{kpi.nParadas}} eventos</div></div>
 <div class="card"><div class="klab">Tempo de Setup</div><div class="kval">{{kpi.setupH}}h</div><div class="ksub">{{kpi.setupPct}}% do tempo programado</div></div>
 <div class="card"><div class="klab">OS Abertas</div><div class="kval {{kpi.osCls}}">{{kpi.osAbertas}}</div><div class="ksub">{{kpi.osFechadas}} fechadas no período</div></div>
-<div class="card"><div class="klab">Refugo</div><div class="kval">{{kpi.refugo}}%</div><div class="ksub">{{kpi.refugoKg}} kg desperdiçados</div></div>
+<div class="card"><div class="klab">Refugo</div><div class="kval">{{kpi.refugo}}%</div><div class="ksub">{{kpi.refugoKg}} kg — apara {{kpi.refugoApara}} / tubo {{kpi.refugoTubo}}</div></div>
 <div class="card"><div class="klab">Alterações de Programação</div><div class="kval {{solK.cls}}">{{solK.total}} / {{solK.aprov}}</div><div class="ksub">solicitadas / aprovadas · {{solK.taxa}}%</div></div>
 <div class="card"><div class="klab">Carteira — Conclusão</div><div class="kval {{stK.taxaCls}}">{{stK.concPct}}%</div><div class="ksub">{{stK.concluido}} concl. · {{stK.aberto}} abertos · {{stK.naoConc}} não concl.</div></div>
 <div class="card"><div class="klab">Carteira — Entrega</div><div class="kval {{stK.entrCls}}">{{stK.entrPct}}%</div><div class="ksub">{{stK.pe}} entregues · {{stK.pne}} aguardando</div></div>
@@ -470,7 +470,8 @@ select.sel[multiple]{height:80px}
 <div class="fg" style="grid-column:span 2"><label class="flab">Pedido / OP (vincula cliente + produto)</label><input class="inp" list="dlPedidos" value="{{fProdPedidoBusca}}" onChange="{{onSearchPedido}}" placeholder="Digite para buscar por código, cliente ou produto…"><datalist id="dlPedidos"><sc-for list="{{pedOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.label}}"></option></sc-for></datalist></div>
 <div class="fg" style="grid-column:span 2"><label class="flab">Produto</label><input class="inp" list="dlProdutos" value="{{fProdProdutoBusca}}" onChange="{{onSearchProduto}}" placeholder="Digite para buscar por código, produto ou cliente…"><datalist id="dlProdutos"><sc-for list="{{prodOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.label}}"></option></sc-for></datalist></div>
 <div class="fg"><label class="flab">Qtd Produzida (pç)</label><input class="inp" type="number" name="prod.qtdPc" value="{{fProd.qtdPc}}" onChange="{{onF}}"></div>
-<div class="fg"><label class="flab">Refugo / Desperdício (kg)</label><input class="inp" type="number" name="prod.refugoKg" value="{{fProd.refugoKg}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Refugo / Desperdício Apara (papel, kg)</label><input class="inp" type="number" name="prod.refugoAparaKg" value="{{fProd.refugoAparaKg}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Refugo / Desperdício Tubo (kg)</label><input class="inp" type="number" name="prod.refugoTuboKg" value="{{fProd.refugoTuboKg}}" onChange="{{onF}}"></div>
 <div class="fg"><label class="flab">Velocidade alvo</label><div class="inp" style="background:#f5f7f9;border-style:dashed">{{metaProdSel}}</div></div>
 <div class="fg"><label class="flab">Velocidade atingida</label><div class="inp" style="background:#f5f7f9;border-style:dashed">{{velAtingida}}</div></div>
 <div class="fg"><label class="flab">Tempo bruto (máquina disponível)</label><div class="inp" style="background:#f5f7f9;border-style:dashed">{{tempoBrutoSel}}</div></div>
@@ -929,7 +930,7 @@ class Component extends DCLogic {
     this.nav = {}; ['dash','prod','par','manut','pcp','rh','cad','ia','man'].forEach(v=>{ this.nav[v]=()=>this.setState({view:v,mobNavOpen:false}); });
     this.unid = { all:()=>this.setState({unidade:'ALL'}), nord:()=>this.setState({unidade:'NORD'}), cone:()=>this.setState({unidade:'CONE'}) };
   }
-  blankProd(){ const d=new Date().toISOString().slice(0,10); return {editId:null,dataInicio:d,horaInicio:'06:00',dataFim:d,horaFim:'14:00',data:d,maquina:'',turno:'A',operador:'',pedido:'',produto:'',qtdPc:'',refugoKg:'',tempoTurnoMin:480,paradas:[]}; }
+  blankProd(){ const d=new Date().toISOString().slice(0,10); return {editId:null,dataInicio:d,horaInicio:'06:00',dataFim:d,horaFim:'14:00',data:d,maquina:'',turno:'A',operador:'',pedido:'',produto:'',qtdPc:'',refugoAparaKg:'',refugoTuboKg:'',tempoTurnoMin:480,paradas:[]}; }
   tempoBruto(a){
     if(a.dataInicio&&a.horaInicio&&a.dataFim&&a.horaFim){
       const ini=new Date(a.dataInicio+'T'+a.horaInicio+':00').getTime();
@@ -1180,7 +1181,7 @@ class Component extends DCLogic {
           const motivoCols=motivoNomes.map(n=>hm[n]);
           const cKey=hm['NR Controle do Pedido'], cMaq=hm['Máquina'], cEquipe=hm['Equipe'], cData=hm['Data'],
                 cOper=hm['Operador'], cTempoMin=hm['Tempo Total (min)'], cQtdPc=hm['Quantidade Produzida (pc)'],
-                cQtdKg=hm['Quantidade Produzida (kg)'], cDesp=hm['Desperdício Total'];
+                cQtdKg=hm['Quantidade Produzida (kg)'], cDesp=hm['Desperdício Total'], cDespApara=hm['Desperdício Papel (kg)'], cDespTubo=hm['Desperdício Tubo (kg)'];
           let apid=1;
           for(let r=hr+1;r<rows.length;r++){
             const row=rows[r]; if(!row) continue;
@@ -1196,6 +1197,8 @@ class Component extends DCLogic {
               qtdPc: cQtdPc!=null?(typeof row[cQtdPc]==='number'?row[cQtdPc]:(parseFloat(row[cQtdPc])||0)):0,
               qtdKg: cQtdKg!=null && typeof row[cQtdKg]==='number'?Math.round(row[cQtdKg]*100)/100:0,
               refugoKg: cDesp!=null && typeof row[cDesp]==='number'?Math.round(row[cDesp]*100)/100:0,
+              refugoAparaKg: cDespApara!=null && typeof row[cDespApara]==='number'?Math.round(row[cDespApara]*100)/100:0,
+              refugoTuboKg: cDespTubo!=null && typeof row[cDespTubo]==='number'?Math.round(row[cDespTubo]*100)/100:0,
               tempoTurnoMin: cTempoMin!=null && typeof row[cTempoMin]==='number'?Math.round(row[cTempoMin]*10)/10:0,
               paradas });
           }
@@ -1495,7 +1498,8 @@ class Component extends DCLogic {
     const brutoMin=this.tempoBruto(f);
     const base={data:f.dataInicio||f.data,dataInicio:f.dataInicio||f.data,horaInicio:f.horaInicio||'',dataFim:f.dataFim||f.dataInicio||f.data,horaFim:f.horaFim||'',
       maquina:f.maquina,turno:f.turno,operador:f.operador,pedido:f.pedido||null,produto:f.produto,
-      qtdPc:+f.qtdPc,qtdKg:+((+f.qtdPc)*(prod?prod.pesoIdeal:0)).toFixed(1),refugoKg:+f.refugoKg||0,tempoTurnoMin:brutoMin};
+      qtdPc:+f.qtdPc,qtdKg:+((+f.qtdPc)*(prod?prod.pesoIdeal:0)).toFixed(1),
+      refugoAparaKg:+f.refugoAparaKg||0,refugoTuboKg:+f.refugoTuboKg||0,refugoKg:(+f.refugoAparaKg||0)+(+f.refugoTuboKg||0),tempoTurnoMin:brutoMin};
     let apId=f.editId;
     if(f.editId){
       db.apontamentos=db.apontamentos.map(a=>a.id===f.editId?{...a,...base}:a);
@@ -1516,7 +1520,7 @@ class Component extends DCLogic {
   editAp = (e)=>{
     const a=this.state.db.apontamentos.find(x=>x.id===e.currentTarget.dataset.id); if(!a)return;
     const pars=this.state.db.paradas.filter(p=>p.apId===a.id).map(p=>({motivo:p.motivo,min:p.min}));
-    this.setState({forms:{...this.state.forms,prod:{editId:a.id,dataInicio:a.dataInicio||a.data,horaInicio:a.horaInicio||'06:00',dataFim:a.dataFim||a.data,horaFim:a.horaFim||'14:00',data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador||'',pedido:a.pedido||'',produto:a.produto,qtdPc:a.qtdPc,refugoKg:a.refugoKg,tempoTurnoMin:a.tempoTurnoMin,paradas:pars}}});
+    this.setState({forms:{...this.state.forms,prod:{editId:a.id,dataInicio:a.dataInicio||a.data,horaInicio:a.horaInicio||'06:00',dataFim:a.dataFim||a.data,horaFim:a.horaFim||'14:00',data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador||'',pedido:a.pedido||'',produto:a.produto,qtdPc:a.qtdPc,refugoAparaKg:a.refugoAparaKg!=null?a.refugoAparaKg:a.refugoKg,refugoTuboKg:a.refugoTuboKg||0,tempoTurnoMin:a.tempoTurnoMin,paradas:pars}}});
     window.scrollTo(0,0); const m=document.querySelector('.main'); if(m)m.scrollTop=0;
   };
   cancelProdEdit = ()=>this.setState({forms:{...this.state.forms,prod:this.blankProd()}});
@@ -2128,7 +2132,7 @@ class Component extends DCLogic {
         .map(p=>{const mo=this.motivoDe(p.motivo); return (mo?mo.nome:p.motivo)+' ('+Math.round(p.min)+'min)';}).join('; ')||'—';
       return {data:this.fmtD(a.data),dataRaw:a.data,maquina:mq.nome||a.maquina,turno:a.turno,operador:op.nome||'—',
         qtd:this.fmtN(a.qtdPc)+' pç / '+this.fmtN(a.qtdKg)+' kg',tempoTurno:Math.round(a.tempoTurnoMin||0)+' min',
-        refugo:this.fmtN(a.refugoKg)+' kg',paradas:parsStr};
+        refugo:this.fmtN(a.refugoKg)+' kg (apara '+this.fmtN(a.refugoAparaKg||0)+' / tubo '+this.fmtN(a.refugoTuboKg||0)+')',paradas:parsStr};
     }).sort((a,b)=>b.dataRaw.localeCompare(a.dataRaw));
     const detTable=detTableFull.slice(0,300);
     // pareto de desperdício (kg) por máquina — % relativo ao total processado naquela máquina (produzido + desperdiçado)
@@ -2251,7 +2255,8 @@ class Component extends DCLogic {
       setupH:(g.setupMin/60).toFixed(1),setupPct:g.tProg?(g.setupMin/g.tProg*100).toFixed(1):'0',
       osAbertas:db.osList.filter(o=>o.status!=='Fechada').length,osCls:db.osList.filter(o=>o.status!=='Fechada').length>4?'kbad':'',
       osFechadas:osArr.filter(o=>o.status==='Fechada').length,
-      refugo:(g.kg+g.ref)?(g.ref/(g.kg+g.ref)*100).toFixed(1):'0',refugoKg:this.fmtN(g.ref)
+      refugo:(g.kg+g.ref)?(g.ref/(g.kg+g.ref)*100).toFixed(1):'0',refugoKg:this.fmtN(g.ref),
+      refugoApara:this.fmtN(aps.reduce((x,a)=>x+(+a.refugoAparaKg||0),0)),refugoTubo:this.fmtN(aps.reduce((x,a)=>x+(+a.refugoTuboKg||0),0)),
     };
     const maqRows=maqStats.map(m=>{const o=Math.round(m.raw.oee*100);return{
       nome:m.nome,unid:m.unid,oee:o,disp:Math.round(m.raw.disp*100),perf:Math.round(m.raw.perf*100),qual:(m.raw.qual*100).toFixed(1),
