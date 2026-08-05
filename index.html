@@ -1252,7 +1252,7 @@ class Component extends DCLogic {
             pesoMin:rec.pesoIdeal?+(rec.pesoIdeal*0.96).toFixed(4):0, pesoMax:rec.pesoIdeal?+(rec.pesoIdeal*1.04).toFixed(4):0,
             velAlvo:rec.velAlvo||null, unid:rec.unid||'pç' });
           let de=fmtDateCell(rec.dataEntrega); if(!de) de='IMEDIATO';
-          let dp=fmtDateCell(rec.dataPedido); if(!dp) dp=(de!=='IMEDIATO'?de:'2025-08-01');
+          let dp=fmtDateCell(rec.dataPedido); if(!dp||dp==='IMEDIATO') dp=(de!=='IMEDIATO'?de:'2025-08-01');
           pedidosNovos.push({ id:pedId, nrCliente:rec.nrCliente||ckey, cliente:clienteId, produto:prodId, maquina:rec.maquina,
             qtd:rec.qtd||0, unid:rec.unid||'pç', valor:0, dataPedido:dp, dataEntrega:de, status:rec.status||'Em aberto', ordem:1 });
         }
