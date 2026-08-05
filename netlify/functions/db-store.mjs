@@ -12,6 +12,7 @@ const CORS_HEADERS = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, OPTIONS',
   'access-control-allow-headers': 'content-type',
+  'cache-control': 'no-store, no-cache, must-revalidate, max-age=0',
 };
 
 export default async (req, context) => {

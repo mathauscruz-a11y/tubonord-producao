@@ -343,7 +343,7 @@ select.sel[multiple]{height:80px}
 <div class="panel" id="p-velocidade"><div class="ptit">Velocidade Atingida × Velocidade Alvo <span class="mini fw5">por máquina — % de aderência à velocidade nominal do produto (m/min)</span></div>
 <sc-for list="{{velRows}}" as="v" hint-placeholder-count="4">
 <sc-if value="{{v.vazio}}" hint-placeholder-val="{{false}}">
-<div class="mb8"><div class="fw6">{{v.nome}}</div><div class="mini" style="color:var(--mut)">Sem dado confiável no período — os produtos rodados aqui não têm Velocidade Alvo real cadastrada no PCP (em m/min) para comparar, ou são medidos em kg. Não estimamos esse número.</div></div>
+<div class="mb8"><div class="fw6">{{v.nome}}</div><div class="mini" style="color:var(--mut)">Sem Velocidade Alvo real cadastrada no PCP (m/min) para comparar — não estimamos meta. Taxa real de produção: <b>{{v.taxaPcMin}}</b></div></div>
 </sc-if>
 <sc-if value="{{v.temDados}}" hint-placeholder-val="{{true}}">
 <div class="pbrow"><div class="fw6" style="min-width:100px">{{v.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{v.pctStyle}}"></div></div><div class="pbv">{{v.pct}}%</div></div>
@@ -991,7 +991,7 @@ class Component extends DCLogic {
   }
   syncPull = async (isFirst)=>{
     try{
-      const res = await fetch('/api/db', {cache:'no-store'});
+      const res = await fetch('/api/db?t='+Date.now(), {cache:'no-store'});
       if(!res.ok) throw new Error('http '+res.status);
       const data = await res.json();
       if(data && data.db){
@@ -1018,7 +1018,7 @@ class Component extends DCLogic {
       this.setState({syncStatus:'offline'});
     }
   };
-  syncPush = async ()=>{
+  syncPush = async (isRetry)=>{
     try{
       const u=this.curUser();
       const res = await fetch('/api/db', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({db:this.state.db, updatedBy:u?u.nome:'desconhecido'})});
@@ -1026,7 +1026,9 @@ class Component extends DCLogic {
       const data = await res.json();
       this.setState({syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
     }catch(e){
+      if(!isRetry){ setTimeout(()=>this.syncPush(true), 1500); return; }
       this.setState({syncStatus:'offline'});
+      this.toast('⚠ Não consegui salvar no servidor agora — sua alteração ficou só neste navegador. Verifique a conexão e tente de novo.');
     }
   };
   onLoginId = (e)=>this.setState({loginId:e.target.value,loginErr:false});
@@ -2024,8 +2026,11 @@ class Component extends DCLogic {
       const velAting=operMinM?m.raw.metrosProd/operMinM:0; // m/min real
       const pct=velAlvo?Math.round(velAting/velAlvo*100):0;
       const pctKgExcluido=operMin?Math.round(m.raw.operMinKgBased/operMin*100):0;
+      // taxa real em peças/min e peças/hora, sempre calculável (não depende de meta), útil quando não há Velocidade Alvo cadastrada (ex.: Conicaleira)
+      const taxaPcMin=operMin?m.raw.qtd/operMin:0;
       return {nome:m.nome,velAlvo:velAlvo?velAlvo.toFixed(2)+' m/min':'—',velAting:velAting?velAting.toFixed(2)+' m/min':'—',
         pct,vazio:!velAlvo,temDados:!!velAlvo,discrepante:pct>150,
+        taxaPcMin:taxaPcMin?taxaPcMin.toFixed(1)+' pç/min ('+Math.round(taxaPcMin*60)+' pç/h)':'—',
         temKg:pctKgExcluido>0,pctKgExcluido,
         pctStyle:{width:Math.min(100,pct)+'%',background:pct>=95?'var(--ok)':pct>=80?'var(--warn)':'var(--bad)'}};
     });
