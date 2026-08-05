@@ -340,6 +340,13 @@ select.sel[multiple]{height:80px}
 <div class="panel" id="p-maquinas"><div class="ptit">Desempenho por Máquina</div><div class="scroll"><table class="tbl"><thead><tr><th></th><th>Máquina</th><th>Unidade</th><th>OEE</th><th></th><th>Disp.</th><th>Perf.</th><th>Qual.</th><th>MTTR</th><th>MTBF</th><th>Produção</th><th>Paradas</th></tr></thead><tbody>
 <sc-for list="{{maqRows}}" as="m" hint-placeholder-count="6"><tr><td><span class="dot {{m.dotCls}}"></span></td><td class="fw6">{{m.nome}}</td><td class="mini">{{m.unid}}</td><td class="num">{{m.oee}}%</td><td><div class="obar"><div class="ofill {{m.barCls}}" style="{{m.barStyle}}"></div></div></td><td class="num">{{m.disp}}%</td><td class="num">{{m.perf}}%</td><td class="num">{{m.qual}}%</td><td class="num">{{m.mttr}}</td><td class="num">{{m.mtbf}}</td><td class="num">{{m.prod}} pç</td><td class="num">{{m.paradas}}h</td></tr></sc-for>
 </tbody></table></div></div>
+<div class="panel" id="p-velocidade"><div class="ptit">Velocidade Atingida × Velocidade Alvo <span class="mini fw5">por máquina — % de aderência à velocidade nominal do produto</span></div>
+<sc-for list="{{velRows}}" as="v" hint-placeholder-count="4">
+<div class="pbrow"><div class="fw6" style="min-width:100px">{{v.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{v.pctStyle}}"></div></div><div class="pbv">{{v.pct}}%</div></div>
+<div class="mini" style="color:var(--mut);margin:-4px 0 8px 0">Alvo: {{v.velAlvo}} · Atingida: {{v.velAting}}</div>
+<sc-if value="{{v.discrepante}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--warn);margin:-4px 0 10px 0">⚠ Produção real muito acima da meta cadastrada no PCP — valide com o PCP se a Velocidade Alvo está desatualizada ou se a máquina produz múltiplas peças por ciclo/via.</div></sc-if>
+</sc-for>
+</div>
 <div class="duo">
 <div class="panel"><div class="ptit">Pareto de Paradas <span class="mini fw5">(minutos no período · % do tempo total: produzido + parado)</span></div>
 <sc-for list="{{pareto}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min <span class="mini">({{p.pct}}%)</span></div></div></sc-for>
@@ -377,6 +384,13 @@ select.sel[multiple]{height:80px}
 </div>
 </sc-for>
 </div>
+</div>
+<div class="panel" id="p-detalhamento"><div class="ptit"><button class="chevbtn" data-k="detalhamento" onClick="{{togglePanel}}">{{detalhamentoChev}}</button>Detalhamento de Produção e Paradas <span class="mini fw5">visão linha a linha (tipo planilha F-23) · {{detTableResumo}}</span></div>
+<sc-if value="{{detalhamentoOpen}}" hint-placeholder-val="{{false}}">
+<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Data</th><th>Máquina</th><th>Turno</th><th>Operador</th><th>Produção</th><th>Tempo Turno</th><th>Refugo</th><th>Paradas (motivo · min)</th></tr></thead><tbody>
+<sc-for list="{{detTable}}" as="d" hint-placeholder-count="8"><tr><td>{{d.data}}</td><td class="fw6">{{d.maquina}}</td><td>{{d.turno}}</td><td>{{d.operador}}</td><td class="num">{{d.qtd}}</td><td class="num">{{d.tempoTurno}}</td><td class="num">{{d.refugo}}</td><td class="mini">{{d.paradas}}</td></tr></sc-for>
+</tbody></table></div>
+</sc-if>
 </div>
 <div class="duo">
 <div class="panel"><div class="ptit">Produção Diária <span class="mini fw5">(kg)</span></div>
@@ -693,6 +707,13 @@ select.sel[multiple]{height:80px}
 </div>
 </div>
 <div class="tabs"><sc-for list="{{cadTabs}}" as="t" hint-placeholder-count="7"><button class="tab {{t.cls}}" data-tab="{{t.key}}" onClick="{{setCadTab}}">{{t.label}}</button></sc-for></div>
+<div class="panel"><div class="ptit">💰 Custos de Manutenção <span class="mini fw5">— usados para calcular o custo estimado ao fechar uma OS</span></div>
+<div class="frm" style="grid-template-columns:1fr 1fr">
+<div class="fg"><label class="flab">Salário do Mecânico (R$/hora)</label><input class="inp" type="number" name="custosManut.salarioMecanico" value="{{custosView.salarioMecanico}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Salário do Auxiliar Mecânico (R$/hora)</label><input class="inp" type="number" name="custosManut.salarioAuxiliar" value="{{custosView.salarioAuxiliar}}" onChange="{{onF}}"></div>
+</div>
+<button class="btn btna mt8" onClick="{{saveCustosManut}}">Salvar taxas</button>
+</div>
 <div class="panel"><div class="ptit">{{cadFormTit}} — {{cadLabel}}
 <sc-if value="{{cadEditing}}" hint-placeholder-val="{{false}}"><span class="editing">Editando {{cadEditId}} <button class="btsm" onClick="{{cancelCadEdit}}">Cancelar</button></span></sc-if></div>
 <div class="frm">
@@ -797,7 +818,7 @@ select.sel[multiple]{height:80px}
 <div class="isosec">5. ANÁLISE E SERVIÇO EXECUTADO</div>
 <div class="isogrid" style="grid-template-columns:1fr 1fr"><div class="isofield"><div class="isoflab">Causa raiz identificada</div>{{osM.causa}}</div><div class="isofield"><div class="isoflab">Serviço executado / Ação corretiva</div>{{osM.servico}}</div></div>
 <div class="isosec">6. RECURSOS E INDICADORES</div>
-<div class="isogrid"><div class="isofield"><div class="isoflab">Responsável Execução</div>{{osM.resp}}</div><div class="isofield"><div class="isoflab">Tempo de Máquina Parada</div>{{osM.tempoParada}}</div><div class="isofield"><div class="isoflab">Tempo de Reparo</div>{{osM.reparo}}</div><div class="isofield"><div class="isoflab">Custo Total (R$)</div>{{osM.custo}}</div><div class="isofield"><div class="isoflab">Peças / Materiais utilizados</div>{{osM.pecas}}</div><div class="isofield"><div class="isoflab">Parada vinculada</div>{{osM.parRef}}</div></div>
+<div class="isogrid"><div class="isofield"><div class="isoflab">Responsável Execução</div>{{osM.resp}}</div><div class="isofield"><div class="isoflab">Tempo de Máquina Parada</div>{{osM.tempoParada}}</div><div class="isofield"><div class="isoflab">Hora Início / Fim do Reparo</div>{{osM.horaInicioReparo}} — {{osM.horaFimReparo}}</div><div class="isofield"><div class="isoflab">Tempo de Reparo</div>{{osM.reparo}}</div><div class="isofield"><div class="isoflab">Auxiliar Mecânico?</div>{{osM.temAuxiliar}}</div><div class="isofield"><div class="isoflab">Custo Mão de Obra (R$)</div>{{osM.custoMaoObra}}</div><div class="isofield"><div class="isoflab">Custo Material (R$)</div>{{osM.materialCusto}}</div><div class="isofield"><div class="isoflab">Custo Total (R$)</div>{{osM.custo}}</div><div class="isofield"><div class="isoflab">Peças / Materiais utilizados</div>{{osM.pecas}}</div><div class="isofield"><div class="isoflab">Parada vinculada</div>{{osM.parRef}}</div></div>
 <sc-if value="{{osMEdit}}" hint-placeholder-val="{{false}}">
 <div class="isosec" style="background:var(--ac)">✏ EDIÇÃO DE CAMPOS</div>
 <div class="frm mt8" style="grid-template-columns:repeat(3,1fr)">
@@ -819,11 +840,16 @@ select.sel[multiple]{height:80px}
 <sc-if value="{{osM.fechando}}" hint-placeholder-val="{{false}}">
 <div class="isosec">8. FECHAMENTO</div>
 <div class="frm mt8" style="grid-template-columns:repeat(3,1fr)">
-<div class="fg"><label class="flab">Tempo de reparo (min)</label><input class="inp" type="number" name="fech.reparoMin" value="{{fFech.reparoMin}}" onChange="{{onF}}"></div>
-<div class="fg"><label class="flab">Custo (R$)</label><input class="inp" type="number" name="fech.custo" value="{{fFech.custo}}" onChange="{{onF}}"></div>
-<div class="fg"><label class="flab">Peças utilizadas</label><input class="inp" name="fech.pecas" value="{{fFech.pecas}}" onChange="{{onF}}"></div>
-<div class="fg" style="grid-column:span 2"><label class="flab">Causa raiz</label><input class="inp" name="fech.causa" value="{{fFech.causa}}" onChange="{{onF}}"></div>
-<div class="fg"><label class="flab">Serviço executado</label><input class="inp" name="fech.servico" value="{{fFech.servico}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Hora início do reparo</label><input class="inp" type="time" name="fech.horaInicio" value="{{fFech.horaInicio}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Hora fim do reparo</label><input class="inp" type="time" name="fech.horaFim" value="{{fFech.horaFim}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Tempo total (calculado)</label><input class="inp" value="{{fFechTempoLabel}}" disabled></div>
+<div class="fg"><label class="flab">Tempo de reparo — manual (min, se não usar hora início/fim)</label><input class="inp" type="number" name="fech.reparoMin" value="{{fFech.reparoMin}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Teve auxiliar mecânico?</label><select class="inp" name="fech.temAuxiliar" onChange="{{onF}}" value="{{fFech.temAuxiliar}}"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
+<div class="fg"><label class="flab">Custo do material/peças (R$)</label><input class="inp" type="number" name="fech.materialCusto" value="{{fFech.materialCusto}}" onChange="{{onF}}"></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Peças/material utilizado (descrição)</label><input class="inp" name="fech.pecas" value="{{fFech.pecas}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Causa raiz</label><input class="inp" name="fech.causa" value="{{fFech.causa}}" onChange="{{onF}}"></div>
+<div class="fg" style="grid-column:span 3"><label class="flab">Serviço executado (o que foi feito)</label><input class="inp" name="fech.servico" value="{{fFech.servico}}" onChange="{{onF}}"></div>
+<div class="fg" style="grid-column:span 3;background:#f6f8fa;border-radius:8px;padding:10px 12px"><label class="flab">Custo total estimado (calculado — mão de obra + material)</label><div class="fw6" style="font-size:18px;color:var(--ac)">{{fFechCustoLabel}}</div><div class="mini" style="color:var(--mut);margin-top:2px">Taxas de mão de obra por hora configuráveis em Cadastros → Custos de Manutenção.</div></div>
 </div>
 <div class="fx mt12"><button class="btn btna" onClick="{{confirmFechar}}" style="margin-left:auto">Confirmar fechamento</button></div>
 </sc-if>
@@ -884,13 +910,13 @@ class Component extends DCLogic {
       valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, pwShow:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false, iaPrintOpen:false, iaPrintIdx:null,
       sim:{}, simOver:null, solicOpen:false, tourOn:false, tourStep:0, tourPlaying:false,
       chat:[], chatInput:'', chatBusy:false, toast:null,
-      panelOpen:{carteira:false, metas:false, atrasados:true},
+      panelOpen:{carteira:false, metas:false, atrasados:true, detalhamento:false},
       pedCardFilter:[], pedColFilters:{},
       importF23File:null, importPcpFile:null, importF23Name:'Nenhum arquivo selecionado', importPcpName:'Nenhum arquivo selecionado', importBusy:false, importMsg:'', importMsgErr:false,
       mobFiltersOpen:false, mobNavOpen:false, pedOpenFilterCol:null, pedStatusPopoverOpen:false,
       forms:{ prod:this.blankProd(), os:this.blankOs(), par:this.blankPar(),
         ped:this.blankPed(), aus:this.blankAus(),
-        fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:''}, osm:{}, solic:{motivo:''}, cad:{} }
+        fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:'',horaInicio:'',horaFim:'',temAuxiliar:'nao',materialCusto:''}, osm:{}, solic:{motivo:''}, cad:{}, custosManut:{} }
     };
     this.nav = {}; ['dash','prod','par','manut','pcp','rh','cad','ia','man'].forEach(v=>{ this.nav[v]=()=>this.setState({view:v,mobNavOpen:false}); });
     this.unid = { all:()=>this.setState({unidade:'ALL'}), nord:()=>this.setState({unidade:'NORD'}), cone:()=>this.setState({unidade:'CONE'}) };
@@ -1329,7 +1355,7 @@ class Component extends DCLogic {
     const mttr=corrFech.length?corrFech.reduce((s,o)=>s+o.tempoReparoMin,0)/corrFech.length/60:0;
     const operH=(tProg-tParNP-tParPR)/60;
     const mtbf=nFalhas?Math.max(0,operH)/nFalhas:0;
-    return {tProg,tParNP,tParPR,qtd,kg,ref,setupMin,nPar,disp,perf,qual,oee,mttr,mtbf,nFalhas,operH};
+    return {tProg,tParNP,tParPR,qtd,kg,ref,setupMin,nPar,disp,perf,qual,oee,mttr,mtbf,nFalhas,operH,teor};
   }
   pedidoCalc(p){
     const db=this.state.db;
@@ -1505,6 +1531,11 @@ class Component extends DCLogic {
   delPar = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
     db.paradas=db.paradas.filter(p=>p.id!==id); this.persist(db); this.toast('Parada excluída'); };
   // ----- manutenção -----
+  saveCustosManut = ()=>{
+    const f=this.state.forms.custosManut||{}; const db={...this.state.db};
+    db.config={...(db.config||{}), salarioMecanico:+f.salarioMecanico||0, salarioAuxiliar:+f.salarioAuxiliar||0};
+    this.persist(db); this.toast('Taxas de custo salvas ✓');
+  };
   saveOs = ()=>{
     const f=this.state.forms.os, db={...this.state.db};
     if(!f.maquina||!f.descricao){ this.toast('Preencha máquina e descrição.'); return; }
@@ -1546,9 +1577,27 @@ class Component extends DCLogic {
   };
   confirmFechar = ()=>{
     const f=this.state.forms.fech, db={...this.state.db}, id=this.state.osDetail;
-    if(!f.reparoMin){ this.toast('Informe o tempo de reparo.'); return; }
-    db.osList=db.osList.map(o=>o.id===id?{...o,status:'Fechada',tempoReparoMin:+f.reparoMin,custo:+f.custo||0,pecas:f.pecas,causa:f.causa,servico:f.servico,dataFechamento:new Date().toISOString().slice(0,10)}:o);
-    this.persist(db); this.setState({osDetail:null,osFechando:false,forms:{...this.state.forms,fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:''}}}); this.toast('OS fechada ✓');
+    const tempoMin=this.calcTempoMin(f.horaInicio,f.horaFim);
+    if(!tempoMin && !f.reparoMin){ this.toast('Informe hora início/fim ou o tempo de reparo.'); return; }
+    const reparoMin=tempoMin||+f.reparoMin||0;
+    const cfg=db.config||{};
+    const salMec=+cfg.salarioMecanico||0, salAux=+cfg.salarioAuxiliar||0;
+    const temAux=f.temAuxiliar==='sim';
+    const custoMaoObra=(reparoMin/60)*salMec + (temAux?(reparoMin/60)*salAux:0);
+    const custoMaterial=+f.materialCusto||0;
+    const custoTotal=custoMaoObra+custoMaterial;
+    db.osList=db.osList.map(o=>o.id===id?{...o,status:'Fechada',tempoReparoMin:reparoMin,horaInicioReparo:f.horaInicio||null,horaFimReparo:f.horaFim||null,
+      temAuxiliar:temAux,materialCusto:custoMaterial,custoMaoObra:+custoMaoObra.toFixed(2),custo:+custoTotal.toFixed(2),
+      pecas:f.pecas,causa:f.causa,servico:f.servico,dataFechamento:new Date().toISOString().slice(0,10)}:o);
+    this.persist(db); this.setState({osDetail:null,osFechando:false,forms:{...this.state.forms,fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:'',horaInicio:'',horaFim:'',temAuxiliar:'nao',materialCusto:''}}}); this.toast('OS fechada ✓ — custo estimado: R$ '+custoTotal.toFixed(2));
+  };
+  calcTempoMin = (hIni,hFim)=>{
+    if(!hIni||!hFim) return 0;
+    const [h1,m1]=hIni.split(':').map(Number), [h2,m2]=hFim.split(':').map(Number);
+    if(isNaN(h1)||isNaN(h2)) return 0;
+    let min=(h2*60+m2)-(h1*60+m1);
+    if(min<0) min+=24*60; // passou da meia-noite
+    return min;
   };
   openOs = (e)=>{ this.setState({osDetail:e.currentTarget.dataset.id,osFechando:false,osMEdit:false}); };
   closeOs = ()=>{ this.setState({osDetail:null,osFechando:false,osMEdit:false}); };
@@ -1952,6 +2001,16 @@ class Component extends DCLogic {
       const raw=this.calcMachine(aps.filter(a=>a.maquina===m.id),pars.filter(p=>p.maquina===m.id),osArr.filter(o=>o.maquina===m.id));
       return {id:m.id,nome:m.nome,unid:m.unidade==='NORD'?'Tubonord':'Tubocone',raw};
     });
+    // Velocidade Atingida x Velocidade Alvo por máquina (mesma metodologia do fator Performance do OEE, exposta como indicador próprio)
+    const velRows=maqStats.map(m=>{
+      const operMin=m.raw.operH*60;
+      const velAlvo=operMin?m.raw.teor/operMin:0;
+      const velAting=operMin?m.raw.qtd/operMin:0;
+      const pct=velAlvo?Math.round(velAting/velAlvo*100):0;
+      return {nome:m.nome,velAlvo:velAlvo?velAlvo.toFixed(2)+' pç/min':'—',velAting:velAting?velAting.toFixed(2)+' pç/min':'—',
+        pct,vazio:!velAlvo,discrepante:pct>150,
+        pctStyle:{width:Math.min(100,pct)+'%',background:pct>=95?'var(--ok)':pct>=80?'var(--warn)':'var(--bad)'}};
+    });
     const g=this.calcMachine(aps,pars,osArr);
     // absenteísmo
     const ops=db.operadores.filter(o=>s.unidade==='ALL'||o.unidade===s.unidade);
@@ -1969,6 +2028,18 @@ class Component extends DCLogic {
     const tempoTotalRef=Math.max(1,tempoTotalBruto-corTotal);
     const maxPar=Math.max(1,...Object.values(parMap));
     const pareto=Object.entries(parMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([nome,min])=>({nome,min:this.fmtN(min),pct:+(min/tempoTotalRef*100).toFixed(1),style:{width:Math.max(2,Math.round(min/maxPar*100))+'%'}}));
+    // ---- Detalhamento de Produção e Paradas (visão tipo Excel/F-23, respeitando todos os filtros ativos) ----
+    const detTableFull=aps.map(a=>{
+      const mq=db.maquinas.find(x=>x.id===a.maquina)||{};
+      const op=db.operadores.find(x=>x.id===a.operador)||{};
+      const parsStr=(a.paradas||[]).filter(p=>{const mo=this.motivoDe(p.motivo); return mo&&mo.tipo!=='COR';})
+        .sort((x,y)=>y.min-x.min)
+        .map(p=>{const mo=this.motivoDe(p.motivo); return (mo?mo.nome:p.motivo)+' ('+Math.round(p.min)+'min)';}).join('; ')||'—';
+      return {data:this.fmtD(a.data),dataRaw:a.data,maquina:mq.nome||a.maquina,turno:a.turno,operador:op.nome||'—',
+        qtd:this.fmtN(a.qtdPc)+' pç / '+this.fmtN(a.qtdKg)+' kg',tempoTurno:Math.round(a.tempoTurnoMin||0)+' min',
+        refugo:this.fmtN(a.refugoKg)+' kg',paradas:parsStr};
+    }).sort((a,b)=>b.dataRaw.localeCompare(a.dataRaw));
+    const detTable=detTableFull.slice(0,300);
     // pareto de desperdício (kg) por máquina — % relativo ao total processado naquela máquina (produzido + desperdiçado)
     const refMap={}, prodKgMap={};
     for(const a of aps){ const mq=db.maquinas.find(m=>m.id===a.maquina); const nome=mq?mq.nome:a.maquina;
@@ -2429,6 +2500,16 @@ class Component extends DCLogic {
     const cadRows=db[def.key].map(x=>({id:x.id,cells:def.cells(x)}));
     // os modal
     let osM=null;
+    // ---- cálculo ao vivo do fechamento de OS (tempo e custo) ----
+    const fFechRaw=s.forms.fech||{};
+    const tempoCalc=this.calcTempoMin(fFechRaw.horaInicio,fFechRaw.horaFim);
+    const tempoFinalMin=tempoCalc||(+fFechRaw.reparoMin||0);
+    const fFechTempoLabel=tempoFinalMin?this.fmtN(tempoFinalMin)+' min ('+(tempoFinalMin/60).toFixed(1)+'h)':'—';
+    const cfgRates=db.config||{};
+    const salMecV=+cfgRates.salarioMecanico||0, salAuxV=+cfgRates.salarioAuxiliar||0;
+    const custoMaoObraCalc=(tempoFinalMin/60)*salMecV + (fFechRaw.temAuxiliar==='sim'?(tempoFinalMin/60)*salAuxV:0);
+    const custoMaterialCalc=+fFechRaw.materialCusto||0;
+    const fFechCustoLabel='R$ '+(custoMaoObraCalc+custoMaterialCalc).toLocaleString('pt-BR',{minimumFractionDigits:2})+'  (mão de obra: R$ '+custoMaoObraCalc.toLocaleString('pt-BR',{minimumFractionDigits:2})+' + material: R$ '+custoMaterialCalc.toLocaleString('pt-BR',{minimumFractionDigits:2})+')';
     if(s.osDetail){ const o=db.osList.find(x=>x.id===s.osDetail);
       if(o){ const mq=db.maquinas.find(m=>m.id===o.maquina)||{};
         const tec=db.operadores.find(t=>t.id===o.responsavel);
@@ -2436,6 +2517,8 @@ class Component extends DCLogic {
           solicitante:o.solicitante,unidade:mq.unidade==='CONE'?'Tubocone':'Tubonord',empresa:mq.unidade==='CONE'?'TUBOCONE':'TUBONORD',
           maqId:o.maquina,maq:mq.nome||o.maquina,item:o.item,motivo:o.motivo,descricao:o.descricao,resp:tec?tec.nome:(o.responsavel||'—'),
           reparo:o.tempoReparoMin?Math.round(o.tempoReparoMin)+' min':'—',custo:o.custo!=null?o.custo.toFixed(2):'—',pecas:o.pecas||'—',
+          horaInicioReparo:o.horaInicioReparo||'—',horaFimReparo:o.horaFimReparo||'—',temAuxiliar:o.temAuxiliar?'Sim':'Não',
+          custoMaoObra:o.custoMaoObra!=null?o.custoMaoObra.toFixed(2):'—',materialCusto:o.materialCusto!=null?o.materialCusto.toFixed(2):'—',
           parRef:o.paradaId||'—',aprovadoEm:o.aprovacao?this.fmtD(o.aprovacao):'—',inicioEm:o.inicioReparo?this.fmtD(o.inicioReparo):'—',
           fechadoEm:o.dataFechamento?this.fmtD(o.dataFechamento):(o.status==='Fechada'?this.fmtD(o.dataAbertura):'—'),
           tempoParada:o.parouMaquina?(o.tempoParadaMin?Math.round(o.tempoParadaMin)+' min':'sim (não medido)'):'não parou',
@@ -2487,7 +2570,9 @@ class Component extends DCLogic {
       viewTitle:titles[s.view],uAll:s.unidade==='ALL'?'segon':'',uNord:s.unidade==='NORD'?'segon':'',uCone:s.unidade==='CONE'?'segon':'',
       dataIniV:s.dataIni,dataFimV:s.dataFim,fMaqV:s.fMaq,fTurnoV:s.fTurno,fOperV:s.fOper,userV:s.user,userNome:u.nome,userPerfil:u.perfil,
       maqFilterOpts:maqs,operFilterOpts:db.operadores,userOpts:db.usuarios,metaOeeV:metaOee,
-      kpi,maqRows,pareto,trend,paretoRefugo,trendRefugo,topParadasMes,topParadasAno,mesRefLabel,anoRefLabel:refY,
+      kpi,maqRows,pareto,trend,paretoRefugo,trendRefugo,topParadasMes,topParadasAno,mesRefLabel,anoRefLabel:refY,velRows,
+      detTable,detTableResumo:detTableFull.length>300?('mostrando 300 de '+detTableFull.length+' registros — refine os filtros para ver outros'):(detTableFull.length+' registro(s)'),
+      detalhamentoOpen:s.panelOpen.detalhamento!==false,detalhamentoChev:s.panelOpen.detalhamento!==false?'▾':'▸',
       atrasadosLista,atrasadosPareto,atrasadosTotal:atrasTodos.length,atrasadosOpen:s.panelOpen.atrasados!==false,atrasadosChev:s.panelOpen.atrasados!==false?'▾':'▸',
       insTop:insights.slice(0,3),insights,
       prodDia,prodDiaPc,prodDiaIni:days.length?this.fmtD(days[0]):'—',prodDiaFim:days.length?this.fmtD(days[days.length-1]):'—',prodDiaMax:this.fmtN(maxDay),prodDiaMaxPc:this.fmtN(maxDayPc),
@@ -2528,12 +2613,15 @@ class Component extends DCLogic {
       fAus,ausEditing:!!fAus.editId,ausFormTit:fAus.editId?'Editar Ausência':'Registrar Ausência',ausSaveLbl:fAus.editId?'Salvar alterações':'Registrar',
       ausRows,rhK,
       cadTabs,cadLabel:def.label,cadFields,cadCols:def.cols,cadRows,cadEditing:!!s.cadEditId,cadEditId:s.cadEditId||'',cadFormTit:s.cadEditId?'Editar registro':'Novo registro',cadSaveLbl:s.cadEditId?'Salvar alterações':'Adicionar',
+      saveCustosManut:this.saveCustosManut,
+      custosView:{salarioMecanico:(s.forms.custosManut&&s.forms.custosManut.salarioMecanico!==undefined&&s.forms.custosManut.salarioMecanico!=='')?s.forms.custosManut.salarioMecanico:((db.config&&db.config.salarioMecanico!=null)?db.config.salarioMecanico:''),
+        salarioAuxiliar:(s.forms.custosManut&&s.forms.custosManut.salarioAuxiliar!==undefined&&s.forms.custosManut.salarioAuxiliar!=='')?s.forms.custosManut.salarioAuxiliar:((db.config&&db.config.salarioAuxiliar!=null)?db.config.salarioAuxiliar:'')},
       chatMsgs:s.chat.map((m,i)=>({cls:m.role==='user'?'mu':'ma',text:m.text,isAi:m.role==='ai',idx:i})),chatInput:s.chatInput,chatBusy:s.chatBusy,
       openIaPrint:this.openIaPrint,closeIaPrint:this.closeIaPrint,iaPrintOpen:s.iaPrintOpen,
       iaPrintText:s.iaPrintIdx!=null&&s.chat[s.iaPrintIdx]?s.chat[s.iaPrintIdx].text:'',
       iaPrintQuestion:s.iaPrintIdx!=null&&s.chat[s.iaPrintIdx-1]?s.chat[s.iaPrintIdx-1].text:'',
       iaPrintData:this.fmtD(hoje),
-      osMOpen:!!osM,osM:osM||{},fFech:s.forms.fech,
+      osMOpen:!!osM,osM:osM||{},fFech:s.forms.fech,fFechTempoLabel,fFechCustoLabel,
       toastOn:!!s.toast,toastMsg:s.toast||'',
       showLoading:false,showLogin:false,showApp:true,
       isAdmin:u.perfil==='Administrador',doLogout:this.doLogout,
