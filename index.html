@@ -1336,7 +1336,7 @@ class Component extends DCLogic {
   motivoDe(id){ return this.state.db.motivosParada.find(x=>x.id===id); }
   calcMachine(aps, pars, osArr){
     const db=this.state.db;
-    let tProg=0,tParNP=0,tParPR=0,qtd=0,teor=0,kg=0,ref=0,setupMin=0,nPar=0,metrosProd=0,operMinKgBased=0,operMinMatched=0;
+    let tProg=0,tParNP=0,tParPR=0,qtd=0,teor=0,kg=0,ref=0,setupMin=0,nPar=0,metrosProd=0,operMinKgBased=0,operMinMatched=0,teorStrict=0,metrosProdStrict=0;
     const parByAp={};
     for(const p of pars){
       const m=this.motivoDe(p.motivo); const t=m?m.tipo:'NP';
@@ -1354,9 +1354,11 @@ class Component extends DCLogic {
       if(prod){
         const unidP=(prod.unid||'').trim().toLowerCase();
         if(unidP==='kg'){
-          operMinKgBased+=oper; // produto medido em kg: sem peso/metro linear cadastrado, nao da pra converter em metros — excluido do Performance/Velocidade para nao distorcer
-        } else if(prod.velAlvo && prod.compMm && !prod.velAlvoEstimado){
-          teor+=prod.velAlvo*oper; metrosProd+=(+a.qtdPc||0)*(prod.compMm/1000); operMinMatched+=oper;
+          operMinKgBased+=oper; // produto medido em kg: sem peso/metro linear cadastrado, nao da pra converter em metros
+        } else if(prod.velAlvo && prod.compMm){
+          // OEE Performance usa todo dado disponivel (inclusive velocidade estimada) para nunca zerar em janelas curtas de filtro
+          teor+=prod.velAlvo*oper; metrosProd+=(+a.qtdPc||0)*(prod.compMm/1000);
+          if(!prod.velAlvoEstimado){ teorStrict+=prod.velAlvo*oper; metrosProdStrict+=(+a.qtdPc||0)*(prod.compMm/1000); operMinMatched+=oper; }
         }
       }
       qtd+=(+a.qtdPc||0); kg+=(+a.qtdKg||0); ref+=(+a.refugoKg||0);
@@ -1372,7 +1374,7 @@ class Component extends DCLogic {
     const mttr=corrFech.length?corrFech.reduce((s,o)=>s+o.tempoReparoMin,0)/corrFech.length/60:0;
     const operH=(tProg-tParNP-tParPR)/60;
     const mtbf=nFalhas?Math.max(0,operH)/nFalhas:0;
-    return {tProg,tParNP,tParPR,qtd,kg,ref,setupMin,nPar,disp,perf,qual,oee,mttr,mtbf,nFalhas,operH,teor,metrosProd,operMinKgBased,operMinMatched};
+    return {tProg,tParNP,tParPR,qtd,kg,ref,setupMin,nPar,disp,perf,qual,oee,mttr,mtbf,nFalhas,operH,teor,metrosProd,operMinKgBased,operMinMatched,teorStrict,metrosProdStrict};
   }
   pedidoCalc(p){
     const db=this.state.db;
@@ -2028,8 +2030,8 @@ class Component extends DCLogic {
     const velRows=maqStats.map(m=>{
       const operMin=m.raw.operH*60;
       const operMinM=m.raw.operMinMatched; // só o tempo com produto medido em peças e com meta cadastrada
-      const velAlvo=operMinM?m.raw.teor/operMinM:0; // m/min
-      const velAting=operMinM?m.raw.metrosProd/operMinM:0; // m/min real
+      const velAlvo=operMinM?m.raw.teorStrict/operMinM:0; // m/min
+      const velAting=operMinM?m.raw.metrosProdStrict/operMinM:0; // m/min real
       const pct=velAlvo?Math.round(velAting/velAlvo*100):0;
       const pctKgExcluido=operMin?Math.round(m.raw.operMinKgBased/operMin*100):0;
       // taxa real em peças/min e peças/hora, sempre calculável (não depende de meta), útil quando não há Velocidade Alvo cadastrada (ex.: Conicaleira)
