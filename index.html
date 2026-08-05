@@ -340,11 +340,17 @@ select.sel[multiple]{height:80px}
 <div class="panel" id="p-maquinas"><div class="ptit">Desempenho por Máquina</div><div class="scroll"><table class="tbl"><thead><tr><th></th><th>Máquina</th><th>Unidade</th><th>OEE</th><th></th><th>Disp.</th><th>Perf.</th><th>Qual.</th><th>MTTR</th><th>MTBF</th><th>Produção</th><th>Paradas</th></tr></thead><tbody>
 <sc-for list="{{maqRows}}" as="m" hint-placeholder-count="6"><tr><td><span class="dot {{m.dotCls}}"></span></td><td class="fw6">{{m.nome}}</td><td class="mini">{{m.unid}}</td><td class="num">{{m.oee}}%</td><td><div class="obar"><div class="ofill {{m.barCls}}" style="{{m.barStyle}}"></div></div></td><td class="num">{{m.disp}}%</td><td class="num">{{m.perf}}%</td><td class="num">{{m.qual}}%</td><td class="num">{{m.mttr}}</td><td class="num">{{m.mtbf}}</td><td class="num">{{m.prod}} pç</td><td class="num">{{m.paradas}}h</td></tr></sc-for>
 </tbody></table></div></div>
-<div class="panel" id="p-velocidade"><div class="ptit">Velocidade Atingida × Velocidade Alvo <span class="mini fw5">por máquina — % de aderência à velocidade nominal do produto</span></div>
+<div class="panel" id="p-velocidade"><div class="ptit">Velocidade Atingida × Velocidade Alvo <span class="mini fw5">por máquina — % de aderência à velocidade nominal do produto (m/min)</span></div>
 <sc-for list="{{velRows}}" as="v" hint-placeholder-count="4">
+<sc-if value="{{v.vazio}}" hint-placeholder-val="{{false}}">
+<div class="mb8"><div class="fw6">{{v.nome}}</div><div class="mini" style="color:var(--mut)">Sem dado confiável no período — os produtos rodados aqui não têm Velocidade Alvo real cadastrada no PCP (em m/min) para comparar, ou são medidos em kg. Não estimamos esse número.</div></div>
+</sc-if>
+<sc-if value="{{v.temDados}}" hint-placeholder-val="{{true}}">
 <div class="pbrow"><div class="fw6" style="min-width:100px">{{v.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{v.pctStyle}}"></div></div><div class="pbv">{{v.pct}}%</div></div>
 <div class="mini" style="color:var(--mut);margin:-4px 0 8px 0">Alvo: {{v.velAlvo}} · Atingida: {{v.velAting}}</div>
 <sc-if value="{{v.discrepante}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--warn);margin:-4px 0 10px 0">⚠ Ainda destoa da meta — pode haver pedidos sem comprimento cadastrado no PCP nesta máquina/período, distorcendo a conversão metros↔peças.</div></sc-if>
+<sc-if value="{{v.temKg}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut);margin:-4px 0 10px 0">ℹ {{v.pctKgExcluido}}% do tempo desta máquina é com produtos medidos em kg e não entra nesta conta — não há peso por metro linear cadastrado para converter em metros.</div></sc-if>
+</sc-if>
 </sc-for>
 </div>
 <div class="duo">
@@ -1328,7 +1334,7 @@ class Component extends DCLogic {
   motivoDe(id){ return this.state.db.motivosParada.find(x=>x.id===id); }
   calcMachine(aps, pars, osArr){
     const db=this.state.db;
-    let tProg=0,tParNP=0,tParPR=0,qtd=0,teor=0,kg=0,ref=0,setupMin=0,nPar=0,metrosProd=0;
+    let tProg=0,tParNP=0,tParPR=0,qtd=0,teor=0,kg=0,ref=0,setupMin=0,nPar=0,metrosProd=0,operMinKgBased=0,operMinMatched=0;
     const parByAp={};
     for(const p of pars){
       const m=this.motivoDe(p.motivo); const t=m?m.tipo:'NP';
@@ -1343,11 +1349,19 @@ class Component extends DCLogic {
       const prog=this.tempoBruto(a)-cor; tProg+=prog;
       const oper=Math.max(prog-par,1);
       const prod=db.produtos.find(x=>x.id===a.produto);
-      if(prod){ teor+=prod.velAlvo*oper; if(prod.compMm){ metrosProd+=(+a.qtdPc||0)*(prod.compMm/1000); } }
+      if(prod){
+        const unidP=(prod.unid||'').trim().toLowerCase();
+        if(unidP==='kg'){
+          operMinKgBased+=oper; // produto medido em kg: sem peso/metro linear cadastrado, nao da pra converter em metros — excluido do Performance/Velocidade para nao distorcer
+        } else if(prod.velAlvo && prod.compMm && !prod.velAlvoEstimado){
+          teor+=prod.velAlvo*oper; metrosProd+=(+a.qtdPc||0)*(prod.compMm/1000); operMinMatched+=oper;
+        }
+      }
       qtd+=(+a.qtdPc||0); kg+=(+a.qtdKg||0); ref+=(+a.refugoKg||0);
     }
     const disp=tProg?Math.max(0,(tProg-tParNP-tParPR)/tProg):0;
     // Performance = metros produzidos ÷ metros-alvo (VELOCIDADE ALVO PRODUÇÃO é em m/min, não peças/min — precisa converter peças→metros pelo comprimento real da peça)
+    // Produtos medidos em kg ficam de fora deste cálculo (não há peso/metro linear cadastrado para converter) — ver operMinKgBased.
     const perf=teor?Math.min(1.15,metrosProd/teor):0;
     const qual=kg?Math.max(0,(kg-ref)/kg):1;
     const oee=disp*perf*qual;
@@ -1356,7 +1370,7 @@ class Component extends DCLogic {
     const mttr=corrFech.length?corrFech.reduce((s,o)=>s+o.tempoReparoMin,0)/corrFech.length/60:0;
     const operH=(tProg-tParNP-tParPR)/60;
     const mtbf=nFalhas?Math.max(0,operH)/nFalhas:0;
-    return {tProg,tParNP,tParPR,qtd,kg,ref,setupMin,nPar,disp,perf,qual,oee,mttr,mtbf,nFalhas,operH,teor,metrosProd};
+    return {tProg,tParNP,tParPR,qtd,kg,ref,setupMin,nPar,disp,perf,qual,oee,mttr,mtbf,nFalhas,operH,teor,metrosProd,operMinKgBased,operMinMatched};
   }
   pedidoCalc(p){
     const db=this.state.db;
@@ -2005,11 +2019,14 @@ class Component extends DCLogic {
     // Velocidade Atingida x Velocidade Alvo por máquina (mesma metodologia do fator Performance do OEE, exposta como indicador próprio)
     const velRows=maqStats.map(m=>{
       const operMin=m.raw.operH*60;
-      const velAlvo=operMin?m.raw.teor/operMin:0; // m/min
-      const velAting=operMin?m.raw.metrosProd/operMin:0; // m/min real
+      const operMinM=m.raw.operMinMatched; // só o tempo com produto medido em peças e com meta cadastrada
+      const velAlvo=operMinM?m.raw.teor/operMinM:0; // m/min
+      const velAting=operMinM?m.raw.metrosProd/operMinM:0; // m/min real
       const pct=velAlvo?Math.round(velAting/velAlvo*100):0;
+      const pctKgExcluido=operMin?Math.round(m.raw.operMinKgBased/operMin*100):0;
       return {nome:m.nome,velAlvo:velAlvo?velAlvo.toFixed(2)+' m/min':'—',velAting:velAting?velAting.toFixed(2)+' m/min':'—',
-        pct,vazio:!velAlvo,discrepante:pct>150,
+        pct,vazio:!velAlvo,temDados:!!velAlvo,discrepante:pct>150,
+        temKg:pctKgExcluido>0,pctKgExcluido,
         pctStyle:{width:Math.min(100,pct)+'%',background:pct>=95?'var(--ok)':pct>=80?'var(--warn)':'var(--bad)'}};
     });
     const g=this.calcMachine(aps,pars,osArr);
