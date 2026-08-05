@@ -702,7 +702,7 @@ select.sel[multiple]{height:80px}
 <sc-if value="{{vCad}}" hint-placeholder-val="{{false}}">
 <div class="panel">
 <div class="ptit">📥 Importar planilhas reais (F-23 e PCP)</div>
-<div class="mini" style="margin-bottom:12px">Envie a planilha F-23 (Controle de Produção Diária) e/ou a PCP Tubonord mais recentes para atualizar produção, paradas, clientes e pedidos. <b>Isso substitui</b> os dados de produção/pedidos atuais pelos da planilha enviada — máquinas, usuários e motivos de parada cadastrados manualmente não são afetados.</div>
+<div class="mini" style="margin-bottom:12px">Envie a planilha F-23 (Controle de Produção Diária) e/ou a PCP Tubonord mais recentes para atualizar produção, paradas, clientes e pedidos. <b>Isso substitui</b> os dados de produção/pedidos atuais pelos da planilha enviada — máquinas, usuários e motivos de parada cadastrados manualmente não são afetados. <b>Recomendado: envie sempre os dois arquivos juntos</b> — importar só um deles pode deixar o status de "produzido" desatualizado até o outro também ser enviado.</div>
 <div class="frm" style="grid-template-columns:1fr 1fr">
 <div class="fg"><label class="flab">F-23 — Controle de Produção Diária (.xlsx)</label><input class="inp" type="file" accept=".xlsx,.xls" onChange="{{onImportF23File}}"><span class="mini">{{importF23Name}}</span></div>
 <div class="fg"><label class="flab">PCP Tubonord (.xlsx)</label><input class="inp" type="file" accept=".xlsx,.xls" onChange="{{onImportPcpFile}}"><span class="mini">{{importPcpName}}</span></div>
@@ -1121,6 +1121,11 @@ class Component extends DCLogic {
       };
 
       // ---------- PCP ---------- (chave composta: mesmo código se repete entre abas Tub7/Tub8)
+      const normStatus=(s)=>{ const up=(s||'').toUpperCase().trim();
+        if(['PONTO E ENTREGUE','RPONTO E ENTREGUE','PRONTO E ENTREGUE'].includes(up)) return 'PRONTO E ENTREGUE';
+        if(up.includes('PRONTO')&&up.includes('NÃO')) return 'PRONTO E NÃO ENTREGUE';
+        if(up==='ERRO!'||/^\d{4}-\d{2}-\d{2}/.test(up)) return '';
+        return s; };
       let pcpByCKey={};
       if(importPcpFile){
         const buf=await importPcpFile.arrayBuffer();
@@ -1145,7 +1150,7 @@ class Component extends DCLogic {
               qtd: cQtd!=null? (typeof row[cQtd]==='number'?row[cQtd]:(parseFloat(row[cQtd])||0)) : 0,
               unid: norm(cUnid!=null?row[cUnid]:null)||'pç',
               velAlvo: cVel!=null && typeof row[cVel]==='number'?row[cVel]:null,
-              status: norm(cStatus!=null?row[cStatus]:null),
+              status: normStatus(norm(cStatus!=null?row[cStatus]:null)),
               dataPedido: cDPed!=null?row[cDPed]:null, dataEntrega: cDEnt!=null?row[cDEnt]:null };
           }
         }
@@ -1228,7 +1233,7 @@ class Component extends DCLogic {
       }));
       const newlyLinkedCKeys=new Set(apontamentosNovos.filter(a=>a.pedidoCKey && pcpByCKey[a.pedidoCKey]).map(a=>a.pedidoCKey));
       const linkedCKeys=new Set([...existingCKeys,...newlyLinkedCKeys]);
-      const openStatuses=new Set(['Em aberto','EM ABERTO','A SER PRODUZIDO - DENTRO DO ESTADO','A SER PRODUZIDO - FORA DO ESTADO','EM PRODUÇÃO']);
+      const openStatuses=new Set(['Em aberto','EM ABERTO','A SER PRODUZIDO - DENTRO DO ESTADO','A SER PRODUZIDO - FORA DO ESTADO','EM PRODUÇÃO','AMOSTRA DE PRODUÇÃO']);
       const openCKeys=new Set(Object.keys(pcpByCKey).filter(k=>openStatuses.has((pcpByCKey[k].status||'').trim())));
       const finalCKeys=importPcpFile? new Set([...linkedCKeys,...openCKeys]) : null;
 
@@ -1266,9 +1271,12 @@ class Component extends DCLogic {
           const prodz = unid==='kg' ? (prodzKg[p.id]||0) : (prodzPc[p.id]||0);
           const raw=(p.status||'').trim().toUpperCase();
           if(raw.startsWith('CANCELADO')){ p.status='CANCELADO'; continue; }
-          if(p.qtd>0 && prodz>=0.9*p.qtd) p.status='PRONTO E ENTREGUE';
-          else if(prodz>0) p.status='EM PRODUÇÃO';
-          else if(!['A SER PRODUZIDO - DENTRO DO ESTADO','A SER PRODUZIDO - FORA DO ESTADO','EM ABERTO'].includes(p.status)) p.status='Em aberto';
+          if(p.qtd>0 && prodz>=0.9*p.qtd){ p.status='PRONTO E ENTREGUE'; continue; }
+          if(prodz>0){ p.status='EM PRODUÇÃO'; continue; }
+          // sem producao vinculada nesta importacao (ex.: importou so o PCP, sem o F-23 correspondente) —
+          // nesse caso preserva um status final ja conhecido do proprio PCP em vez de rebaixar para 'Em aberto' por engano
+          if(raw.startsWith('PRONTO')||raw==='CANCELADO'){ /* mantem o status original do PCP, ja setado em p.status */ }
+          else if(!['A SER PRODUZIDO - DENTRO DO ESTADO','A SER PRODUZIDO - FORA DO ESTADO','EM ABERTO','AMOSTRA DE PRODUÇÃO'].includes(p.status)){ p.status='Em aberto'; }
         }
       }
 
