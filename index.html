@@ -956,6 +956,7 @@ class Component extends DCLogic {
       if(!db || !db.paradas){
         db=this.materializeSeed(window.TuboData);
       }
+      db=this.sanitizeDb(db);
       db.pedidos=(db.pedidos||[]).map(p=>{
         if(p.statusProd) return p;
         const st=String(p.status||'');
@@ -982,21 +983,29 @@ class Component extends DCLogic {
     };
     tryInit();
   }
+  sanitizeDb(db){
+    // blindagem: garante que os arrays essenciais sempre existem, mesmo se uma versao salva (local ou no servidor) estiver incompleta — evita crash da tela inteira
+    if(!db) return db;
+    const arrays=['pedidos','apontamentos','osList','ausencias','clientes','produtos','maquinas','operadores','usuarios','motivosParada','itensEquip','motivosOS','unidades','turnos','metasMensais','componentes','paradas'];
+    for(const k of arrays){ if(!Array.isArray(db[k])) db[k]=[]; }
+    return db;
+  }
   syncPull = async (isFirst)=>{
     try{
       const res = await fetch('/api/db?t='+Date.now(), {cache:'no-store'});
       if(!res.ok) throw new Error('http '+res.status);
       const data = await res.json();
       if(data && data.db){
+        const safeDb=this.sanitizeDb(data.db);
         if(isFirst){
           // ao abrir o app, o servidor é a verdade compartilhada — substitui a base local
-          try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(data.db)); }catch(e){}
-          this.setState({db:data.db, syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
+          try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(safeDb)); }catch(e){}
+          this.setState({db:safeDb, syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
         } else {
           // pull periódico: só aplica se alguém mais salvou algo depois do que já temos
           if(data.updatedAt && data.updatedAt!==this.state.syncUpdatedAt){
-            try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(data.db)); }catch(e){}
-            this.setState({db:data.db, syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
+            try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(safeDb)); }catch(e){}
+            this.setState({db:safeDb, syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
           } else {
             this.setState({syncStatus:'online'});
           }
