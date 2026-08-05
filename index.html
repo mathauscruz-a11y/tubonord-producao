@@ -344,7 +344,7 @@ select.sel[multiple]{height:80px}
 <sc-for list="{{velRows}}" as="v" hint-placeholder-count="4">
 <div class="pbrow"><div class="fw6" style="min-width:100px">{{v.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{v.pctStyle}}"></div></div><div class="pbv">{{v.pct}}%</div></div>
 <div class="mini" style="color:var(--mut);margin:-4px 0 8px 0">Alvo: {{v.velAlvo}} · Atingida: {{v.velAting}}</div>
-<sc-if value="{{v.discrepante}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--warn);margin:-4px 0 10px 0">⚠ Produção real muito acima da meta cadastrada no PCP — valide com o PCP se a Velocidade Alvo está desatualizada ou se a máquina produz múltiplas peças por ciclo/via.</div></sc-if>
+<sc-if value="{{v.discrepante}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--warn);margin:-4px 0 10px 0">⚠ Ainda destoa da meta — pode haver pedidos sem comprimento cadastrado no PCP nesta máquina/período, distorcendo a conversão metros↔peças.</div></sc-if>
 </sc-for>
 </div>
 <div class="duo">
@@ -1328,7 +1328,7 @@ class Component extends DCLogic {
   motivoDe(id){ return this.state.db.motivosParada.find(x=>x.id===id); }
   calcMachine(aps, pars, osArr){
     const db=this.state.db;
-    let tProg=0,tParNP=0,tParPR=0,qtd=0,teor=0,kg=0,ref=0,setupMin=0,nPar=0;
+    let tProg=0,tParNP=0,tParPR=0,qtd=0,teor=0,kg=0,ref=0,setupMin=0,nPar=0,metrosProd=0;
     const parByAp={};
     for(const p of pars){
       const m=this.motivoDe(p.motivo); const t=m?m.tipo:'NP';
@@ -1343,11 +1343,12 @@ class Component extends DCLogic {
       const prog=this.tempoBruto(a)-cor; tProg+=prog;
       const oper=Math.max(prog-par,1);
       const prod=db.produtos.find(x=>x.id===a.produto);
-      if(prod){ teor+=prod.velAlvo*oper; }
+      if(prod){ teor+=prod.velAlvo*oper; if(prod.compMm){ metrosProd+=(+a.qtdPc||0)*(prod.compMm/1000); } }
       qtd+=(+a.qtdPc||0); kg+=(+a.qtdKg||0); ref+=(+a.refugoKg||0);
     }
     const disp=tProg?Math.max(0,(tProg-tParNP-tParPR)/tProg):0;
-    const perf=teor?Math.min(1.15,qtd/teor):0;
+    // Performance = metros produzidos ÷ metros-alvo (VELOCIDADE ALVO PRODUÇÃO é em m/min, não peças/min — precisa converter peças→metros pelo comprimento real da peça)
+    const perf=teor?Math.min(1.15,metrosProd/teor):0;
     const qual=kg?Math.max(0,(kg-ref)/kg):1;
     const oee=disp*perf*qual;
     const corrFech=osArr.filter(o=>o.tipo==='Corretiva'&&o.status==='Fechada'&&o.tempoReparoMin);
@@ -1355,7 +1356,7 @@ class Component extends DCLogic {
     const mttr=corrFech.length?corrFech.reduce((s,o)=>s+o.tempoReparoMin,0)/corrFech.length/60:0;
     const operH=(tProg-tParNP-tParPR)/60;
     const mtbf=nFalhas?Math.max(0,operH)/nFalhas:0;
-    return {tProg,tParNP,tParPR,qtd,kg,ref,setupMin,nPar,disp,perf,qual,oee,mttr,mtbf,nFalhas,operH,teor};
+    return {tProg,tParNP,tParPR,qtd,kg,ref,setupMin,nPar,disp,perf,qual,oee,mttr,mtbf,nFalhas,operH,teor,metrosProd};
   }
   pedidoCalc(p){
     const db=this.state.db;
@@ -1805,7 +1806,7 @@ class Component extends DCLogic {
     return [
       {tag:'Eficiência',nome:'OEE',texto:'Overall Equipment Effectiveness — eficiência global do equipamento. Multiplica os três fatores de perda: tempo perdido, ritmo perdido e produto perdido. É o indicador-mestre da operação.',formula:'OEE = Disponibilidade × Performance × Qualidade',meta:'Meta de '+meta+'%. Abaixo de '+(meta-10)+'% o cartão fica vermelho.'},
       {tag:'Tempo',nome:'Disponibilidade',texto:'Percentual do tempo em que a máquina realmente produziu, dentro do tempo em que deveria estar produzindo. O tempo bruto vem dos horários de início e fim do apontamento; as paradas classificadas como Correção não contam.',formula:'Disp. = (Tempo bruto − Paradas prog. − Paradas não prog.) ÷ Tempo bruto',meta:'Meta ≥ 88%. Setups e paradas de manutenção são os principais ofensores.'},
-      {tag:'Ritmo',nome:'Performance',texto:'Compara o que foi produzido com o que a máquina deveria ter produzido rodando na velocidade alvo do produto durante o tempo em que ficou rodando.',formula:'Perf. = Qtd produzida ÷ (Velocidade alvo × Tempo rodando)',meta:'Meta ≥ 85%. Abaixo disso, revise velocidade alvo, matéria-prima e regulagens.'},
+      {tag:'Ritmo',nome:'Performance',texto:'Compara os metros de papel processados com os metros que a máquina deveria ter processado rodando na velocidade alvo do produto (m/min) durante o tempo em que ficou rodando. A quantidade de peças é convertida em metros pelo comprimento real de cada produto (cadastro PCP).',formula:'Perf. = Metros produzidos (peças × comprimento) ÷ (Velocidade alvo em m/min × Tempo rodando)',meta:'Meta ≥ 85%. Abaixo disso, revise velocidade alvo, matéria-prima e regulagens.'},
       {tag:'Qualidade',nome:'Qualidade',texto:'Fração do que foi produzido que saiu conforme, descontando o refugo apontado em quilos.',formula:'Qual. = (Peso produzido − Refugo) ÷ Peso produzido',meta:'Meta ≥ 98%.'},
       {tag:'Manutenção',nome:'MTTR',texto:'Mean Time To Repair — tempo médio de reparo das ordens corretivas já fechadas. Mede a agilidade da manutenção, incluindo o tempo de espera por peças e aprovação.',formula:'MTTR = Σ tempo de reparo ÷ nº de corretivas fechadas',meta:'Meta ≤ 2h. MTTR alto indica falta de peças ou de padronização do reparo.'},
       {tag:'Manutenção',nome:'MTBF',texto:'Mean Time Between Failures — tempo médio de operação entre duas falhas. Mede a confiabilidade do equipamento.',formula:'MTBF = Horas em operação ÷ nº de falhas corretivas',meta:'Meta ≥ 80h. MTBF baixo pede plano de preventiva dedicado.'},
@@ -2004,10 +2005,10 @@ class Component extends DCLogic {
     // Velocidade Atingida x Velocidade Alvo por máquina (mesma metodologia do fator Performance do OEE, exposta como indicador próprio)
     const velRows=maqStats.map(m=>{
       const operMin=m.raw.operH*60;
-      const velAlvo=operMin?m.raw.teor/operMin:0;
-      const velAting=operMin?m.raw.qtd/operMin:0;
+      const velAlvo=operMin?m.raw.teor/operMin:0; // m/min
+      const velAting=operMin?m.raw.metrosProd/operMin:0; // m/min real
       const pct=velAlvo?Math.round(velAting/velAlvo*100):0;
-      return {nome:m.nome,velAlvo:velAlvo?velAlvo.toFixed(2)+' pç/min':'—',velAting:velAting?velAting.toFixed(2)+' pç/min':'—',
+      return {nome:m.nome,velAlvo:velAlvo?velAlvo.toFixed(2)+' m/min':'—',velAting:velAting?velAting.toFixed(2)+' m/min':'—',
         pct,vazio:!velAlvo,discrepante:pct>150,
         pctStyle:{width:Math.min(100,pct)+'%',background:pct>=95?'var(--ok)':pct>=80?'var(--warn)':'var(--bad)'}};
     });
