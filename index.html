@@ -954,16 +954,7 @@ class Component extends DCLogic {
       let db=null;
       try{ const saved=localStorage.getItem('tubo_sys_v4_real'); db=saved?JSON.parse(saved):null; }catch(e){}
       if(!db || !db.paradas){
-        const seed=JSON.parse(JSON.stringify(window.TuboData));
-        const paradas=[]; let pid=1;
-        for(const a of seed.apontamentos){
-          for(const p of (a.paradas||[])){
-            paradas.push({id:'PR'+String(pid++).padStart(4,'0'),data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador,motivo:p.motivo,min:p.min,obs:p.obs||'',apId:a.id,osId:null});
-          }
-          delete a.paradas;
-        }
-        seed.paradas=paradas;
-        db=seed;
+        db=this.materializeSeed(window.TuboData);
       }
       db.pedidos=(db.pedidos||[]).map(p=>{
         if(p.statusProd) return p;
@@ -1560,9 +1551,34 @@ class Component extends DCLogic {
   delPar = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
     db.paradas=db.paradas.filter(p=>p.id!==id); this.persist(db); this.toast('Parada excluída'); };
   // ----- manutenção -----
+  materializeSeed(seedRaw){
+    const seed=JSON.parse(JSON.stringify(seedRaw));
+    const paradas=[]; let pid=1;
+    for(const a of seed.apontamentos){
+      for(const p of (a.paradas||[])){
+        paradas.push({id:'PR'+String(pid++).padStart(4,'0'),data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador,motivo:p.motivo,min:p.min,obs:p.obs||'',apId:a.id,osId:null});
+      }
+      delete a.paradas;
+    }
+    seed.paradas=paradas;
+    seed.pedidos=(seed.pedidos||[]).map(p=>{
+      if(p.statusProd) return p;
+      const st=String(p.status||'');
+      let sp='Em Aberto',sl='—';
+      if(st==='CANCELADO') sp='Cancelado';
+      else if(st.startsWith('PRONTO')){ sp='Concluído'; sl=st==='PRONTO E ENTREGUE'?'Pronto e Entregue':'Pronto e Não Entregue'; }
+      return {...p,statusProd:sp,statusLog:sl};
+    });
+    if(!seed.componentes) seed.componentes=[
+      {id:'CP01',nome:'Rolamento do fuso 6204',maquina:'TUB03',criticidade:'A'},
+      {id:'CP02',nome:'Faca circular de corte',maquina:'CONE02',criticidade:'A'},
+      {id:'CP03',nome:'Correia dentada do coleiro',maquina:'TUB07',criticidade:'B'},
+      {id:'CP04',nome:'Bomba de cola',maquina:'TUB08',criticidade:'A'}];
+    return seed;
+  }
   restaurarSeed = ()=>{
     if(!window.confirm('Isso vai SUBSTITUIR a base atual (no servidor e neste navegador) pelos dados originais do sistema (seed atual). Cadastros manuais recentes, OS lançadas à mão e edições feitas depois do último import serão perdidos. Confirma?')) return;
-    const fresh=JSON.parse(JSON.stringify(window.TuboData));
+    const fresh=this.materializeSeed(window.TuboData);
     fresh.config=(this.state.db&&this.state.db.config)||{};
     this.persist(fresh);
     this.toast('Base restaurada para os dados originais ✓ — sincronizando com o servidor…');
