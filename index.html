@@ -467,8 +467,8 @@ select.sel[multiple]{height:80px}
 <div class="fg"><label class="flab">Máquina</label><select class="inp" name="prod.maquina" value="{{fProd.maquina}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{maqOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
 <div class="fg"><label class="flab">Turno</label><select class="inp" name="prod.turno" value="{{fProd.turno}}" onChange="{{onF}}"><option value="A">1º Turno (06–14h)</option><option value="B">2º Turno (14–22h)</option><option value="C">3º Turno (22–06h)</option></select></div>
 <div class="fg"><label class="flab">Operador</label><select class="inp" name="prod.operador" value="{{fProd.operador}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{opOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
-<div class="fg" style="grid-column:span 2"><label class="flab">Pedido / OP (vincula cliente + produto)</label><select class="inp" name="prod.pedido" value="{{fProd.pedido}}" onChange="{{onF}}"><option value="">Sem pedido vinculado</option><sc-for list="{{pedOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
-<div class="fg" style="grid-column:span 2"><label class="flab">Produto</label><select class="inp" name="prod.produto" value="{{fProd.produto}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{prodOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Pedido / OP (vincula cliente + produto)</label><input class="inp" list="dlPedidos" value="{{fProdPedidoBusca}}" onChange="{{onSearchPedido}}" placeholder="Digite para buscar por código, cliente ou produto…"><datalist id="dlPedidos"><sc-for list="{{pedOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.label}}"></option></sc-for></datalist></div>
+<div class="fg" style="grid-column:span 2"><label class="flab">Produto</label><input class="inp" list="dlProdutos" value="{{fProdProdutoBusca}}" onChange="{{onSearchProduto}}" placeholder="Digite para buscar por código, produto ou cliente…"><datalist id="dlProdutos"><sc-for list="{{prodOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.label}}"></option></sc-for></datalist></div>
 <div class="fg"><label class="flab">Qtd Produzida (pç)</label><input class="inp" type="number" name="prod.qtdPc" value="{{fProd.qtdPc}}" onChange="{{onF}}"></div>
 <div class="fg"><label class="flab">Refugo / Desperdício (kg)</label><input class="inp" type="number" name="prod.refugoKg" value="{{fProd.refugoKg}}" onChange="{{onF}}"></div>
 <div class="fg"><label class="flab">Velocidade alvo</label><div class="inp" style="background:#f5f7f9;border-style:dashed">{{metaProdSel}}</div></div>
@@ -669,8 +669,8 @@ select.sel[multiple]{height:80px}
 </sc-if>
 <div class="panel"><div class="ptit"><button class="chevbtn" data-k="metas" onClick="{{togglePanel}}">{{metasChev}}</button>Metas de Velocidade por Produto × Cliente <span class="mini fw5">(edite em Cadastros → Produtos) · {{metaRowsResumo}}</span></div>
 <sc-if value="{{metasOpen}}" hint-placeholder-val="{{true}}">
-<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Produto</th><th>Cliente</th><th>Tipo de Máquina</th><th>Peso Ideal (kg/pç)</th><th>Velocidade Alvo</th><th>Capacidade/turno (8h)</th></tr></thead><tbody>
-<sc-for list="{{metaRows}}" as="m" hint-placeholder-count="8"><tr><td class="fw6">{{m.nome}}</td><td>{{m.cliente}}</td><td>{{m.tipo}}</td><td class="num">{{m.peso}}</td><td class="num">{{m.vel}}</td><td class="num">{{m.cap}} pç</td></tr></sc-for>
+<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Produto</th><th>Cliente</th><th>Tipo de Máquina</th><th>Comprimento</th><th>Diâmetro</th><th>Peso Ideal (kg/pç)</th><th>Velocidade Alvo</th><th>Capacidade/turno (8h)</th></tr></thead><tbody>
+<sc-for list="{{metaRows}}" as="m" hint-placeholder-count="8"><tr><td class="fw6">{{m.nome}}</td><td>{{m.cliente}}</td><td>{{m.tipo}}</td><td class="num">{{m.comp}}</td><td class="num">{{m.diam}}</td><td class="num">{{m.peso}}</td><td class="num {{m.velCls}}">{{m.vel}}</td><td class="num">{{m.cap}}</td></tr></sc-for>
 </tbody></table></div>
 </sc-if>
 </div>
@@ -1592,6 +1592,23 @@ class Component extends DCLogic {
     this.persist(fresh);
     this.toast('Base restaurada para os dados originais ✓ — sincronizando com o servidor…');
   };
+  onSearchPedido = (e)=>{
+    const typed=e.target.value;
+    const id=typed.split(' · ')[0].trim();
+    const ped=this.state.db.pedidos.find(p=>p.id===id);
+    const forms={...this.state.forms};
+    forms.prod={...forms.prod, pedidoBusca:typed, pedido: ped?id:''};
+    if(ped){ forms.prod.produto=ped.produto; forms.prod.produtoBusca=''; if(ped.maquina) forms.prod.maquina=ped.maquina; }
+    this.setState({forms});
+  };
+  onSearchProduto = (e)=>{
+    const typed=e.target.value;
+    const id=typed.split(' · ')[0].trim();
+    const prod=this.state.db.produtos.find(p=>p.id===id);
+    const forms={...this.state.forms};
+    forms.prod={...forms.prod, produtoBusca:typed, produto: prod?id:''};
+    this.setState({forms});
+  };
   saveCustosManut = ()=>{
     const f=this.state.forms.custosManut||{}; const db={...this.state.db};
     db.config={...(db.config||{}), salarioMecanico:+f.salarioMecanico||0, salarioAuxiliar:+f.salarioAuxiliar||0};
@@ -2416,22 +2433,31 @@ class Component extends DCLogic {
       cAberto:pedCardFilter.includes('aberto')?'cardOn':'',cConcluido:pedCardFilter.includes('concluido')?'cardOn':'',cNaoConc:pedCardFilter.includes('naoConc')?'cardOn':'',
       cCancelado:pedCardFilter.includes('cancelado')?'cardOn':'',cPne:pedCardFilter.includes('pne')?'cardOn':'',cPe:pedCardFilter.includes('pe')?'cardOn':''};
     this._iaCtx+='\nCarteira: '+stK.aberto+' em aberto, '+stK.concluido+' concluídos, '+stK.naoConc+' não concluídos, '+stK.cancelado+' cancelados; logística: '+stK.pne+' pronto e não entregue, '+stK.pe+' entregues. Conclusão '+concPct+'%, entrega '+entrPct+'%.';
-    const metaRowsAll=db.produtos.map(p=>({nome:p.nome,cliente:(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',tipo:p.maquinaTipo,
-      peso:String(p.pesoIdeal),vel:p.velAlvo+' '+p.unid,cap:this.fmtN(p.velAlvo*480*0.85)}));
+    const metaRowsAll=db.produtos.map(p=>{
+      const confiavel=!!(p.velAlvo && !p.velAlvoEstimado && (p.unid||'').trim().toLowerCase()!=='kg');
+      const capPc=(confiavel && p.compMm)? this.fmtN((p.velAlvo*480*0.85)/(p.compMm/1000)) : '—';
+      return {nome:p.nome,cliente:(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',tipo:p.maquinaTipo,
+        peso:String(p.pesoIdeal),comp:p.compMm?(p.compMm/1000).toFixed(3)+' m':'—',diam:p.diamMm?p.diamMm+' mm':'—',
+        vel:confiavel?(p.velAlvo+' m/min'):'sem meta confiável',velCls:confiavel?'':'mini',cap:capPc};
+    });
     const metaRows=metaRowsAll.slice(0,300);
     // ---- Simulador de Programação ----
     const simCanDrag=perfilAtual==='Coordenador de Produção';
-    const simPeds=pedsUnid.filter(p=>!this.pedidoCalc(p).status.startsWith('PRONTO E ENTREGUE'));
+    const simPeds=pedsUnid.filter(p=>{
+      if(this.pedidoCalc(p).status.startsWith('PRONTO E ENTREGUE')) return false;
+      const dEnt=p.dataEntrega!=='IMEDIATO'?p.dataEntrega:null;
+      const dRef=p.dataProgramada||dEnt;
+      // só entra no simulador se a data de referência estiver dentro do período filtrado (ou for "IMEDIATO"/sem data, sempre relevante)
+      if(dRef && (dRef<s.dataIni||dRef>s.dataFim)) return false;
+      return true;
+    });
     const simBaseReal=p=>p.dataProgramada||(p.dataEntrega&&p.dataEntrega!=='IMEDIATO'?p.dataEntrega:hoje)||hoje;
     const simBase=p=>s.sim[p.id]||simBaseReal(p);
     const simFim=(p,ini)=>this.addDias(ini,this.diasProducao(p)-1);
     const simLate=(p,ini)=>{ if(!p.dataEntrega||p.dataEntrega==='IMEDIATO')return false; return simFim(p,ini)>p.dataEntrega; };
-    // janela ancorada em hoje, estendida até cobrir todos os pedidos do cenário
-    let colIni=hoje,colFim=this.addDias(hoje,13);
-    for(const p of simPeds){ const b=simBase(p),r=simBaseReal(p);
-      if(b<colIni)colIni=b; if(r<colIni)colIni=r;
-      if(b>colFim)colFim=b; if(r>colFim)colFim=r; }
-    const nCols=Math.min(90,Math.max(14,Math.round((new Date(colFim+'T12:00:00')-new Date(colIni+'T12:00:00'))/86400000)+1));
+    // janela = o período selecionado no filtro do topo (não mais expandida por pedidos antigos ainda em aberto)
+    let colIni=s.dataIni, colFim=s.dataFim;
+    const nCols=Math.min(90,Math.max(7,Math.round((new Date(colFim+'T12:00:00')-new Date(colIni+'T12:00:00'))/86400000)+1));
     const simDias=[]; for(let i=0;i<nCols;i++) simDias.push(this.addDias(colIni,i));
     const dowN=['dom','seg','ter','qua','qui','sex','sáb'];
     const simCols=simDias.map(iso=>{
@@ -2603,6 +2629,8 @@ class Component extends DCLogic {
     const tSteps=this.tourSteps();
     const tSt=tSteps[s.tourStep]||tSteps[0];
     const fProd=s.forms.prod, fPar=s.forms.par, fOs=s.forms.os, fPed=s.forms.ped, fAus=s.forms.aus;
+    const pedOptsComputed=db.pedidos.filter(p=>!this.pedidoCalc(p).status.startsWith('PRONTO')).map(p=>({id:p.id,label:p.id+' · '+((db.clientes.find(c=>c.id===p.cliente)||{}).nome||'')+' · '+((db.produtos.find(x=>x.id===p.produto)||{}).nome||'').slice(0,30)}));
+    const prodOptsComputed=db.produtos.filter(p=>{ const ped=db.pedidos.find(x=>x.produto===p.id); return !ped||!this.pedidoCalc(ped).status.startsWith('PRONTO'); }).map(p=>({id:p.id,label:p.id+' · '+p.nome.slice(0,60)+' — '+((db.clientes.find(c=>c.id===p.cliente)||{}).nome||''),comp:p.compMm?(p.compMm/1000).toFixed(3)+' m':'—',diam:p.diamMm?p.diamMm+' mm':'—'}));
     return {
       nav:this.nav,unid:this.unid,onDataIni:this.onDataIni,onDataFim:this.onDataFim,onFMaq:this.onFMaq,onFTurno:this.onFTurno,onFOper:this.onFOper,onUser:this.onUser,onF:this.onF,
       addParada:this.addParada,rmParada:this.rmParada,onParada:this.onParada,saveProd:this.saveProd,delAp:this.delAp,editAp:this.editAp,cancelProdEdit:this.cancelProdEdit,
@@ -2652,12 +2680,15 @@ class Component extends DCLogic {
       prodDia,prodDiaPc,prodDiaIni:days.length?this.fmtD(days[0]):'—',prodDiaFim:days.length?this.fmtD(days[days.length-1]):'—',prodDiaMax:this.fmtN(maxDay),prodDiaMaxPc:this.fmtN(maxDayPc),
       mapaUf,mapaList,ader,aderWk,entr,
       fProd,fProdParadas:fProd.paradas.map((p,i)=>({...p,i})),prodEditing:!!fProd.editId,prodFormTit:fProd.editId?'Editar Apontamento':'Novo Apontamento de Produção',prodSaveLbl:fProd.editId?'Salvar alterações':'Salvar apontamento',
+      fProdPedidoBusca:fProd.pedidoBusca!=null?fProd.pedidoBusca:((pedOptsComputed.find(o=>o.id===fProd.pedido)||{}).label||''),
+      fProdProdutoBusca:fProd.produtoBusca!=null?fProd.produtoBusca:((prodOptsComputed.find(o=>o.id===fProd.produto)||{}).label||''),
+      onSearchPedido:this.onSearchPedido,onSearchProduto:this.onSearchProduto,
       maqOpts:maqs,opOpts:ops.filter(o=>o.funcao!=='Técnico de Manutenção'),opTodosOpts:db.operadores,
-      pedOpts:db.pedidos.filter(p=>!this.pedidoCalc(p).status.startsWith('PRONTO')).map(p=>({id:p.id,label:p.id+' · '+((db.clientes.find(c=>c.id===p.cliente)||{}).nome||'')+' · '+((db.produtos.find(x=>x.id===p.produto)||{}).nome||'').slice(0,30)})),
-      prodOpts:db.produtos.map(p=>({id:p.id,label:p.nome+' — '+((db.clientes.find(c=>c.id===p.cliente)||{}).nome||'')})),
+      pedOpts:pedOptsComputed,
+      prodOpts:prodOptsComputed,
       motivoOpts:db.motivosParada,apRows,apCount:aps.length,velAtingida,tempoBrutoSel,tempoRodandoSel,
       canVerValor,canPrintOs,noPrintOs:!canPrintOs,
-      metaProdSel:prodSel?prodSel.velAlvo+' '+prodSel.unid+' · '+prodSel.pesoIdeal+' kg/pç':'—',
+      metaProdSel:prodSel?((prodSel.velAlvo&&!prodSel.velAlvoEstimado&&(prodSel.unid||'').toLowerCase()!=='kg')?(prodSel.velAlvo+' m/min'):'sem meta confiável')+' · '+prodSel.pesoIdeal+' kg/pç'+(prodSel.compMm?' · Compr.: '+(prodSel.compMm/1000).toFixed(3)+'m':'')+(prodSel.diamMm?' · Diâm.: '+prodSel.diamMm+'mm':''):'—',
       fPar,parEditing:!!fPar.editId,parFormTit:fPar.editId?'Editar Parada':'Registrar Parada',parSaveLbl:fPar.editId?'Salvar alterações':'Registrar parada',
       parRows,parCount:pars.length,parK,apLinkOpts,
       fOs,osEditing:!!fOs.editId,osFormTit:fOs.editId?'Editar OS':'Abrir Ordem de Serviço',osSaveLbl:fOs.editId?'Salvar alterações':'Abrir OS',
