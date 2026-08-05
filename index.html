@@ -2019,6 +2019,12 @@ class Component extends DCLogic {
       return {id:m.id,nome:m.nome,unid:m.unidade==='NORD'?'Tubonord':'Tubocone',raw};
     });
     // Velocidade Atingida x Velocidade Alvo por máquina (mesma metodologia do fator Performance do OEE, exposta como indicador próprio)
+    // uma máquina "tem meta confiável" se, no histórico completo (não só no período filtrado), existe produção real com Velocidade Alvo não-estimada e em peças — evita que um recorte de data curto pareça "sem meta" por coincidência
+    const maqTemMetaReal=(maqId)=>db.apontamentos.some(a=>{
+      if(a.maquina!==maqId||!a.produto) return false;
+      const pr=db.produtos.find(x=>x.id===a.produto);
+      return pr && pr.velAlvo && pr.compMm && !pr.velAlvoEstimado && (pr.unid||'').trim().toLowerCase()!=='kg';
+    });
     const velRows=maqStats.map(m=>{
       const operMin=m.raw.operH*60;
       const operMinM=m.raw.operMinMatched; // só o tempo com produto medido em peças e com meta cadastrada
@@ -2028,8 +2034,9 @@ class Component extends DCLogic {
       const pctKgExcluido=operMin?Math.round(m.raw.operMinKgBased/operMin*100):0;
       // taxa real em peças/min e peças/hora, sempre calculável (não depende de meta), útil quando não há Velocidade Alvo cadastrada (ex.: Conicaleira)
       const taxaPcMin=operMin?m.raw.qtd/operMin:0;
+      const temMetaReal=maqTemMetaReal(m.id);
       return {nome:m.nome,velAlvo:velAlvo?velAlvo.toFixed(2)+' m/min':'—',velAting:velAting?velAting.toFixed(2)+' m/min':'—',
-        pct,vazio:!velAlvo,temDados:!!velAlvo,discrepante:pct>150,
+        pct,vazio:!temMetaReal,temDados:temMetaReal,discrepante:pct>150,
         taxaPcMin:taxaPcMin?taxaPcMin.toFixed(1)+' pç/min ('+Math.round(taxaPcMin*60)+' pç/h)':'—',
         temKg:pctKgExcluido>0,pctKgExcluido,
         pctStyle:{width:Math.min(100,pct)+'%',background:pct>=95?'var(--ok)':pct>=80?'var(--warn)':'var(--bad)'}};
