@@ -709,8 +709,10 @@ select.sel[multiple]{height:80px}
 </div>
 <div class="fx gap8 mt16" style="align-items:center">
 <button class="btn btna" onClick="{{processImport}}">{{importBtnLbl}}</button>
+<button class="btsm" onClick="{{restaurarSeed}}" style="color:var(--bad);border-color:var(--bad)">⚠ Restaurar dados originais</button>
 <sc-if value="{{importMsg}}" hint-placeholder-val="{{false}}"><span class="mini fw6" style="{{importMsgStyle}}">{{importMsg}}</span></sc-if>
 </div>
+<div class="mini" style="color:var(--mut);margin-top:6px">O botão "Restaurar dados originais" apaga qualquer versão salva no servidor (mesmo com bug) e volta pro conteúdo mais recente que eu publiquei em <code>data.js</code> — use se a tela continuar mostrando dados errados mesmo depois de eu corrigir e você atualizar a página.</div>
 </div>
 <div class="tabs"><sc-for list="{{cadTabs}}" as="t" hint-placeholder-count="7"><button class="tab {{t.cls}}" data-tab="{{t.key}}" onClick="{{setCadTab}}">{{t.label}}</button></sc-for></div>
 <div class="panel"><div class="ptit">💰 Custos de Manutenção <span class="mini fw5">— usados para calcular o custo estimado ao fechar uma OS</span></div>
@@ -1558,6 +1560,13 @@ class Component extends DCLogic {
   delPar = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
     db.paradas=db.paradas.filter(p=>p.id!==id); this.persist(db); this.toast('Parada excluída'); };
   // ----- manutenção -----
+  restaurarSeed = ()=>{
+    if(!window.confirm('Isso vai SUBSTITUIR a base atual (no servidor e neste navegador) pelos dados originais do sistema (seed atual). Cadastros manuais recentes, OS lançadas à mão e edições feitas depois do último import serão perdidos. Confirma?')) return;
+    const fresh=JSON.parse(JSON.stringify(window.TuboData));
+    fresh.config=(this.state.db&&this.state.db.config)||{};
+    this.persist(fresh);
+    this.toast('Base restaurada para os dados originais ✓ — sincronizando com o servidor…');
+  };
   saveCustosManut = ()=>{
     const f=this.state.forms.custosManut||{}; const db={...this.state.db};
     db.config={...(db.config||{}), salarioMecanico:+f.salarioMecanico||0, salarioAuxiliar:+f.salarioAuxiliar||0};
@@ -2653,7 +2662,7 @@ class Component extends DCLogic {
       fAus,ausEditing:!!fAus.editId,ausFormTit:fAus.editId?'Editar Ausência':'Registrar Ausência',ausSaveLbl:fAus.editId?'Salvar alterações':'Registrar',
       ausRows,rhK,
       cadTabs,cadLabel:def.label,cadFields,cadCols:def.cols,cadRows,cadEditing:!!s.cadEditId,cadEditId:s.cadEditId||'',cadFormTit:s.cadEditId?'Editar registro':'Novo registro',cadSaveLbl:s.cadEditId?'Salvar alterações':'Adicionar',
-      saveCustosManut:this.saveCustosManut,
+      saveCustosManut:this.saveCustosManut,restaurarSeed:this.restaurarSeed,
       custosView:{salarioMecanico:(s.forms.custosManut&&s.forms.custosManut.salarioMecanico!==undefined&&s.forms.custosManut.salarioMecanico!=='')?s.forms.custosManut.salarioMecanico:((db.config&&db.config.salarioMecanico!=null)?db.config.salarioMecanico:''),
         salarioAuxiliar:(s.forms.custosManut&&s.forms.custosManut.salarioAuxiliar!==undefined&&s.forms.custosManut.salarioAuxiliar!=='')?s.forms.custosManut.salarioAuxiliar:((db.config&&db.config.salarioAuxiliar!=null)?db.config.salarioAuxiliar:'')},
       chatMsgs:s.chat.map((m,i)=>({cls:m.role==='user'?'mu':'ma',text:m.text,isAi:m.role==='ai',idx:i})),chatInput:s.chatInput,chatBusy:s.chatBusy,
