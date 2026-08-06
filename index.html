@@ -1631,7 +1631,7 @@ class Component extends DCLogic {
     const paradas=[]; let pid=1;
     for(const a of seed.apontamentos){
       for(const p of (a.paradas||[])){
-        paradas.push({id:'PR'+String(pid++).padStart(4,'0'),data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador,motivo:p.motivo,min:p.min,obs:p.obs||'',apId:a.id,osId:null});
+        paradas.push({id:'PR'+String(pid++).padStart(4,'0'),data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador,motivo:p.motivo,min:p.min,horaInicio:p.horaInicio||'',horaFim:p.horaFim||'',obs:p.obs||'',apId:a.id,osId:null});
       }
       delete a.paradas;
     }
