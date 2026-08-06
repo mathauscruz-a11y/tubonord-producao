@@ -485,7 +485,7 @@ select.sel[multiple]{height:80px}
 </div>
 <div class="panel" id="p-prod-lista"><div class="ptit">Apontamentos <span class="mini fw5">{{apCount}} registros no período filtrado</span><button class="btsm" style="margin-left:auto" onClick="{{openRelatorioPrint}}">🖨 Relatório de Produção do Período (ISO 9001)</button></div>
 <div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Início</th><th>Fim</th><th>Máquina</th><th>Turno</th><th>Operador</th><th>Produto</th><th>Bruto</th><th>Rodando</th><th>Vel. Real</th><th>Qtd (pç)</th><th>Peso (kg)</th><th>Refugo</th><th></th></tr></thead><tbody>
-<sc-for list="{{apRows}}" as="a" hint-placeholder-count="8"><tr><td>{{a.inicio}}</td><td>{{a.fim}}</td><td class="fw6">{{a.maq}}</td><td>{{a.turno}}</td><td>{{a.op}}</td><td class="mini">{{a.prod}}</td><td class="num">{{a.bruto}}</td><td class="num">{{a.rodando}}</td><td class="num {{a.velCls}}">{{a.velReal}}</td><td class="num">{{a.qtd}}</td><td class="num">{{a.kg}}</td><td class="num">{{a.refugo}} kg</td><td class="fx gap8"><button class="btsm" data-id="{{a.id}}" onClick="{{editAp}}">Editar</button><button class="btsm btdel" data-id="{{a.id}}" onClick="{{delAp}}">Excluir</button></td></tr></sc-for>
+<sc-for list="{{apRows}}" as="a" hint-placeholder-count="8"><tr><td title="{{a.rastro}}">{{a.inicio}}</td><td>{{a.fim}}</td><td class="fw6">{{a.maq}}</td><td>{{a.turno}}</td><td>{{a.op}}</td><td class="mini">{{a.prod}}</td><td class="num">{{a.bruto}}</td><td class="num">{{a.rodando}}</td><td class="num {{a.velCls}}">{{a.velReal}}</td><td class="num">{{a.qtd}}</td><td class="num">{{a.kg}}</td><td class="num">{{a.refugo}} kg</td><td class="fx gap8"><button class="btsm" data-id="{{a.id}}" onClick="{{editAp}}">Editar</button><button class="btsm btdel" data-id="{{a.id}}" onClick="{{delAp}}">Excluir</button></td></tr></sc-for>
 </tbody></table></div></div>
 <sc-if value="{{relatorioPrintOpen}}" hint-placeholder-val="{{false}}">
 <div class="modal" onClick="{{closeRelatorioPrint}}"><div class="mbox" onClick="{{stop}}" style="max-width:820px">
@@ -668,7 +668,7 @@ select.sel[multiple]{height:80px}
 <div class="scroll scrollcap"><table class="tbl"><thead><tr><th>OP</th><th>Nº Cliente</th><th>Cliente</th><th>Produto</th><th>Máquina</th><th>Qtd</th><th>Valor (R$)</th><th>Produzido</th><th>Avanço</th><th>Entrega Prev.</th><th>Prog. Prod.</th><th>Prog. Real</th><th>Entrega Final</th><th>Replan.</th><th>Status Produção</th><th>Status Logística</th><th></th></tr>
 <tr class="filterrow"><th></th><th><button class="colfbtn {{pedColBtnCls.nr}}" data-col="nr" onClick="{{openColFilter}}">{{pedColBtnLabel.nr}}</button></th><th><button class="colfbtn {{pedColBtnCls.cliente}}" data-col="cliente" onClick="{{openColFilter}}">{{pedColBtnLabel.cliente}}</button></th><th><button class="colfbtn {{pedColBtnCls.produto}}" data-col="produto" onClick="{{openColFilter}}">{{pedColBtnLabel.produto}}</button></th><th><button class="colfbtn {{pedColBtnCls.maq}}" data-col="maq" onClick="{{openColFilter}}">{{pedColBtnLabel.maq}}</button></th><th><button class="colfbtn {{pedColBtnCls.qtd}}" data-col="qtd" onClick="{{openColFilter}}">{{pedColBtnLabel.qtd}}</button></th><th></th><th><button class="colfbtn {{pedColBtnCls.prodz}}" data-col="prodz" onClick="{{openColFilter}}">{{pedColBtnLabel.prodz}}</button></th><th></th><th><button class="colfbtn {{pedColBtnCls.entrega}}" data-col="entrega" onClick="{{openColFilter}}">{{pedColBtnLabel.entrega}}</button></th><th><button class="colfbtn {{pedColBtnCls.progProd}}" data-col="progProd" onClick="{{openColFilter}}">{{pedColBtnLabel.progProd}}</button></th><th><button class="colfbtn {{pedColBtnCls.progReal}}" data-col="progReal" onClick="{{openColFilter}}">{{pedColBtnLabel.progReal}}</button></th><th><button class="colfbtn {{pedColBtnCls.entregaFinal}}" data-col="entregaFinal" onClick="{{openColFilter}}">{{pedColBtnLabel.entregaFinal}}</button></th><th><button class="colfbtn {{pedColBtnCls.replan}}" data-col="replan" onClick="{{openColFilter}}">{{pedColBtnLabel.replan}}</button></th><th><button class="colfbtn {{pedColBtnCls.statusProd}}" data-col="statusProd" onClick="{{openColFilter}}">{{pedColBtnLabel.statusProd}}</button></th><th><button class="colfbtn {{pedColBtnCls.statusLog}}" data-col="statusLog" onClick="{{openColFilter}}">{{pedColBtnLabel.statusLog}}</button></th><th></th></tr>
 </thead><tbody>
-<sc-for list="{{pedRows}}" as="p" hint-placeholder-count="8"><tr><td class="fw6">{{p.id}}</td><td>{{p.nr}}</td><td class="fw6">{{p.cliente}}</td><td class="mini">{{p.produto}}</td><td>{{p.maq}}</td><td class="num">{{p.qtd}}</td><td class="num">{{p.valorShow}}</td><td class="num">{{p.prodz}}</td><td><div class="obar"><div class="ofill" style="{{p.pctStyle}}"></div></div><span class="mini">{{p.pct}}%</span></td><td>{{p.entrega}} <sc-if value="{{p.atrasado}}" hint-placeholder-val="{{false}}"><span class="chip stAtras">ATRASADO</span></sc-if></td><td>{{p.progProd}}</td><td class="fw6">{{p.progReal}}</td><td class="fw6">{{p.entregaFinal}}</td><td class="mini" title="{{p.obsReplan}}">{{p.replan}}</td><td><span class="chip {{p.spCls}}">{{p.statusProd}}</span></td><td><span class="chip {{p.slCls}}">{{p.statusLog}}</span></td><td class="fx gap8">
+<sc-for list="{{pedRows}}" as="p" hint-placeholder-count="8"><tr><td class="fw6" title="{{p.rastro}}">{{p.id}}</td><td>{{p.nr}}</td><td class="fw6">{{p.cliente}}</td><td class="mini">{{p.produto}}</td><td>{{p.maq}}</td><td class="num">{{p.qtd}}</td><td class="num">{{p.valorShow}}</td><td class="num">{{p.prodz}}</td><td><div class="obar"><div class="ofill" style="{{p.pctStyle}}"></div></div><span class="mini">{{p.pct}}%</span></td><td>{{p.entrega}} <sc-if value="{{p.atrasado}}" hint-placeholder-val="{{false}}"><span class="chip stAtras">ATRASADO</span></sc-if></td><td>{{p.progProd}}</td><td class="fw6">{{p.progReal}}</td><td class="fw6">{{p.entregaFinal}}</td><td class="mini" title="{{p.obsReplan}}">{{p.replan}}</td><td><span class="chip {{p.spCls}}">{{p.statusProd}}</span></td><td><span class="chip {{p.slCls}}">{{p.statusLog}}</span></td><td class="fx gap8">
 <sc-if value="{{p.canEntregar}}" hint-placeholder-val="{{false}}"><button class="btsm" data-id="{{p.id}}" onClick="{{entregarPed}}">Entregar</button></sc-if>
 <button class="btsm" data-id="{{p.id}}" onClick="{{editPed}}">Editar</button><button class="btsm btdel" data-id="{{p.id}}" onClick="{{delPed}}">✕</button></td></tr></sc-for>
 </tbody></table></div>
@@ -747,6 +747,18 @@ select.sel[multiple]{height:80px}
 <div class="fg"><label class="flab">Salário do Auxiliar Mecânico (R$/hora)</label><input class="inp" type="number" name="custosManut.salarioAuxiliar" value="{{custosView.salarioAuxiliar}}" onChange="{{onF}}"></div>
 </div>
 <button class="btn btna mt8" onClick="{{saveCustosManut}}">Salvar taxas</button>
+</div>
+<div class="panel" id="p-auditoria"><div class="ptit"><button class="chevbtn" data-k="auditoria" onClick="{{togglePanel}}">{{auditoriaChev}}</button>📜 Histórico / Rastreabilidade <span class="mini fw5">— quem criou, editou ou excluiu Pedidos, Apontamentos e Ordens de Serviço · {{auditResumo}}</span></div>
+<sc-if value="{{auditoriaOpen}}" hint-placeholder-val="{{true}}">
+<div class="frm" style="grid-template-columns:1fr 1fr 1fr">
+<div class="fg"><label class="flab">Tipo</label><select class="inp" onChange="{{onF}}" name="auditFiltro.tipo" value="{{auditFiltro.tipo}}"><option value="">Todos</option><option value="pedido">Pedido</option><option value="apontamento">Apontamento</option><option value="os">Ordem de Serviço</option><option value="importacao">Importação de planilha</option></select></div>
+<div class="fg"><label class="flab">Usuário</label><select class="inp" onChange="{{onF}}" name="auditFiltro.usuario" value="{{auditFiltro.usuario}}"><option value="">Todos</option><sc-for list="{{auditUsuarios}}" as="u" hint-placeholder-count="3"><option value="{{u}}">{{u}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Referência (ID)</label><input class="inp" onChange="{{onF}}" name="auditFiltro.ref" value="{{auditFiltro.ref}}" placeholder="ex.: PD-CONE02-... ou AP4198"></div>
+</div>
+<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Quando</th><th>Usuário</th><th>Tipo</th><th>Ação</th><th>Referência</th><th>Resumo</th></tr></thead><tbody>
+<sc-for list="{{auditRows}}" as="l" hint-placeholder-count="6"><tr><td class="mini">{{l.quando}}</td><td class="fw6">{{l.usuario}}</td><td>{{l.tipo}}</td><td><span class="chip {{l.acaoCls}}">{{l.acao}}</span></td><td class="fw6">{{l.refId}}</td><td class="mini">{{l.resumo}}</td></tr></sc-for>
+</tbody></table></div>
+</sc-if>
 </div>
 <div class="panel"><div class="ptit">{{cadFormTit}} — {{cadLabel}}
 <sc-if value="{{cadEditing}}" hint-placeholder-val="{{false}}"><span class="editing">Editando {{cadEditId}} <button class="btsm" onClick="{{cancelCadEdit}}">Cancelar</button></span></sc-if></div>
@@ -944,13 +956,13 @@ class Component extends DCLogic {
       valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, pwShow:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false, iaPrintOpen:false, iaPrintIdx:null, relatorioPrintOpen:false,
       sim:{}, simOver:null, solicOpen:false, tourOn:false, tourStep:0, tourPlaying:false,
       chat:[], chatInput:'', chatBusy:false, toast:null,
-      panelOpen:{carteira:false, metas:false, atrasados:true, detalhamento:false},
+      panelOpen:{carteira:false, metas:false, atrasados:true, detalhamento:false, auditoria:false},
       pedCardFilter:[], pedColFilters:{},
       importF23File:null, importPcpFile:null, importF23Name:'Nenhum arquivo selecionado', importPcpName:'Nenhum arquivo selecionado', importBusy:false, importMsg:'', importMsgErr:false,
       mobFiltersOpen:false, mobNavOpen:false, pedOpenFilterCol:null, pedStatusPopoverOpen:false,
       forms:{ prod:this.blankProd(), os:this.blankOs(), par:this.blankPar(),
         ped:this.blankPed(), aus:this.blankAus(),
-        fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:'',horaInicio:'',horaFim:'',temAuxiliar:'nao',materialCusto:''}, osm:{}, solic:{motivo:''}, cad:{}, custosManut:{} }
+        fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:'',horaInicio:'',horaFim:'',temAuxiliar:'nao',materialCusto:''}, osm:{}, solic:{motivo:''}, cad:{}, custosManut:{}, auditFiltro:{} }
     };
     this.nav = {}; ['dash','prod','par','manut','pcp','rh','cad','ia','man'].forEach(v=>{ this.nav[v]=()=>this.setState({view:v,mobNavOpen:false}); });
     this.unid = { all:()=>this.setState({unidade:'ALL'}), nord:()=>this.setState({unidade:'NORD'}), cone:()=>this.setState({unidade:'CONE'}) };
@@ -1344,6 +1356,8 @@ class Component extends DCLogic {
           statusProd:p.status==='CANCELADO'?'Cancelado':(String(p.status).startsWith('PRONTO')?'Concluído':'Em Aberto'),
           statusLog:String(p.status).startsWith('PRONTO')?(p.status==='PRONTO E ENTREGUE'?'Pronto e Entregue':'Pronto e Não Entregue'):'—'}));
       }
+      const quemImp=this.curUser().nome;
+      this.logAudit(db,'importacao','criado','F-23/PCP','Importação de planilha por '+quemImp+' — '+apontamentosNovos.length+' apontamentos'+(pedidosNovos?', '+pedidosNovos.length+' pedidos':''));
       this.persist(db);
       this.setState({importBusy:false, importMsgErr:false,
         importMsg:'Importado: '+apontamentosNovos.length+' apontamentos'+(pedidosNovos?', '+pedidosNovos.length+' pedidos':'')+'.',
@@ -1529,17 +1543,20 @@ class Component extends DCLogic {
     if(!f.maquina||!f.produto||!f.qtdPc){ this.toast('Preencha máquina, produto e quantidade.'); return; }
     const prod=db.produtos.find(p=>p.id===f.produto);
     const brutoMin=this.tempoBruto(f);
+    const quem=this.curUser().nome, agora=new Date().toISOString();
     const base={data:f.dataInicio||f.data,dataInicio:f.dataInicio||f.data,horaInicio:f.horaInicio||'',dataFim:f.dataFim||f.dataInicio||f.data,horaFim:f.horaFim||'',
       maquina:f.maquina,turno:f.turno,operador:f.operador,pedido:f.pedido||null,produto:f.produto,
       qtdPc:+f.qtdPc,qtdKg:(f.qtdKgManual!==''&&f.qtdKgManual!=null)?+f.qtdKgManual:+((+f.qtdPc)*(prod?prod.pesoIdeal:0)).toFixed(1),
       refugoAparaKg:+f.refugoAparaKg||0,refugoTuboKg:+f.refugoTuboKg||0,refugoKg:(+f.refugoAparaKg||0)+(+f.refugoTuboKg||0),tempoTurnoMin:brutoMin};
     let apId=f.editId;
     if(f.editId){
-      db.apontamentos=db.apontamentos.map(a=>a.id===f.editId?{...a,...base}:a);
+      db.apontamentos=db.apontamentos.map(a=>a.id===f.editId?{...a,...base,editadoPor:quem,editadoEm:agora}:a);
       db.paradas=db.paradas.filter(p=>p.apId!==f.editId);
+      this.logAudit(db,'apontamento','editado',f.editId,'Apontamento '+f.editId+' editado por '+quem);
     } else {
       apId=this.nextId(db.apontamentos,'AP',4);
-      db.apontamentos=[...db.apontamentos,{id:apId,...base}];
+      db.apontamentos=[...db.apontamentos,{id:apId,...base,criadoPor:quem,criadoEm:agora}];
+      this.logAudit(db,'apontamento','criado',apId,'Apontamento '+apId+' criado por '+quem);
     }
     let novasPar=[...db.paradas];
     for(const p of f.paradas.filter(p=>+p.min>0)){
@@ -1559,6 +1576,7 @@ class Component extends DCLogic {
   cancelProdEdit = ()=>this.setState({forms:{...this.state.forms,prod:this.blankProd()}});
   delAp = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
     db.apontamentos=db.apontamentos.filter(a=>a.id!==id); db.paradas=db.paradas.filter(p=>p.apId!==id);
+    this.logAudit(db,'apontamento','excluido',id,'Apontamento '+id+' excluído por '+this.curUser().nome);
     this.persist(db); this.toast('Apontamento excluído'); };
   // ----- paradas -----
   savePar = ()=>{
@@ -1666,18 +1684,21 @@ class Component extends DCLogic {
     const f=this.state.forms.os, db={...this.state.db};
     if(!f.maquina||!f.descricao){ this.toast('Preencha máquina e descrição.'); return; }
     const tParada=f.parou==='sim'?(+f.tempoParadaMin||0):0;
+    const quem=this.curUser().nome;
     if(f.editId){
-      db.osList=db.osList.map(o=>o.id===f.editId?{...o,tipo:f.tipo,maquina:f.maquina,item:f.item,motivo:f.motivo,parouMaquina:f.parou==='sim',tempoParadaMin:tParada,paradaId:f.paradaId||o.paradaId||null,responsavel:f.responsavel,descricao:f.descricao}:o);
+      db.osList=db.osList.map(o=>o.id===f.editId?{...o,tipo:f.tipo,maquina:f.maquina,item:f.item,motivo:f.motivo,parouMaquina:f.parou==='sim',tempoParadaMin:tParada,paradaId:f.paradaId||o.paradaId||null,responsavel:f.responsavel,descricao:f.descricao,editadoPor:quem,editadoEm:new Date().toISOString()}:o);
       if(f.paradaId) db.paradas=db.paradas.map(p=>p.id===f.paradaId?{...p,osId:f.editId}:p);
+      this.logAudit(db,'os','editado',f.editId,'OS '+f.editId+' editada por '+quem);
       this.persist(db); this.toast('OS atualizada ✓');
     } else {
       const id=this.nextId(db.osList,'OS-',4);
       const now=new Date();
       db.osList=[...db.osList,{id,tipo:f.tipo,maquina:f.maquina,item:f.item,motivo:f.motivo,descricao:f.descricao,
-        parouMaquina:f.parou==='sim',tempoParadaMin:tParada,paradaId:f.paradaId||null,solicitante:this.curUser().nome,responsavel:f.responsavel,
+        parouMaquina:f.parou==='sim',tempoParadaMin:tParada,paradaId:f.paradaId||null,solicitante:quem,responsavel:f.responsavel,
         dataAbertura:now.toISOString().slice(0,10),horaAbertura:now.toTimeString().slice(0,5),
-        aprovacao:null,inicioReparo:null,tempoReparoMin:null,status:'Aberta',custo:null,pecas:''}];
+        aprovacao:null,inicioReparo:null,tempoReparoMin:null,status:'Aberta',custo:null,pecas:'',criadoPor:quem,criadoEm:now.toISOString()}];
       if(f.paradaId) db.paradas=db.paradas.map(p=>p.id===f.paradaId?{...p,osId:id}:p);
+      this.logAudit(db,'os','criado',id,'OS '+id+' aberta por '+quem);
       this.persist(db); this.toast('OS '+id+' aberta ✓'+(f.paradaId?' e vinculada à parada '+f.paradaId:'')+' — aguardando aprovação');
     }
     this.setState({forms:{...this.state.forms,os:this.blankOs()}});
@@ -1691,14 +1712,16 @@ class Component extends DCLogic {
   delOs = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
     db.osList=db.osList.filter(o=>o.id!==id);
     db.paradas=db.paradas.map(p=>p.osId===id?{...p,osId:null}:p);
+    this.logAudit(db,'os','excluido',id,'OS '+id+' excluída por '+this.curUser().nome);
     this.persist(db); this.toast('OS excluída'); };
   osAct = (e)=>{
-    const {id,act}=e.currentTarget.dataset; const db={...this.state.db};
+    const {id,act}=e.currentTarget.dataset; const db={...this.state.db}; const quem=this.curUser().nome;
     if(act==='fechar'){ this.setState({osDetail:id,osFechando:true}); return; }
     db.osList=db.osList.map(o=>{ if(o.id!==id)return o;
-      if(act==='aprovar')return{...o,status:'Aprovada',aprovacao:new Date().toISOString().slice(0,10)};
-      if(act==='iniciar')return{...o,status:'Em Execução',inicioReparo:new Date().toISOString().slice(0,10)};
+      if(act==='aprovar')return{...o,status:'Aprovada',aprovacao:new Date().toISOString().slice(0,10),aprovadoPor:quem};
+      if(act==='iniciar')return{...o,status:'Em Execução',inicioReparo:new Date().toISOString().slice(0,10),iniciadoPor:quem};
       return o; });
+    this.logAudit(db,'os',act==='aprovar'?'aprovada':'iniciada',id,'OS '+id+' '+(act==='aprovar'?'aprovada':'iniciada em execução')+' por '+quem);
     this.persist(db); this.toast(act==='aprovar'?'OS aprovada ✓':'Execução iniciada ✓');
   };
   confirmFechar = ()=>{
@@ -1712,9 +1735,11 @@ class Component extends DCLogic {
     const custoMaoObra=(reparoMin/60)*salMec + (temAux?(reparoMin/60)*salAux:0);
     const custoMaterial=+f.materialCusto||0;
     const custoTotal=custoMaoObra+custoMaterial;
+    const quem=this.curUser().nome;
     db.osList=db.osList.map(o=>o.id===id?{...o,status:'Fechada',tempoReparoMin:reparoMin,horaInicioReparo:f.horaInicio||null,horaFimReparo:f.horaFim||null,
       temAuxiliar:temAux,materialCusto:custoMaterial,custoMaoObra:+custoMaoObra.toFixed(2),custo:+custoTotal.toFixed(2),
-      pecas:f.pecas,causa:f.causa,servico:f.servico,dataFechamento:new Date().toISOString().slice(0,10)}:o);
+      pecas:f.pecas,causa:f.causa,servico:f.servico,dataFechamento:new Date().toISOString().slice(0,10),fechadoPor:quem}:o);
+    this.logAudit(db,'os','fechada',id,'OS '+id+' fechada por '+quem+' — custo R$ '+custoTotal.toFixed(2));
     this.persist(db); this.setState({osDetail:null,osFechando:false,forms:{...this.state.forms,fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:'',horaInicio:'',horaFim:'',temAuxiliar:'nao',materialCusto:''}}}); this.toast('OS fechada ✓ — custo estimado: R$ '+custoTotal.toFixed(2));
   };
   calcTempoMin = (hIni,hFim)=>{
@@ -1744,16 +1769,24 @@ class Component extends DCLogic {
   stop = (e)=>{ e.stopPropagation(); };
   printOs = ()=>{ window.print(); };
   // ----- pcp -----
+  logAudit(db, tipo, acao, id, resumo){
+    const entry={id:this.nextId(db.auditLog||[],'LOG',5),tipo,acao,refId:id,usuario:this.curUser().nome,quando:new Date().toISOString(),resumo:resumo||''};
+    db.auditLog=[...(db.auditLog||[]), entry];
+    return db;
+  }
   savePed = ()=>{
     const f=this.state.forms.ped, db={...this.state.db};
     if(!f.cliente||!f.produto||!f.qtd){ this.toast('Preencha cliente, produto e quantidade.'); return; }
+    const quem=this.curUser().nome, agora=new Date().toISOString();
     if(f.editId){
-      db.pedidos=db.pedidos.map(p=>p.id===f.editId?{...p,nrCliente:f.nrCliente,cliente:f.cliente,produto:f.produto,maquina:f.maquina,qtd:+f.qtd,valor:+f.valor||p.valor||0,dataEntrega:f.dataEntrega||'IMEDIATO',dataProgramada:f.dataProgramada||'',ordem:+f.ordem||p.ordem||99,dataReplan:f.dataReplan||'',obsReplan:f.obsReplan||'',status:f.status,statusProd:f.statusProd||'',statusLog:f.statusLog||''}:p);
+      db.pedidos=db.pedidos.map(p=>p.id===f.editId?{...p,nrCliente:f.nrCliente,cliente:f.cliente,produto:f.produto,maquina:f.maquina,qtd:+f.qtd,valor:+f.valor||p.valor||0,dataEntrega:f.dataEntrega||'IMEDIATO',dataProgramada:f.dataProgramada||'',ordem:+f.ordem||p.ordem||99,dataReplan:f.dataReplan||'',obsReplan:f.obsReplan||'',status:f.status,statusProd:f.statusProd||'',statusLog:f.statusLog||'',editadoPor:quem,editadoEm:agora}:p);
+      this.logAudit(db,'pedido','editado',f.editId,'Pedido '+f.editId+' editado por '+quem);
       this.persist(db); this.toast('Pedido atualizado ✓');
     } else {
       const id=this.nextId(db.pedidos,'PD',3);
       db.pedidos=[...db.pedidos,{id,nrCliente:f.nrCliente||id,cliente:f.cliente,produto:f.produto,maquina:f.maquina,qtd:+f.qtd,valor:+f.valor||0,unid:'pç',
-        dataPedido:new Date().toISOString().slice(0,10),dataEntrega:f.dataEntrega||'IMEDIATO',dataProgramada:f.dataProgramada||'',dataReplan:f.dataReplan||'',obsReplan:f.obsReplan||'',status:f.status,statusProd:f.statusProd||'',statusLog:f.statusLog||'',ordem:+f.ordem||99}];
+        dataPedido:new Date().toISOString().slice(0,10),dataEntrega:f.dataEntrega||'IMEDIATO',dataProgramada:f.dataProgramada||'',dataReplan:f.dataReplan||'',obsReplan:f.obsReplan||'',status:f.status,statusProd:f.statusProd||'',statusLog:f.statusLog||'',ordem:+f.ordem||99,criadoPor:quem,criadoEm:agora}];
+      this.logAudit(db,'pedido','criado',id,'Pedido '+id+' criado por '+quem);
       this.persist(db); this.toast('Pedido '+id+' criado ✓');
     }
     this.setState({forms:{...this.state.forms,ped:this.blankPed()}});
@@ -1765,7 +1798,7 @@ class Component extends DCLogic {
   };
   cancelPedEdit = ()=>this.setState({forms:{...this.state.forms,ped:this.blankPed()}});
   delPed = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
-    db.pedidos=db.pedidos.filter(p=>p.id!==id); this.persist(db); this.toast('Pedido excluído'); };
+    db.pedidos=db.pedidos.filter(p=>p.id!==id); this.logAudit(db,'pedido','excluido',id,'Pedido '+id+' excluído por '+this.curUser().nome); this.persist(db); this.toast('Pedido excluído'); };
   entregarPed = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
     db.pedidos=db.pedidos.map(p=>p.id===id?{...p,status:'PRONTO E ENTREGUE',statusProd:'Concluído',statusLog:'Pronto e Entregue'}:p); this.persist(db); this.toast('Pedido entregue ✓'); };
   // ----- rh -----
@@ -2341,7 +2374,8 @@ class Component extends DCLogic {
       const fmtHM=m=>{const h=Math.floor(m/60);return (h?h+'h':'')+(m%60)+'m';};
       const iniLbl=this.fmtD(a.dataInicio||a.data)+(a.horaInicio?' '+a.horaInicio:'');
       const fimLbl=(a.dataFim&&a.dataFim!==(a.dataInicio||a.data)?this.fmtD(a.dataFim)+' ':'')+(a.horaFim||'—');
-      return{id:a.id,inicio:iniLbl,fim:fimLbl,maq:mq.nome||a.maquina,turno:a.turno,op:op.nome?op.nome.split(' ')[0]:'—',prod:(pr.nome||'—').slice(0,28),
+      const rastro=a.editadoPor?('Editado por '+a.editadoPor+(a.editadoEm?' em '+this.fmtD(a.editadoEm.slice(0,10)):'')):(a.criadoPor?('Criado por '+a.criadoPor+(a.criadoEm?' em '+this.fmtD(a.criadoEm.slice(0,10)):'')):'sem rastro (dado importado da planilha)');
+      return{id:a.id,inicio:iniLbl,fim:fimLbl,maq:mq.nome||a.maquina,turno:a.turno,op:op.nome?op.nome.split(' ')[0]:'—',prod:(pr.nome||'—').slice(0,28),rastro,
         bruto:fmtHM(bruto),rodando:fmtHM(Math.max(0,bruto-parMin)),
         velReal:vReal.toFixed(1)+' pç/min',velCls:vAlvo?(vReal>=vAlvo*0.85?'kok':'kbad'):'',
         qtd:this.fmtN(a.qtdPc),kg:this.fmtN(a.qtdKg),refugo:a.refugoKg,paradaMin:parMin};});
@@ -2416,7 +2450,8 @@ class Component extends DCLogic {
       const pct=p.qtd?Math.min(100,Math.round(calc.prodz/p.qtd*100)):0;
       const pronto=calc.status.startsWith('PRONTO');
       const valorFmt=p.valor?'R$ '+(+p.valor).toLocaleString('pt-BR',{minimumFractionDigits:2}):'—';
-      return{id:p.id,nr:p.nrCliente,cliente:cl,produto:(pr.nome||'—').slice(0,34),maq:mq,qtd:this.fmtN(p.qtd)+' '+p.unid,
+      const rastro=p.editadoPor?('Editado por '+p.editadoPor+(p.editadoEm?' em '+this.fmtD(p.editadoEm.slice(0,10)):'')):(p.criadoPor?('Criado por '+p.criadoPor+(p.criadoEm?' em '+this.fmtD(p.criadoEm.slice(0,10)):'')):'sem rastro (dado importado da planilha)');
+      return{id:p.id,nr:p.nrCliente,cliente:cl,produto:(pr.nome||'—').slice(0,34),maq:mq,qtd:this.fmtN(p.qtd)+' '+p.unid,rastro,
         valorShow:canVerValor?valorFmt:'R$ ••••••',prodz:this.fmtN(calc.prodz),
         pct,pctStyle:{width:pct+'%'},entrega:p.dataEntrega==='IMEDIATO'?'IMEDIATO':this.fmtD(p.dataEntrega),
         atrasado:p.dataEntrega!=='IMEDIATO'&&p.dataEntrega<hoje&&!pronto,
@@ -2783,6 +2818,18 @@ class Component extends DCLogic {
       ausRows,rhK,
       cadTabs,cadLabel:def.label,cadFields,cadCols:def.cols,cadRows,cadEditing:!!s.cadEditId,cadEditId:s.cadEditId||'',cadFormTit:s.cadEditId?'Editar registro':'Novo registro',cadSaveLbl:s.cadEditId?'Salvar alterações':'Adicionar',
       saveCustosManut:this.saveCustosManut,restaurarSeed:this.restaurarSeed,
+      auditoriaOpen:s.panelOpen.auditoria!==false,auditoriaChev:s.panelOpen.auditoria!==false?'▾':'▸',
+      auditFiltro:{tipo:'',usuario:'',ref:'',...(s.forms.auditFiltro||{})},
+      auditUsuarios:[...new Set((db.usuarios||[]).map(u=>u.nome))],
+      auditRows:(()=>{
+        const af=s.forms.auditFiltro||{};
+        const acaoCls={criado:'stPronto',editado:'stAprovada',excluido:'stAtras',aprovada:'stAprovada',iniciada:'stProd',fechada:'stPronto'};
+        return [...(db.auditLog||[])].reverse()
+          .filter(l=>(!af.tipo||l.tipo===af.tipo)&&(!af.usuario||l.usuario===af.usuario)&&(!af.ref||String(l.refId).toLowerCase().includes((af.ref||'').toLowerCase())))
+          .slice(0,300)
+          .map(l=>({quando:this.fmtD(l.quando.slice(0,10))+' '+l.quando.slice(11,16),usuario:l.usuario,tipo:l.tipo,acao:l.acao,acaoCls:acaoCls[l.acao]||'',refId:l.refId,resumo:l.resumo}));
+      })(),
+      auditResumo:(db.auditLog||[]).length+' evento(s) registrados',
       custosView:{salarioMecanico:(s.forms.custosManut&&s.forms.custosManut.salarioMecanico!==undefined&&s.forms.custosManut.salarioMecanico!=='')?s.forms.custosManut.salarioMecanico:((db.config&&db.config.salarioMecanico!=null)?db.config.salarioMecanico:''),
         salarioAuxiliar:(s.forms.custosManut&&s.forms.custosManut.salarioAuxiliar!==undefined&&s.forms.custosManut.salarioAuxiliar!=='')?s.forms.custosManut.salarioAuxiliar:((db.config&&db.config.salarioAuxiliar!=null)?db.config.salarioAuxiliar:'')},
       chatMsgs:s.chat.map((m,i)=>({cls:m.role==='user'?'mu':'ma',text:m.text,isAi:m.role==='ai',idx:i})),chatInput:s.chatInput,chatBusy:s.chatBusy,
