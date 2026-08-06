@@ -470,6 +470,7 @@ select.sel[multiple]{height:80px}
 <div class="fg" style="grid-column:span 2"><label class="flab">Pedido / OP (vincula cliente + produto)</label><input class="inp" list="dlPedidos" value="{{fProdPedidoBusca}}" onChange="{{onSearchPedido}}" placeholder="Digite para buscar por código, cliente ou produto…"><datalist id="dlPedidos"><sc-for list="{{pedOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.label}}"></option></sc-for></datalist></div>
 <div class="fg" style="grid-column:span 2"><label class="flab">Produto</label><input class="inp" list="dlProdutos" value="{{fProdProdutoBusca}}" onChange="{{onSearchProduto}}" placeholder="Digite para buscar por código, produto ou cliente…"><datalist id="dlProdutos"><sc-for list="{{prodOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.label}}"></option></sc-for></datalist></div>
 <div class="fg"><label class="flab">Qtd Produzida (pç)</label><input class="inp" type="number" name="prod.qtdPc" value="{{fProd.qtdPc}}" onChange="{{onF}}"></div>
+<div class="fg"><label class="flab">Qtd Produzida (kg)</label><input class="inp" type="number" name="prod.qtdKgManual" value="{{fProd.qtdKgManual}}" onChange="{{onF}}" placeholder="{{fProdQtdKgCalc}}"></div>
 <div class="fg"><label class="flab">Refugo / Desperdício Apara (papel, kg)</label><input class="inp" type="number" name="prod.refugoAparaKg" value="{{fProd.refugoAparaKg}}" onChange="{{onF}}"></div>
 <div class="fg"><label class="flab">Refugo / Desperdício Tubo (kg)</label><input class="inp" type="number" name="prod.refugoTuboKg" value="{{fProd.refugoTuboKg}}" onChange="{{onF}}"></div>
 <div class="fg"><label class="flab">Velocidade alvo</label><div class="inp" style="background:#f5f7f9;border-style:dashed">{{metaProdSel}}</div></div>
@@ -482,10 +483,32 @@ select.sel[multiple]{height:80px}
 <div class="fx gap8 mt8"><button class="btsm" onClick="{{addParada}}">+ Adicionar parada</button><button class="btn btna" onClick="{{saveProd}}" style="margin-left:auto">{{prodSaveLbl}}</button></div>
 </div>
 </div>
-<div class="panel" id="p-prod-lista"><div class="ptit">Apontamentos <span class="mini fw5">{{apCount}} registros no período filtrado</span></div>
+<div class="panel" id="p-prod-lista"><div class="ptit">Apontamentos <span class="mini fw5">{{apCount}} registros no período filtrado</span><button class="btsm" style="margin-left:auto" onClick="{{openRelatorioPrint}}">🖨 Relatório de Produção do Período (ISO 9001)</button></div>
 <div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Início</th><th>Fim</th><th>Máquina</th><th>Turno</th><th>Operador</th><th>Produto</th><th>Bruto</th><th>Rodando</th><th>Vel. Real</th><th>Qtd (pç)</th><th>Peso (kg)</th><th>Refugo</th><th></th></tr></thead><tbody>
 <sc-for list="{{apRows}}" as="a" hint-placeholder-count="8"><tr><td>{{a.inicio}}</td><td>{{a.fim}}</td><td class="fw6">{{a.maq}}</td><td>{{a.turno}}</td><td>{{a.op}}</td><td class="mini">{{a.prod}}</td><td class="num">{{a.bruto}}</td><td class="num">{{a.rodando}}</td><td class="num {{a.velCls}}">{{a.velReal}}</td><td class="num">{{a.qtd}}</td><td class="num">{{a.kg}}</td><td class="num">{{a.refugo}} kg</td><td class="fx gap8"><button class="btsm" data-id="{{a.id}}" onClick="{{editAp}}">Editar</button><button class="btsm btdel" data-id="{{a.id}}" onClick="{{delAp}}">Excluir</button></td></tr></sc-for>
 </tbody></table></div></div>
+<sc-if value="{{relatorioPrintOpen}}" hint-placeholder-val="{{false}}">
+<div class="modal" onClick="{{closeRelatorioPrint}}"><div class="mbox" onClick="{{stop}}" style="max-width:820px">
+<div class="isohead"><div class="isoc"><b style="font-size:13px">TUBONORD</b><span class="mini">Sistema de Gestão da Qualidade</span></div><div class="isoc isot">RELATÓRIO DE PRODUÇÃO DO PERÍODO</div><div class="isoc" style="border-right:none"><div class="isor"><span>Código:</span><b>F-23-R</b></div><div class="isor"><span>Revisão:</span><b>01</b></div><div class="isor"><span>Página:</span><b>1 de 1</b></div></div></div>
+<div class="fx jb mini mt8"><span>Elaborado por: PWR Gestão</span><span>Aprovado por: Helder Gomes</span><span>Período: {{relIniLabel}} a {{relFimLabel}}</span><span>Conforme ISO 9001:2015 — 8.5.1</span></div>
+<div class="isosec">RESUMO DO PERÍODO</div>
+<div class="isogrid">
+<div class="isofield"><div class="isoflab">Produzido (peças)</div>{{relK.qtdPc}}</div>
+<div class="isofield"><div class="isoflab">Produzido (kg)</div>{{relK.qtdKg}}</div>
+<div class="isofield"><div class="isoflab">Refugo Apara</div>{{relK.refugoApara}} kg</div>
+<div class="isofield"><div class="isoflab">Refugo Tubo</div>{{relK.refugoTubo}} kg</div>
+<div class="isofield"><div class="isoflab">Horas Paradas</div>{{relK.horasParadas}}h</div>
+<div class="isofield"><div class="isoflab">OEE Médio</div>{{relK.oee}}%</div>
+</div>
+<div class="isosec">PRODUÇÃO POR MÁQUINA</div>
+<table class="tbl mini"><thead><tr><th>Máquina</th><th>Produzido (pç)</th><th>Produzido (kg)</th><th>Refugo (kg)</th><th>Paradas (h)</th><th>OEE</th></tr></thead><tbody>
+<sc-for list="{{relMaqRows}}" as="m" hint-placeholder-count="4"><tr><td class="fw6">{{m.nome}}</td><td class="num">{{m.qtdPc}}</td><td class="num">{{m.qtdKg}}</td><td class="num">{{m.refugo}}</td><td class="num">{{m.paradas}}</td><td class="num">{{m.oee}}%</td></tr></sc-for>
+</tbody></table>
+<div class="mini" style="margin-top:10px;color:var(--mut)">Relatório gerado automaticamente a partir dos apontamentos de produção do Sistema Tubonord, referente ao período e filtros selecionados no momento da emissão.</div>
+<div class="fx gap24 mt16" style="border-top:1px solid var(--bd);padding-top:14px"><div class="f1"><div class="isoflab">Revisado por (PCP/Produção)</div><div style="border-top:1px solid var(--ink);margin-top:26px;font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div><div class="f1"><div class="isoflab">Aprovado por</div><div style="border-top:1px solid var(--ink);margin-top:26px;font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div></div>
+<div class="fx gap8 mt16 noprint"><button class="btsm" onClick="{{printOs}}">🖨 Imprimir</button><button class="btsm" onClick="{{closeRelatorioPrint}}" style="margin-left:auto">Fechar</button></div>
+</div></div>
+</sc-if>
 </sc-if>
 
 <sc-if value="{{vPar}}" hint-placeholder-val="{{false}}">
@@ -503,6 +526,8 @@ select.sel[multiple]{height:80px}
 <div class="fg"><label class="flab">Turno</label><select class="inp" name="par.turno" value="{{fPar.turno}}" onChange="{{onF}}"><option value="A">1º Turno</option><option value="B">2º Turno</option><option value="C">3º Turno</option></select></div>
 <div class="fg"><label class="flab">Operador</label><select class="inp" name="par.operador" value="{{fPar.operador}}" onChange="{{onF}}"><option value="">Selecione…</option><sc-for list="{{opOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select></div>
 <div class="fg" style="grid-column:span 2"><label class="flab">Motivo da parada</label><select class="inp" name="par.motivo" value="{{fPar.motivo}}" onChange="{{onF}}"><sc-for list="{{motivoOpts}}" as="m" hint-placeholder-count="3"><option value="{{m.id}}">{{m.nome}}</option></sc-for></select></div>
+<div class="fg"><label class="flab">Hora inicial</label><input class="inp" type="time" name="par.horaInicio" value="{{fPar.horaInicio}}" onChange="{{onParHora}}"></div>
+<div class="fg"><label class="flab">Hora final</label><input class="inp" type="time" name="par.horaFim" value="{{fPar.horaFim}}" onChange="{{onParHora}}"></div>
 <div class="fg"><label class="flab">Duração (min)</label><input class="inp" type="number" name="par.min" value="{{fPar.min}}" onChange="{{onF}}"></div>
 <div class="fg" style="grid-column:span 2"><label class="flab">Produção em curso (vínculo)</label><select class="inp" name="par.apId" value="{{fPar.apId}}" onChange="{{onF}}"><option value="">Sem vínculo</option><sc-for list="{{apLinkOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
 <div class="fg" style="grid-column:span 3"><label class="flab">Observação</label><input class="inp" name="par.obs" value="{{fPar.obs}}" onChange="{{onF}}"></div>
@@ -916,7 +941,7 @@ class Component extends DCLogic {
       dataIni:d0.toISOString().slice(0,10), dataFim:hoje,
       fMaq:'ALL', fTurno:'ALL', fOper:'ALL', user:'U01',
       db:null, cadTab:'maquinas', cadEditId:null, osDetail:null, osFechando:false, osMEdit:false,
-      valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, pwShow:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false, iaPrintOpen:false, iaPrintIdx:null,
+      valorUnlocked:false, pwOpen:false, pwInput:'', pwErr:false, pwShow:false, progDate:hoje, progMaqFilter:'ALL', progPrintOpen:false, iaPrintOpen:false, iaPrintIdx:null, relatorioPrintOpen:false,
       sim:{}, simOver:null, solicOpen:false, tourOn:false, tourStep:0, tourPlaying:false,
       chat:[], chatInput:'', chatBusy:false, toast:null,
       panelOpen:{carteira:false, metas:false, atrasados:true, detalhamento:false},
@@ -930,7 +955,7 @@ class Component extends DCLogic {
     this.nav = {}; ['dash','prod','par','manut','pcp','rh','cad','ia','man'].forEach(v=>{ this.nav[v]=()=>this.setState({view:v,mobNavOpen:false}); });
     this.unid = { all:()=>this.setState({unidade:'ALL'}), nord:()=>this.setState({unidade:'NORD'}), cone:()=>this.setState({unidade:'CONE'}) };
   }
-  blankProd(){ const d=new Date().toISOString().slice(0,10); return {editId:null,dataInicio:d,horaInicio:'06:00',dataFim:d,horaFim:'14:00',data:d,maquina:'',turno:'A',operador:'',pedido:'',produto:'',qtdPc:'',refugoAparaKg:'',refugoTuboKg:'',tempoTurnoMin:480,paradas:[]}; }
+  blankProd(){ const d=new Date().toISOString().slice(0,10); return {editId:null,dataInicio:d,horaInicio:'06:00',dataFim:d,horaFim:'14:00',data:d,maquina:'',turno:'A',operador:'',pedido:'',produto:'',qtdPc:'',qtdKgManual:'',refugoAparaKg:'',refugoTuboKg:'',tempoTurnoMin:480,paradas:[]}; }
   tempoBruto(a){
     if(a.dataInicio&&a.horaInicio&&a.dataFim&&a.horaFim){
       const ini=new Date(a.dataInicio+'T'+a.horaInicio+':00').getTime();
@@ -946,7 +971,7 @@ class Component extends DCLogic {
     const genericos=db.itensEquip.map(v=>({v}));
     return comps.length?[...comps,...genericos]:genericos;
   }
-  blankPar(){ return {editId:null,data:new Date().toISOString().slice(0,10),maquina:'',turno:'A',operador:'',motivo:'M01',min:'',apId:'',obs:''}; }
+  blankPar(){ return {editId:null,data:new Date().toISOString().slice(0,10),maquina:'',turno:'A',operador:'',motivo:'M01',min:'',horaInicio:'',horaFim:'',apId:'',obs:''}; }
   blankPed(){ return {editId:null,nrCliente:'',cliente:'',produto:'',maquina:'',qtd:'',valor:'',dataEntrega:'',dataProgramada:'',ordem:'',dataReplan:'',obsReplan:'',statusProd:'',statusLog:'',status:'A SER PRODUZIDO - DENTRO DO ESTADO'}; }
   blankAus(){ return {editId:null,data:new Date().toISOString().slice(0,10),operador:'',tipo:'Falta Injustificada',dias:1}; }
   componentDidMount(){
@@ -1506,7 +1531,7 @@ class Component extends DCLogic {
     const brutoMin=this.tempoBruto(f);
     const base={data:f.dataInicio||f.data,dataInicio:f.dataInicio||f.data,horaInicio:f.horaInicio||'',dataFim:f.dataFim||f.dataInicio||f.data,horaFim:f.horaFim||'',
       maquina:f.maquina,turno:f.turno,operador:f.operador,pedido:f.pedido||null,produto:f.produto,
-      qtdPc:+f.qtdPc,qtdKg:+((+f.qtdPc)*(prod?prod.pesoIdeal:0)).toFixed(1),
+      qtdPc:+f.qtdPc,qtdKg:(f.qtdKgManual!==''&&f.qtdKgManual!=null)?+f.qtdKgManual:+((+f.qtdPc)*(prod?prod.pesoIdeal:0)).toFixed(1),
       refugoAparaKg:+f.refugoAparaKg||0,refugoTuboKg:+f.refugoTuboKg||0,refugoKg:(+f.refugoAparaKg||0)+(+f.refugoTuboKg||0),tempoTurnoMin:brutoMin};
     let apId=f.editId;
     if(f.editId){
@@ -1518,7 +1543,7 @@ class Component extends DCLogic {
     }
     let novasPar=[...db.paradas];
     for(const p of f.paradas.filter(p=>+p.min>0)){
-      novasPar.push({id:this.nextId(novasPar,'PR',4),data:f.data,maquina:f.maquina,turno:f.turno,operador:f.operador,motivo:p.motivo,min:+p.min,obs:'',apId,osId:null});
+      novasPar.push({id:this.nextId(novasPar,'PR',4),data:f.data,maquina:f.maquina,turno:f.turno,operador:f.operador,motivo:p.motivo,min:+p.min,horaInicio:p.horaInicio||'',horaFim:p.horaFim||'',obs:'',apId,osId:null});
     }
     db.paradas=novasPar;
     this.persist(db);
@@ -1527,8 +1552,8 @@ class Component extends DCLogic {
   };
   editAp = (e)=>{
     const a=this.state.db.apontamentos.find(x=>x.id===e.currentTarget.dataset.id); if(!a)return;
-    const pars=this.state.db.paradas.filter(p=>p.apId===a.id).map(p=>({motivo:p.motivo,min:p.min}));
-    this.setState({forms:{...this.state.forms,prod:{editId:a.id,dataInicio:a.dataInicio||a.data,horaInicio:a.horaInicio||'06:00',dataFim:a.dataFim||a.data,horaFim:a.horaFim||'14:00',data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador||'',pedido:a.pedido||'',produto:a.produto,qtdPc:a.qtdPc,refugoAparaKg:a.refugoAparaKg!=null?a.refugoAparaKg:a.refugoKg,refugoTuboKg:a.refugoTuboKg||0,tempoTurnoMin:a.tempoTurnoMin,paradas:pars}}});
+    const pars=this.state.db.paradas.filter(p=>p.apId===a.id).map(p=>({motivo:p.motivo,min:p.min,horaInicio:p.horaInicio||'',horaFim:p.horaFim||''}));
+    this.setState({forms:{...this.state.forms,prod:{editId:a.id,dataInicio:a.dataInicio||a.data,horaInicio:a.horaInicio||'06:00',dataFim:a.dataFim||a.data,horaFim:a.horaFim||'14:00',data:a.data,maquina:a.maquina,turno:a.turno,operador:a.operador||'',pedido:a.pedido||'',produto:a.produto,qtdPc:a.qtdPc,qtdKgManual:a.qtdKg!=null?a.qtdKg:'',refugoAparaKg:a.refugoAparaKg!=null?a.refugoAparaKg:a.refugoKg,refugoTuboKg:a.refugoTuboKg||0,tempoTurnoMin:a.tempoTurnoMin,paradas:pars}}});
     window.scrollTo(0,0); const m=document.querySelector('.main'); if(m)m.scrollTop=0;
   };
   cancelProdEdit = ()=>this.setState({forms:{...this.state.forms,prod:this.blankProd()}});
@@ -1544,7 +1569,7 @@ class Component extends DCLogic {
     if(f.editId){
       const old=db.paradas.find(p=>p.id===f.editId);
       osId=old?old.osId:null;
-      db.paradas=db.paradas.map(p=>p.id===f.editId?{...p,data:f.data,maquina:f.maquina,turno:f.turno,operador:f.operador,motivo:f.motivo,min:+f.min,obs:f.obs,apId:f.apId||null}:p);
+      db.paradas=db.paradas.map(p=>p.id===f.editId?{...p,data:f.data,maquina:f.maquina,turno:f.turno,operador:f.operador,motivo:f.motivo,min:+f.min,horaInicio:f.horaInicio||'',horaFim:f.horaFim||'',obs:f.obs,apId:f.apId||null}:p);
     } else {
       const parId=this.nextId(db.paradas,'PR',4);
       if(mot&&mot.manut){
@@ -1557,7 +1582,7 @@ class Component extends DCLogic {
           aprovacao:null,inicioReparo:null,tempoParadaMin:+f.min,tempoReparoMin:null,status:'Aberta',custo:null,pecas:'',paradaId:parId,apId:f.apId||null}];
         osMsg=' — OS '+osId+' gerada automaticamente';
       }
-      db.paradas=[...db.paradas,{id:parId,data:f.data,maquina:f.maquina,turno:f.turno,operador:f.operador,motivo:f.motivo,min:+f.min,obs:f.obs,apId:f.apId||null,osId}];
+      db.paradas=[...db.paradas,{id:parId,data:f.data,maquina:f.maquina,turno:f.turno,operador:f.operador,motivo:f.motivo,min:+f.min,horaInicio:f.horaInicio||'',horaFim:f.horaFim||'',obs:f.obs,apId:f.apId||null,osId}];
     }
     this.persist(db);
     this.setState({forms:{...this.state.forms,par:this.blankPar()}});
@@ -1565,8 +1590,19 @@ class Component extends DCLogic {
   };
   editPar = (e)=>{
     const p=this.state.db.paradas.find(x=>x.id===e.currentTarget.dataset.id); if(!p)return;
-    this.setState({forms:{...this.state.forms,par:{editId:p.id,data:p.data,maquina:p.maquina,turno:p.turno,operador:p.operador||'',motivo:p.motivo,min:p.min,apId:p.apId||'',obs:p.obs||''}}});
+    this.setState({forms:{...this.state.forms,par:{editId:p.id,data:p.data,maquina:p.maquina,turno:p.turno,operador:p.operador||'',motivo:p.motivo,min:p.min,horaInicio:p.horaInicio||'',horaFim:p.horaFim||'',apId:p.apId||'',obs:p.obs||''}}});
     const m=document.querySelector('.main'); if(m)m.scrollTop=0;
+  };
+  onParHora = (e)=>{
+    const field=e.target.name.split('.')[1];
+    const forms={...this.state.forms};
+    const novo={...forms.par,[field]:e.target.value};
+    if(novo.horaInicio && novo.horaFim){
+      const calc=this.calcTempoMin(novo.horaInicio,novo.horaFim);
+      if(calc>0) novo.min=calc;
+    }
+    forms.par=novo;
+    this.setState({forms});
   };
   cancelParEdit = ()=>this.setState({forms:{...this.state.forms,par:this.blankPar()}});
   delPar = (e)=>{ const id=e.currentTarget.dataset.id; const db={...this.state.db};
@@ -1985,6 +2021,8 @@ class Component extends DCLogic {
   closeProgPrint = ()=>this.setState({progPrintOpen:false});
   openIaPrint = (e)=>{ const idx=+e.currentTarget.dataset.idx; this.setState({iaPrintOpen:true,iaPrintIdx:idx}); };
   closeIaPrint = ()=>this.setState({iaPrintOpen:false});
+  openRelatorioPrint = ()=>this.setState({relatorioPrintOpen:true});
+  closeRelatorioPrint = ()=>this.setState({relatorioPrintOpen:false});
   moveOrdem = (e)=>{
     const {id,dir}=e.currentTarget.dataset; const db={...this.state.db};
     const alvo=db.pedidos.find(p=>p.id===id); if(!alvo)return;
@@ -2647,7 +2685,7 @@ class Component extends DCLogic {
     return {
       nav:this.nav,unid:this.unid,onDataIni:this.onDataIni,onDataFim:this.onDataFim,onFMaq:this.onFMaq,onFTurno:this.onFTurno,onFOper:this.onFOper,onUser:this.onUser,onF:this.onF,
       addParada:this.addParada,rmParada:this.rmParada,onParada:this.onParada,saveProd:this.saveProd,delAp:this.delAp,editAp:this.editAp,cancelProdEdit:this.cancelProdEdit,
-      savePar:this.savePar,editPar:this.editPar,delPar:this.delPar,cancelParEdit:this.cancelParEdit,
+      savePar:this.savePar,editPar:this.editPar,delPar:this.delPar,cancelParEdit:this.cancelParEdit,onParHora:this.onParHora,
       saveOs:this.saveOs,editOs:this.editOs,delOs:this.delOs,cancelOsEdit:this.cancelOsEdit,osAct:this.osAct,openOs:this.openOs,closeOs:this.closeOs,stop:this.stop,printOs:this.printOs,confirmFechar:this.confirmFechar,
       savePed:this.savePed,editPed:this.editPed,delPed:this.delPed,cancelPedEdit:this.cancelPedEdit,entregarPed:this.entregarPed,
       saveAus:this.saveAus,editAus:this.editAus,delAus:this.delAus,cancelAusEdit:this.cancelAusEdit,
@@ -2700,8 +2738,21 @@ class Component extends DCLogic {
       pedOpts:pedOptsComputed,
       prodOpts:prodOptsComputed,
       motivoOpts:db.motivosParada,apRows,apCount:aps.length,velAtingida,tempoBrutoSel,tempoRodandoSel,
+      openIaPrint:this.openIaPrint,closeIaPrint:this.closeIaPrint,
+      openRelatorioPrint:this.openRelatorioPrint,closeRelatorioPrint:this.closeRelatorioPrint,relatorioPrintOpen:s.relatorioPrintOpen,
+      relIniLabel:this.fmtD(s.dataIni),relFimLabel:this.fmtD(s.dataFim),
+      relK:{qtdPc:this.fmtN(aps.reduce((x,a)=>x+(+a.qtdPc||0),0)),qtdKg:this.fmtN(aps.reduce((x,a)=>x+(+a.qtdKg||0),0)),
+        refugoApara:this.fmtN(aps.reduce((x,a)=>x+(+a.refugoAparaKg||0),0)),refugoTubo:this.fmtN(aps.reduce((x,a)=>x+(+a.refugoTuboKg||0),0)),
+        horasParadas:this.fmtN(pars.reduce((x,p)=>{const mo=this.motivoDe(p.motivo);return x+(mo&&mo.tipo!=='COR'?(+p.min||0):0);},0)/60),
+        oee:maqStats.length?Math.round(maqStats.reduce((x,m)=>x+m.raw.oee,0)/maqStats.length*100):0},
+      relMaqRows:maqStats.map(m=>{
+        const mAps=aps.filter(a=>a.maquina===m.id);
+        return {nome:m.nome,qtdPc:this.fmtN(mAps.reduce((x,a)=>x+(+a.qtdPc||0),0)),qtdKg:this.fmtN(mAps.reduce((x,a)=>x+(+a.qtdKg||0),0)),
+          refugo:this.fmtN(mAps.reduce((x,a)=>x+(+a.refugoKg||0),0)),paradas:this.fmtN((m.raw.tParNP+m.raw.tParPR)/60),oee:Math.round(m.raw.oee*100)};
+      }),
       canVerValor,canPrintOs,noPrintOs:!canPrintOs,
       metaProdSel:prodSel?((prodSel.velAlvo&&!prodSel.velAlvoEstimado&&(prodSel.unid||'').toLowerCase()!=='kg')?(prodSel.velAlvo+' m/min'):'sem meta confiável')+' · '+prodSel.pesoIdeal+' kg/pç'+(prodSel.compMm?' · Compr.: '+(prodSel.compMm/1000).toFixed(3)+'m':'')+(prodSel.diamMm?' · Diâm.: '+prodSel.diamMm+'mm':''):'—',
+      fProdQtdKgCalc:(prodSel&&fProd.qtdPc)?('calculado: '+((+fProd.qtdPc)*prodSel.pesoIdeal).toFixed(1)+' kg'):'calculado automaticamente',
       fPar,parEditing:!!fPar.editId,parFormTit:fPar.editId?'Editar Parada':'Registrar Parada',parSaveLbl:fPar.editId?'Salvar alterações':'Registrar parada',
       parRows,parCount:pars.length,parK,apLinkOpts,
       fOs,osEditing:!!fOs.editId,osFormTit:fOs.editId?'Editar OS':'Abrir Ordem de Serviço',osSaveLbl:fOs.editId?'Salvar alterações':'Abrir OS',
