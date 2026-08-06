@@ -2354,7 +2354,7 @@ class Component extends DCLogic {
       const oMin=Math.max(1,bruto-pMin);
       const fmtHM=m=>{const h=Math.floor(m/60);return (h?h+'h ':'')+(m%60)+'min ('+m+' min)';};
       tempoBrutoSel=fmtHM(bruto);
-      tempoRodandoSel=fmtHM(Math.max(0,bruto-pMin))+(bruto?' · '+Math.round((bruto-pMin)/bruto*100)+'% disp.':'');
+      tempoRodandoSel=fmtHM(Math.max(0,bruto-pMin))+(bruto?' · '+Math.max(0,Math.round((bruto-pMin)/bruto*100))+'% disp.'+(pMin>bruto?' ⚠ paradas somam mais que o tempo bruto do turno':''):'');
       if(+fp.qtdPc>0){
         const v=(+fp.qtdPc)/oMin;
         velAtingida=v.toFixed(1)+' pç/min';
