@@ -1196,6 +1196,13 @@ class Component extends DCLogic {
         }
       }
 
+      const fmtHoraCell=(v)=>{
+        if(v==null||v==='') return '';
+        if(v instanceof Date && !isNaN(v)) return String(v.getHours()).padStart(2,'0')+':'+String(v.getMinutes()).padStart(2,'0');
+        if(typeof v==='number'){ const totalMin=Math.round(v*24*60)%1440; return String(Math.floor(totalMin/60)).padStart(2,'0')+':'+String(totalMin%60).padStart(2,'0'); }
+        const s=norm(v); const m=s.match(/^(\d{1,2}):(\d{2})/); if(m) return m[1].padStart(2,'0')+':'+m[2];
+        return '';
+      };
       // ---------- F-23 ----------
       let apontamentosNovos=[];
       if(importF23File){
@@ -1218,7 +1225,8 @@ class Component extends DCLogic {
           const motivoCols=motivoNomes.map(n=>hm[n]);
           const cKey=hm['NR Controle do Pedido'], cMaq=hm['Máquina'], cEquipe=hm['Equipe'], cData=hm['Data'],
                 cOper=hm['Operador'], cTempoMin=hm['Tempo Total (min)'], cQtdPc=hm['Quantidade Produzida (pc)'],
-                cQtdKg=hm['Quantidade Produzida (kg)'], cDesp=hm['Desperdício Total'], cDespApara=hm['Desperdício Papel (kg)'], cDespTubo=hm['Desperdício Tubo (kg)'];
+                cQtdKg=hm['Quantidade Produzida (kg)'], cDesp=hm['Desperdício Total'], cDespApara=hm['Desperdício Papel (kg)'], cDespTubo=hm['Desperdício Tubo (kg)'],
+                cHoraIni=hm['Hora Inicial'], cHoraFim=hm['Hora Final'];
           let apid=1;
           for(let r=hr+1;r<rows.length;r++){
             const row=rows[r]; if(!row) continue;
@@ -1229,7 +1237,9 @@ class Component extends DCLogic {
             const key=cKey!=null && row[cKey]!=null?String(row[cKey]).trim():'';
             const paradas=[];
             motivoCols.forEach((ci,idx)=>{ if(ci==null) return; const v=row[ci]; if(typeof v==='number' && v>0) paradas.push({motivo:motivoIds[idx], min:Math.round(v*10)/10}); });
-            apontamentosNovos.push({ id:'AP'+String(apid++).padStart(5,'0'), data:dataIso, maquina:mach, turno:norm(cEquipe!=null?row[cEquipe]:null)||'A',
+            const horaIni=cHoraIni!=null?fmtHoraCell(row[cHoraIni]):'', horaFim=cHoraFim!=null?fmtHoraCell(row[cHoraFim]):'';
+            apontamentosNovos.push({ id:'AP'+String(apid++).padStart(5,'0'), data:dataIso, dataInicio:dataIso, dataFim:dataIso,
+              horaInicio:horaIni, horaFim:horaFim, maquina:mach, turno:norm(cEquipe!=null?row[cEquipe]:null)||'A',
               operadorRaw:norm(cOper!=null?row[cOper]:null)||null, pedidoCKey:key?(mach+'||'+key):null,
               qtdPc: cQtdPc!=null?(typeof row[cQtdPc]==='number'?row[cQtdPc]:(parseFloat(row[cQtdPc])||0)):0,
               qtdKg: cQtdKg!=null && typeof row[cQtdKg]==='number'?Math.round(row[cQtdKg]*100)/100:0,
