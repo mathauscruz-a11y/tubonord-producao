@@ -636,7 +636,7 @@ select.sel[multiple]{height:80px}
 <button class="btsm" onClick="{{openProgPrint}}">🖨 Imprimir Programação</button></div></div>
 <sc-for list="{{progMaqs}}" as="pm" hint-placeholder-count="2"><div style="margin-top:12px"><div class="fw7 fs14" style="border-bottom:2px solid var(--ac);padding-bottom:4px;margin-bottom:4px">{{pm.maq}} <span class="mini fw5">· {{pm.n}} pedido(s) · {{pm.tot}} pç</span></div>
 <sc-if value="{{pm.vazia}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut);padding:6px 0">Sem programação para esta data.</div></sc-if>
-<sc-if value="{{pm.vazia}}" hint-placeholder-val="{{true}}">
+<sc-if value="{{pm.comDados}}" hint-placeholder-val="{{true}}">
 <div class="scroll"><table class="tbl"><thead><tr><th>Ordem</th><th>Nº Pedido</th><th>Cliente</th><th>Produto</th><th>Ø × Comp</th><th>Parede</th><th>Vel. Alvo</th><th>Peso Mín</th><th>Peso Padrão</th><th>Peso Máx</th><th>Qtd</th><th></th></tr></thead><tbody>
 <sc-for list="{{pm.itens}}" as="it" hint-placeholder-count="2"><tr><td class="num fw7">{{it.ordem}}</td><td class="fw6">{{it.nrCliente}}</td><td>{{it.cliente}}</td><td class="mini">{{it.produto}}</td><td class="num">{{it.dim}}</td><td class="num">{{it.parede}}</td><td class="num">{{it.vel}}</td><td class="num">{{it.pesoMin}}</td><td class="num fw6">{{it.pesoPad}}</td><td class="num">{{it.pesoMax}}</td><td class="num">{{it.qtd}}</td><td class="fx gap8"><button class="btsm" data-id="{{it.id}}" data-dir="up" onClick="{{moveOrdem}}">↑</button><button class="btsm" data-id="{{it.id}}" data-dir="down" onClick="{{moveOrdem}}">↓</button></td></tr></sc-for>
 </tbody></table></div>
@@ -930,7 +930,7 @@ select.sel[multiple]{height:80px}
 <sc-for list="{{progPrint.maqs}}" as="pm" hint-placeholder-count="2">
 <div class="isosec">MÁQUINA: {{pm.maq}} — {{pm.n}} PEDIDO(S) · {{pm.tot}} PÇ</div>
 <sc-if value="{{pm.vazia}}" hint-placeholder-val="{{false}}"><div class="mini" style="padding:4px 0">Sem programação para esta data.</div></sc-if>
-<sc-if value="{{pm.vazia}}" hint-placeholder-val="{{true}}">
+<sc-if value="{{pm.comDados}}" hint-placeholder-val="{{true}}">
 <div class="scroll"><table class="tbl"><thead><tr><th>Seq.</th><th>Nº Pedido</th><th>Cliente</th><th>Produto</th><th>Ø × Comp</th><th>Parede</th><th>Vel. Alvo</th><th>Peso Mín</th><th>Peso Padrão</th><th>Peso Máx</th><th>Qtd</th></tr></thead><tbody>
 <sc-for list="{{pm.itens}}" as="it" hint-placeholder-count="2"><tr><td class="num fw7">{{it.ordem}}</td><td class="fw6">{{it.nrCliente}}</td><td>{{it.cliente}}</td><td class="mini">{{it.produto}}</td><td class="num">{{it.dim}}</td><td class="num">{{it.parede}}</td><td class="num">{{it.vel}}</td><td class="num">{{it.pesoMin}}</td><td class="num fw6">{{it.pesoPad}}</td><td class="num">{{it.pesoMax}}</td><td class="num">{{it.qtd}}</td></tr></sc-for>
 </tbody></table></div>
@@ -2685,7 +2685,7 @@ class Component extends DCLogic {
           vel:pr.velAlvo?pr.velAlvo+' pç/min':'—',pesoMin:pr.pesoMin?pr.pesoMin+' kg':'—',
           pesoPad:(pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)?((pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)+' kg'):'—',
           pesoMax:pr.pesoMax?pr.pesoMax+' kg':'—',qtd:this.fmtN(p.qtd)+' '+p.unid};});
-      return{maq:mq.nome||mid,n:itens.length,tot:this.fmtN((progByMaq[mid]||[]).reduce((x,p)=>x+(+p.qtd||0),0)),itens,vazia:itens.length===0};
+      return{maq:mq.nome||mid,n:itens.length,tot:this.fmtN((progByMaq[mid]||[]).reduce((x,p)=>x+(+p.qtd||0),0)),itens,vazia:itens.length===0,comDados:itens.length>0};
     });
     // ---- Gantt de máquinas — janela = filtro de data selecionado no topo ----
     const DAY=86400000;
