@@ -1182,22 +1182,28 @@ class Component extends DCLogic {
           const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true});
           const hr=findHeaderRow(rows,'NRO CONTROLE PEDIDO'); if(hr<0) continue;
           const hm=headerMap(rows[hr]);
-          const cKey=hm['NRO CONTROLE PEDIDO'], cNr=hm['Nº PEDIDO\nCLIENTE'], cCli=hm['CLIENTE'], cProd=hm['PRODUTO'],
-                cPesoI=hm['PESO \nIDEAL (Kg)'], cQtd=hm['QUANT. \nSOLICITADA'], cUnid=hm['UNID'],
-                cVel=hm['VELOCIDADE ALVO\nPRODUÇÃO'], cStatus=hm['STATUS PEDIDO'], cDPed=hm['DATA\nPEDIDO'], cDEnt=hm['DATA \nENTREGA'];
+          const col=(name)=>hm[norm(name)]; // busca sempre normalizando a chave (cabeçalhos com quebra de linha viram espaço em hm, então a busca precisa normalizar igual, senão nunca bate)
+          const cKey=col('NRO CONTROLE PEDIDO'), cNr=col('Nº PEDIDO\nCLIENTE'), cCli=col('CLIENTE'), cProd=col('PRODUTO'),
+                cMedidas=col('MEDIDAS'), cPesoI=col('PESO \nIDEAL (Kg)'), cQtd=col('QUANT. \nSOLICITADA'), cUnid=col('UNID'),
+                cVel=col('VELOCIDADE ALVO\nPRODUÇÃO'), cStatus=col('STATUS PEDIDO'), cDPed=col('DATA\nPEDIDO'), cDEnt=col('DATA \nENTREGA'),
+                cDProg=col('DATA PLANEJADA PRODUÇÃO');
+          const cDiam=cMedidas!=null?cMedidas+2:null;
           const mach=sheetToMach[sn];
           for(let r=hr+2;r<rows.length;r++){
             const row=rows[r]; if(!row) continue;
             const key=norm(cKey!=null?row[cKey]:null); if(!key) continue;
             const ckey=mach+'||'+key;
+            const compRaw=cMedidas!=null?row[cMedidas]:null, diamRaw=cDiam!=null?row[cDiam]:null;
             pcpByCKey[ckey]={ maquina:mach, nrCliente:norm(cNr!=null?row[cNr]:null), cliente:norm(cCli!=null?row[cCli]:null),
               produto:norm(cProd!=null?row[cProd]:null),
+              compMm: typeof compRaw==='number'?compRaw:0, diamMm: typeof diamRaw==='number'?diamRaw:0,
               pesoIdeal: cPesoI!=null && typeof row[cPesoI]==='number'?row[cPesoI]:null,
               qtd: cQtd!=null? (typeof row[cQtd]==='number'?row[cQtd]:(parseFloat(row[cQtd])||0)) : 0,
               unid: norm(cUnid!=null?row[cUnid]:null)||'pç',
               velAlvo: cVel!=null && typeof row[cVel]==='number'?row[cVel]:null,
               status: normStatus(norm(cStatus!=null?row[cStatus]:null)),
-              dataPedido: cDPed!=null?row[cDPed]:null, dataEntrega: cDEnt!=null?row[cDEnt]:null };
+              dataPedido: cDPed!=null?row[cDPed]:null, dataEntrega: cDEnt!=null?row[cDEnt]:null,
+              dataProgramada: cDProg!=null?fmtDateCell(row[cDProg]):null };
           }
         }
       }
@@ -1306,13 +1312,13 @@ class Component extends DCLogic {
           const clienteId=getCliente(rec.cliente);
           const tipo=rec.maquina==='CONE02'?'Conicaleira':'Tubeteira';
           produtosNovos.push({ id:prodId, nome:(rec.produto||ckey).slice(0,90), cliente:clienteId, maquinaTipo:tipo,
-            diamMm:0, compMm:0, paredeMm:0, pesoIdeal:rec.pesoIdeal||0, pesoPadrao:rec.pesoIdeal||0,
+            diamMm:rec.diamMm||0, compMm:rec.compMm||0, paredeMm:0, pesoIdeal:rec.pesoIdeal||0, pesoPadrao:rec.pesoIdeal||0,
             pesoMin:rec.pesoIdeal?+(rec.pesoIdeal*0.96).toFixed(4):0, pesoMax:rec.pesoIdeal?+(rec.pesoIdeal*1.04).toFixed(4):0,
-            velAlvo:rec.velAlvo||null, unid:rec.unid||'pç' });
+            velAlvo:rec.velAlvo||null, unid:rec.unid||'pç', velAlvoEstimado:!rec.velAlvo });
           let de=fmtDateCell(rec.dataEntrega); if(!de) de='IMEDIATO';
           let dp=fmtDateCell(rec.dataPedido); if(!dp||dp==='IMEDIATO') dp=(de!=='IMEDIATO'?de:'2025-08-01');
           pedidosNovos.push({ id:pedId, nrCliente:rec.nrCliente||ckey, cliente:clienteId, produto:prodId, maquina:rec.maquina,
-            qtd:rec.qtd||0, unid:rec.unid||'pç', valor:0, dataPedido:dp, dataEntrega:de, status:rec.status||'Em aberto', ordem:1 });
+            qtd:rec.qtd||0, unid:rec.unid||'pç', valor:0, dataPedido:dp, dataEntrega:de, dataProgramada:rec.dataProgramada||'', status:rec.status||'Em aberto', ordem:1 });
         }
       }
       for(const a of apontamentosNovos){
