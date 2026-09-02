@@ -142,7 +142,7 @@ select.sel[multiple]{height:80px}
 .mini{font-size:12px;color:var(--mut)}
 .scroll{overflow-x:auto}
 .simwrap{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
-.simcol{min-width:150px;flex:none;background:#f7f9fa;border:1px solid var(--bd);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-height:130px}
+.simcol{min-width:150px;flex:none;background:#f7f9fa;border:1px solid var(--bd);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-height:130px;max-height:520px;overflow-y:auto}
 .simcolOver{background:#fdf3e3;border-color:var(--ac)}
 .simcolHoje{border-color:var(--ac);border-width:2px}
 .simdate{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);display:flex;justify-content:space-between;align-items:center}
@@ -352,6 +352,11 @@ select.sel[multiple]{height:80px}
 <sc-if value="{{v.temKg}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut);margin:-4px 0 10px 0">ℹ {{v.pctKgExcluido}}% do tempo desta máquina é com produtos medidos em kg e não entra nesta conta — não há peso por metro linear cadastrado para converter em metros.</div></sc-if>
 </sc-if>
 </sc-for>
+</div>
+<div class="panel" id="p-operador"><div class="ptit">Performance por Operador <span class="mini fw5">— produção e refugo no período filtrado</span></div>
+<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Operador</th><th>Produção (pç)</th><th>Produção (kg)</th><th>Refugo Apara</th><th>Refugo Tubo</th><th>Refugo Total</th><th>% Refugo</th><th>Apontamentos</th></tr></thead><tbody>
+<sc-for list="{{operRows}}" as="o" hint-placeholder-count="6"><tr><td class="fw6">{{o.nome}}</td><td class="num">{{o.qtdPc}}</td><td class="num">{{o.qtdKg}}</td><td class="num">{{o.refugoApara}} kg</td><td class="num">{{o.refugoTubo}} kg</td><td class="num">{{o.refugoTotal}} kg</td><td class="num {{o.refugoCls}}">{{o.pctRefugo}}%</td><td class="num">{{o.nAp}}</td></tr></sc-for>
+</tbody></table></div>
 </div>
 <div class="duo">
 <div class="panel"><div class="ptit">Pareto de Paradas <span class="mini fw5">(minutos no período · % do tempo total: produzido + parado)</span></div>
@@ -603,6 +608,7 @@ select.sel[multiple]{height:80px}
 <div class="simdate"><span>{{c.label}}</span><span class="mini">{{c.qtd}}</span></div>
 <sc-for list="{{c.cards}}" as="k" hint-placeholder-count="1"><div class="simcard {{k.cls}}" draggable="{{simCanDrag}}" data-id="{{k.id}}" onDragStart="{{simDragStart}}" title="{{k.tip}}"><div class="simid">{{k.nr}}</div><div>{{k.cliente}}</div><div class="simmeta">{{k.maq}} · {{k.qtd}}</div><div class="simmeta">Entrega {{k.entrega}}</div><sc-if value="{{k.moved}}" hint-placeholder-val="{{false}}"><div class="simdelta">{{k.delta}}</div></sc-if></div></sc-for>
 <sc-if value="{{c.vazio}}" hint-placeholder-val="{{false}}"><div class="mini" style="opacity:.5">—</div></sc-if>
+<sc-if value="{{c.maisQ}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut);text-align:center;padding-top:4px;border-top:1px dashed var(--bd)">+ {{c.maisQ}}</div></sc-if>
 </div></sc-for></div>
 <div class="simimp">
 <div class="simbox"><div class="simbl">Pedidos atrasados</div><div class="fx gap8 ac"><span class="simv">{{sim.lateBefore}}</span><span class="simarrow">→</span><span class="simv {{sim.lateCls}}">{{sim.lateAfter}}</span></div><div class="mini">real → simulado</div></div>
@@ -2196,6 +2202,23 @@ class Component extends DCLogic {
         pctStyle:{width:Math.min(100,pct)+'%',background:pct>=95?'var(--ok)':pct>=80?'var(--warn)':'var(--bad)'}};
     });
     const g=this.calcMachine(aps,pars,osArr);
+    // ---- Performance por Operador (Produção e Refugo) ----
+    const operMap={};
+    for(const a of aps){
+      if(!a.operador) continue;
+      if(!operMap[a.operador]) operMap[a.operador]={qtdPc:0,qtdKg:0,refugoApara:0,refugoTubo:0,nAp:0};
+      const om=operMap[a.operador];
+      om.qtdPc+=(+a.qtdPc||0); om.qtdKg+=(+a.qtdKg||0);
+      om.refugoApara+=(+a.refugoAparaKg||0); om.refugoTubo+=(+a.refugoTuboKg||0); om.nAp++;
+    }
+    const operRows=Object.entries(operMap).sort((a,b)=>b[1].qtdKg-a[1].qtdKg).map(([opId,om])=>{
+      const op=db.operadores.find(x=>x.id===opId);
+      const refugoTotal=om.refugoApara+om.refugoTubo;
+      const pctRefugo=(om.qtdKg+refugoTotal)?(refugoTotal/(om.qtdKg+refugoTotal)*100):0;
+      return {nome:op?op.nome:opId,qtdPc:this.fmtN(om.qtdPc),qtdKg:this.fmtN(om.qtdKg),
+        refugoApara:this.fmtN(om.refugoApara),refugoTubo:this.fmtN(om.refugoTubo),refugoTotal:this.fmtN(refugoTotal),
+        pctRefugo:pctRefugo.toFixed(1),refugoCls:pctRefugo>10?'stAtras':pctRefugo>5?'stFila':'',nAp:om.nAp};
+    });
     // absenteísmo
     const ops=db.operadores.filter(o=>s.unidade==='ALL'||o.unidade===s.unidade);
     const ausP=db.ausencias.filter(a=>this.inRange(a.data)&&ops.some(o=>o.id===a.operador)&&(s.fOper==='ALL'||a.operador===s.fOper));
@@ -2558,7 +2581,7 @@ class Component extends DCLogic {
     const dowN=['dom','seg','ter','qua','qui','sex','sáb'];
     const simCols=simDias.map(iso=>{
       const inCol=simPeds.filter(p=>simBase(p)===iso);
-      const cards=inCol.map(p=>{
+      const cardsAll=inCol.map(p=>{
         const cl=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—';
         const mq=(db.maquinas.find(m=>m.id===p.maquina)||{}).nome||'—';
         const real=simBaseReal(p); const moved=!!s.sim[p.id]&&s.sim[p.id]!==real;
@@ -2569,9 +2592,11 @@ class Component extends DCLogic {
           cls:(moved?'simMoved ':'')+(late?'simLate':'simOk'),moved,delta:(dif>0?'+':'')+dif+'d',
           tip:p.id+' · '+cl+' · '+mq+' · fim previsto '+this.fmtD(simFim(p,iso))};
       });
+      const cards=cardsAll.slice(0,100);
       const d=new Date(iso+'T12:00:00');
-      return{iso,label:dowN[d.getDay()]+' '+this.fmtD(iso).slice(0,5),qtd:cards.length?cards.length+' ped.':'',
-        cls:(s.simOver===iso?'simcolOver ':'')+(iso===hoje?'simcolHoje':''),cards,vazio:cards.length===0};
+      return{iso,label:dowN[d.getDay()]+' '+this.fmtD(iso).slice(0,5),qtd:cardsAll.length?cardsAll.length+' ped.':'',
+        maisQ:cardsAll.length>100?(cardsAll.length-100)+' pedido(s) a mais — refine os filtros pra ver todos':'',
+        cls:(s.simOver===iso?'simcolOver ':'')+(iso===hoje?'simcolHoje':''),cards,vazio:cardsAll.length===0};
     });
     let lateB=0,lateA=0,adTotB=0,adOkB=0,adTotA=0,adOkA=0;
     for(const p of simPeds){
@@ -2768,7 +2793,7 @@ class Component extends DCLogic {
       viewTitle:titles[s.view],uAll:s.unidade==='ALL'?'segon':'',uNord:s.unidade==='NORD'?'segon':'',uCone:s.unidade==='CONE'?'segon':'',
       dataIniV:s.dataIni,dataFimV:s.dataFim,fMaqV:s.fMaq,fTurnoV:s.fTurno,fOperV:s.fOper,userV:s.user,userNome:u.nome,userPerfil:u.perfil,
       maqFilterOpts:maqs,operFilterOpts:db.operadores,userOpts:db.usuarios,metaOeeV:metaOee,
-      kpi,maqRows,pareto,trend,paretoRefugo,trendRefugo,topParadasMes,topParadasAno,mesRefLabel,anoRefLabel:refY,velRows,
+      kpi,maqRows,pareto,trend,paretoRefugo,trendRefugo,topParadasMes,topParadasAno,mesRefLabel,anoRefLabel:refY,velRows,operRows,
       detTable,detTableResumo:detTableFull.length>300?('mostrando 300 de '+detTableFull.length+' registros — refine os filtros para ver outros'):(detTableFull.length+' registro(s)'),
       detalhamentoOpen:s.panelOpen.detalhamento!==false,detalhamentoChev:s.panelOpen.detalhamento!==false?'▾':'▸',
       atrasadosLista,atrasadosPareto,atrasadosTotal:atrasTodos.length,atrasadosOpen:s.panelOpen.atrasados!==false,atrasadosChev:s.panelOpen.atrasados!==false?'▾':'▸',
