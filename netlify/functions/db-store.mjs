@@ -24,6 +24,16 @@ export default async (req, context) => {
 
   if (req.method === 'GET') {
     try {
+      const url = new URL(req.url);
+      const metaOnly = url.searchParams.get('meta') === '1';
+      if (metaOnly) {
+        // checagem leve: só o timestamp/autor da ultima gravacao, sem baixar o banco inteiro (usado no polling periodico, a cada poucos segundos)
+        const meta = await store.get('meta', { type: 'json' });
+        return new Response(JSON.stringify({
+          updatedAt: meta ? meta.updatedAt : null,
+          updatedBy: meta ? meta.updatedBy : null,
+        }), { status: 200, headers: CORS_HEADERS });
+      }
       const [db, meta] = await Promise.all([
         store.get('db', { type: 'json' }),
         store.get('meta', { type: 'json' }),

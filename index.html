@@ -1023,7 +1023,9 @@ class Component extends DCLogic {
         user: validSession ? sessionUser.id : this.state.user
       });
       this.syncPull(true);
-      this._syncTimer = setInterval(()=>this.syncPull(false), 25000);
+      // polling a cada 60s (era 25s) e pausado quando a aba não está visível, pra economizar uso do plano gratuito do Netlify
+      this._syncTimer = setInterval(()=>{ if(document.visibilityState==='visible') this.syncPull(false); }, 60000);
+      document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') this.syncPull(false); });
     };
     tryInit();
   }
@@ -1036,6 +1038,13 @@ class Component extends DCLogic {
   }
   syncPull = async (isFirst)=>{
     try{
+      if(!isFirst){
+        // pull periódico: primeiro só checa o timestamp (poucos bytes) — só baixa o banco inteiro (MB) se algo realmente mudou
+        const resMeta = await fetch('/api/db?meta=1&t='+Date.now(), {cache:'no-store'});
+        if(!resMeta.ok) throw new Error('http '+resMeta.status);
+        const meta = await resMeta.json();
+        if(!meta.updatedAt || meta.updatedAt===this.state.syncUpdatedAt){ this.setState({syncStatus:'online'}); return; }
+      }
       const res = await fetch('/api/db?t='+Date.now(), {cache:'no-store'});
       if(!res.ok) throw new Error('http '+res.status);
       const data = await res.json();
@@ -1046,13 +1055,8 @@ class Component extends DCLogic {
           try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(safeDb)); }catch(e){}
           this.setState({db:safeDb, syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
         } else {
-          // pull periódico: só aplica se alguém mais salvou algo depois do que já temos
-          if(data.updatedAt && data.updatedAt!==this.state.syncUpdatedAt){
-            try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(safeDb)); }catch(e){}
-            this.setState({db:safeDb, syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
-          } else {
-            this.setState({syncStatus:'online'});
-          }
+          try{ localStorage.setItem('tubo_sys_v4_real', JSON.stringify(safeDb)); }catch(e){}
+          this.setState({db:safeDb, syncStatus:'online', syncUpdatedAt:data.updatedAt, syncUpdatedBy:data.updatedBy});
         }
       } else if(isFirst){
         // servidor acessível mas ainda sem dados salvos: publica a base atual como ponto de partida
