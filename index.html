@@ -1216,6 +1216,8 @@ class Component extends DCLogic {
         return '';
       };
       // ---------- F-23 ----------
+      const knownKeyPrefixes=['TUB03-','TUB07-','TUB08-','CONE02-','CONE-'];
+      const withMachPrefix=(mach,rawKey)=>{ const hasPrefix=knownKeyPrefixes.some(p=>rawKey.startsWith(p)); return hasPrefix?rawKey:(mach+'-'+rawKey); };
       let apontamentosNovos=[];
       if(importF23File){
         const buf=await importF23File.arrayBuffer();
@@ -1247,12 +1249,13 @@ class Component extends DCLogic {
             if(!(dcell instanceof Date) || isNaN(dcell)) continue;
             const dataIso=dcell.toISOString().slice(0,10);
             const key=cKey!=null && row[cKey]!=null?String(row[cKey]).trim():'';
+            const keyComPrefixo=key?withMachPrefix(mach,key):'';
             const paradas=[];
             motivoCols.forEach((ci,idx)=>{ if(ci==null) return; const v=row[ci]; if(typeof v==='number' && v>0) paradas.push({motivo:motivoIds[idx], min:Math.round(v*10)/10}); });
             const horaIni=cHoraIni!=null?fmtHoraCell(row[cHoraIni]):'', horaFim=cHoraFim!=null?fmtHoraCell(row[cHoraFim]):'';
             apontamentosNovos.push({ id:'AP'+String(apid++).padStart(5,'0'), data:dataIso, dataInicio:dataIso, dataFim:dataIso,
               horaInicio:horaIni, horaFim:horaFim, maquina:mach, turno:norm(cEquipe!=null?row[cEquipe]:null)||'A',
-              operadorRaw:norm(cOper!=null?row[cOper]:null)||null, pedidoCKey:key?(mach+'||'+key):null,
+              operadorRaw:norm(cOper!=null?row[cOper]:null)||null, pedidoCKey:keyComPrefixo?(mach+'||'+keyComPrefixo):null,
               qtdPc: cQtdPc!=null?(typeof row[cQtdPc]==='number'?row[cQtdPc]:(parseFloat(row[cQtdPc])||0)):0,
               qtdKg: cQtdKg!=null && typeof row[cQtdKg]==='number'?Math.round(row[cQtdKg]*100)/100:0,
               refugoKg: cDesp!=null && typeof row[cDesp]==='number'?Math.round(row[cDesp]*100)/100:0,
@@ -1289,17 +1292,11 @@ class Component extends DCLogic {
         turno:Object.entries(o.turnoCount).sort((x,y)=>y[1]-x[1])[0]?.[0]||'A' }));
 
       // ---------- produtos / pedidos (chave composta) ----------
-      const machPrefixes=['TUB03','TUB07','TUB08','CONE02'];
-      const existingCKeys=new Set((db.apontamentos||[]).map(a=>a.pedido).filter(Boolean).map(id=>{
-        const rest=id.replace(/^PD-/,'');
-        for(const mp of machPrefixes){ if(rest.startsWith(mp+'-')) return mp+'||'+rest.slice(mp.length+1); }
-        return rest;
-      }));
       const newlyLinkedCKeys=new Set(apontamentosNovos.filter(a=>a.pedidoCKey && pcpByCKey[a.pedidoCKey]).map(a=>a.pedidoCKey));
-      const linkedCKeys=new Set([...existingCKeys,...newlyLinkedCKeys]);
+      // não usar mais o vinculo de sessoes anteriores (db.apontamentos antigo) para decidir o que entra no import de agora — só o que está NESTES arquivos, pra não misturar dado desatualizado
       const openStatuses=new Set(['Em aberto','EM ABERTO','A SER PRODUZIDO - DENTRO DO ESTADO','A SER PRODUZIDO - FORA DO ESTADO','EM PRODUÇÃO','AMOSTRA DE PRODUÇÃO']);
       const openCKeys=new Set(Object.keys(pcpByCKey).filter(k=>openStatuses.has((pcpByCKey[k].status||'').trim())));
-      const finalCKeys=importPcpFile? new Set([...linkedCKeys,...openCKeys]) : null;
+      const finalCKeys=importPcpFile? new Set([...newlyLinkedCKeys,...openCKeys]) : null;
 
       let produtosNovos=null, pedidosNovos=null, ckeyToProdId={}, ckeyToPedId={};
       if(finalCKeys){
