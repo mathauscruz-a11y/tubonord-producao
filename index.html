@@ -741,10 +741,10 @@ select.sel[multiple]{height:80px}
 </div>
 <div class="fx gap8 mt16" style="align-items:center">
 <button class="btn btna" onClick="{{processImport}}">{{importBtnLbl}}</button>
-<button class="btsm" onClick="{{restaurarSeed}}" style="color:var(--bad);border-color:var(--bad)">⚠ Restaurar dados originais</button>
+<button class="btsm" onClick="{{restaurarSeed}}" style="color:var(--bad);border-color:var(--bad)">⚠ Emergência: apagar tudo e voltar à última versão publicada por mim</button>
 <sc-if value="{{importMsg}}" hint-placeholder-val="{{false}}"><span class="mini fw6" style="{{importMsgStyle}}">{{importMsg}}</span></sc-if>
 </div>
-<div class="mini" style="color:var(--mut);margin-top:6px">O botão "Restaurar dados originais" apaga qualquer versão salva no servidor (mesmo com bug) e volta pro conteúdo mais recente que eu publiquei em <code>data.js</code> — use se a tela continuar mostrando dados errados mesmo depois de eu corrigir e você atualizar a página.</div>
+<div class="mini" style="color:var(--bad);margin-top:6px;font-weight:600">⚠ Este botão NÃO é para atualizar dados nem sincronizar — ele APAGA qualquer planilha importada, pedido/apontamento lançado ou OS aberta depois da última correção publicada por mim, voltando tudo pro que estava salvo em <code>data.js</code> no meu último deploy. Use SOMENTE se o sistema estiver travando ou mostrando erro por causa de um dado corrompido no servidor — nunca depois de uma importação normal de planilha, que já atualiza os dados sozinha.</div>
 </div>
 <div class="tabs"><sc-for list="{{cadTabs}}" as="t" hint-placeholder-count="7"><button class="tab {{t.cls}}" data-tab="{{t.key}}" onClick="{{setCadTab}}">{{t.label}}</button></sc-for></div>
 <div class="panel"><div class="ptit">💰 Custos de Manutenção <span class="mini fw5">— usados para calcular o custo estimado ao fechar uma OS</span></div>
@@ -1674,11 +1674,12 @@ class Component extends DCLogic {
     return seed;
   }
   restaurarSeed = ()=>{
-    if(!window.confirm('Isso vai SUBSTITUIR a base atual (no servidor e neste navegador) pelos dados originais do sistema (seed atual). Cadastros manuais recentes, OS lançadas à mão e edições feitas depois do último import serão perdidos. Confirma?')) return;
+    if(!window.confirm('ATENÇÃO — isso não é "atualizar" nem "sincronizar". Isso vai APAGAR toda importação de planilha, pedido, apontamento e OS lançados depois do último deploy, e voltar a base pro que estava salva no código na última correção publicada. Use só em emergência (sistema travando/corrompido) — NUNCA depois de uma importação normal. Tem certeza que quer continuar?')) return;
+    if(!window.confirm('Confirmando de novo: você vai PERDER dados lançados recentemente que ainda não estejam refletidos no meu último deploy. Continuar mesmo assim?')) return;
     const fresh=this.materializeSeed(window.TuboData);
     fresh.config=(this.state.db&&this.state.db.config)||{};
     this.persist(fresh);
-    this.toast('Base restaurada para os dados originais ✓ — sincronizando com o servidor…');
+    this.toast('Base restaurada para a última versão publicada por mim ✓ — sincronizando com o servidor…');
   };
   onSearchPedido = (e)=>{
     const typed=e.target.value;
