@@ -353,9 +353,9 @@ select.sel[multiple]{height:80px}
 </sc-if>
 </sc-for>
 </div>
-<div class="panel" id="p-operador"><div class="ptit">Performance por Operador <span class="mini fw5">— produção e refugo no período filtrado</span></div>
-<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Operador</th><th>Produção (pç)</th><th>Produção (kg)</th><th>Refugo Apara</th><th>Refugo Tubo</th><th>Refugo Total</th><th>% Refugo</th><th>Apontamentos</th></tr></thead><tbody>
-<sc-for list="{{operRows}}" as="o" hint-placeholder-count="6"><tr><td class="fw6">{{o.nome}}</td><td class="num">{{o.qtdPc}}</td><td class="num">{{o.qtdKg}}</td><td class="num">{{o.refugoApara}} kg</td><td class="num">{{o.refugoTubo}} kg</td><td class="num">{{o.refugoTotal}} kg</td><td class="num {{o.refugoCls}}">{{o.pctRefugo}}%</td><td class="num">{{o.nAp}}</td></tr></sc-for>
+<div class="panel" id="p-operador"><div class="ptit">Performance por Operador <span class="mini fw5">— produção, refugo e eficiência (produzido ÷ produzido+refugo) no período filtrado</span></div>
+<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Operador</th><th>Produção (pç)</th><th>Produção (kg)</th><th>Refugo Apara</th><th>Refugo Tubo</th><th>Refugo Total</th><th>% Refugo</th><th>Eficiência</th><th>Apontamentos</th></tr></thead><tbody>
+<sc-for list="{{operRows}}" as="o" hint-placeholder-count="6"><tr><td class="fw6">{{o.nome}}</td><td class="num">{{o.qtdPc}}</td><td class="num">{{o.qtdKg}}</td><td class="num">{{o.refugoApara}} kg</td><td class="num">{{o.refugoTubo}} kg</td><td class="num">{{o.refugoTotal}} kg</td><td class="num {{o.refugoCls}}">{{o.pctRefugo}}%</td><td><div class="fx gap8 ac"><div class="pbtrack" style="width:80px"><div class="pbfill" style="{{o.eficienciaStyle}}"></div></div><span class="mini fw6">{{o.eficiencia}}%</span></div></td><td class="num">{{o.nAp}}</td></tr></sc-for>
 </tbody></table></div>
 </div>
 <div class="duo">
@@ -2214,11 +2214,15 @@ class Component extends DCLogic {
     const operRows=Object.entries(operMap).sort((a,b)=>b[1].qtdKg-a[1].qtdKg).map(([opId,om])=>{
       const op=db.operadores.find(x=>x.id===opId);
       const refugoTotal=om.refugoApara+om.refugoTubo;
-      const pctRefugo=(om.qtdKg+refugoTotal)?(refugoTotal/(om.qtdKg+refugoTotal)*100):0;
+      const base=om.qtdKg+refugoTotal;
+      const pctRefugo=base?(refugoTotal/base*100):0;
+      const eficiencia=base?(om.qtdKg/base*100):0; // eficiência = produzido líquido ÷ (produzido + refugo) — quanto do que passou pela máquina virou peça boa
       return {nome:op?op.nome:opId,qtdPc:this.fmtN(om.qtdPc),qtdKg:this.fmtN(om.qtdKg),
         refugoApara:this.fmtN(om.refugoApara),refugoTubo:this.fmtN(om.refugoTubo),refugoTotal:this.fmtN(refugoTotal),
-        pctRefugo:pctRefugo.toFixed(1),refugoCls:pctRefugo>10?'stAtras':pctRefugo>5?'stFila':'',nAp:om.nAp};
-    });
+        pctRefugo:pctRefugo.toFixed(1),refugoCls:pctRefugo>10?'stAtras':pctRefugo>5?'stFila':'',nAp:om.nAp,
+        eficiencia:eficiencia.toFixed(1),
+        eficienciaStyle:{width:Math.max(2,Math.round(eficiencia))+'%',background:eficiencia>=95?'var(--ok)':eficiencia>=90?'var(--warn)':'var(--bad)'}};
+    }).sort((a,b)=>+b.eficiencia-+a.eficiencia);
     // absenteísmo
     const ops=db.operadores.filter(o=>s.unidade==='ALL'||o.unidade===s.unidade);
     const ausP=db.ausencias.filter(a=>this.inRange(a.data)&&ops.some(o=>o.id===a.operador)&&(s.fOper==='ALL'||a.operador===s.fOper));
