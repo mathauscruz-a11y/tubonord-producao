@@ -635,9 +635,13 @@ select.sel[multiple]{height:80px}
 <select class="sel" value="{{progMaqFilterV}}" onChange="{{onProgMaqFilter}}"><option value="ALL">Todas as máquinas</option><sc-for list="{{maqFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.nome}}</option></sc-for></select>
 <button class="btsm" onClick="{{openProgPrint}}">🖨 Imprimir Programação</button></div></div>
 <sc-for list="{{progMaqs}}" as="pm" hint-placeholder-count="2"><div style="margin-top:12px"><div class="fw7 fs14" style="border-bottom:2px solid var(--ac);padding-bottom:4px;margin-bottom:4px">{{pm.maq}} <span class="mini fw5">· {{pm.n}} pedido(s) · {{pm.tot}} pç</span></div>
+<sc-if value="{{pm.vazia}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut);padding:6px 0">Sem programação para esta data.</div></sc-if>
+<sc-if value="{{pm.vazia}}" hint-placeholder-val="{{true}}">
 <div class="scroll"><table class="tbl"><thead><tr><th>Ordem</th><th>Nº Pedido</th><th>Cliente</th><th>Produto</th><th>Ø × Comp</th><th>Parede</th><th>Vel. Alvo</th><th>Peso Mín</th><th>Peso Padrão</th><th>Peso Máx</th><th>Qtd</th><th></th></tr></thead><tbody>
 <sc-for list="{{pm.itens}}" as="it" hint-placeholder-count="2"><tr><td class="num fw7">{{it.ordem}}</td><td class="fw6">{{it.nrCliente}}</td><td>{{it.cliente}}</td><td class="mini">{{it.produto}}</td><td class="num">{{it.dim}}</td><td class="num">{{it.parede}}</td><td class="num">{{it.vel}}</td><td class="num">{{it.pesoMin}}</td><td class="num fw6">{{it.pesoPad}}</td><td class="num">{{it.pesoMax}}</td><td class="num">{{it.qtd}}</td><td class="fx gap8"><button class="btsm" data-id="{{it.id}}" data-dir="up" onClick="{{moveOrdem}}">↑</button><button class="btsm" data-id="{{it.id}}" data-dir="down" onClick="{{moveOrdem}}">↓</button></td></tr></sc-for>
-</tbody></table></div></div></sc-for>
+</tbody></table></div>
+</sc-if>
+</div></sc-for>
 <sc-if value="{{progVazio}}" hint-placeholder-val="{{false}}"><div class="empty">Nenhum pedido com entrega prevista (ou Data Programada) nesta data. Troque a data acima ou defina a "Data Programada na Produção" nos pedidos para um controle mais preciso.</div></sc-if>
 </div>
 <div class="panel" id="p-gantt"><div class="ptit">Gantt de Máquinas <span class="mini fw5">— carga e sequenciamento da produção</span></div>
@@ -925,9 +929,13 @@ select.sel[multiple]{height:80px}
 <div class="fx jb mini mt8"><span>Elaborado por: PWR Gestão</span><span>Aprovado por: Helder Gomes</span><span>Data da programação: {{progPrint.data}}</span><span>Emitido em: {{progPrint.emitido}}</span><span>Conforme ISO 9001:2015 — 8.1</span></div>
 <sc-for list="{{progPrint.maqs}}" as="pm" hint-placeholder-count="2">
 <div class="isosec">MÁQUINA: {{pm.maq}} — {{pm.n}} PEDIDO(S) · {{pm.tot}} PÇ</div>
+<sc-if value="{{pm.vazia}}" hint-placeholder-val="{{false}}"><div class="mini" style="padding:4px 0">Sem programação para esta data.</div></sc-if>
+<sc-if value="{{pm.vazia}}" hint-placeholder-val="{{true}}">
 <div class="scroll"><table class="tbl"><thead><tr><th>Seq.</th><th>Nº Pedido</th><th>Cliente</th><th>Produto</th><th>Ø × Comp</th><th>Parede</th><th>Vel. Alvo</th><th>Peso Mín</th><th>Peso Padrão</th><th>Peso Máx</th><th>Qtd</th></tr></thead><tbody>
 <sc-for list="{{pm.itens}}" as="it" hint-placeholder-count="2"><tr><td class="num fw7">{{it.ordem}}</td><td class="fw6">{{it.nrCliente}}</td><td>{{it.cliente}}</td><td class="mini">{{it.produto}}</td><td class="num">{{it.dim}}</td><td class="num">{{it.parede}}</td><td class="num">{{it.vel}}</td><td class="num">{{it.pesoMin}}</td><td class="num fw6">{{it.pesoPad}}</td><td class="num">{{it.pesoMax}}</td><td class="num">{{it.qtd}}</td></tr></sc-for>
-</tbody></table></div></sc-for>
+</tbody></table></div>
+</sc-if>
+</sc-for>
 <sc-if value="{{progPrint.vazio}}" hint-placeholder-val="{{false}}"><div class="empty">Nenhum pedido programado para esta data / máquina.</div></sc-if>
 <div class="fx gap24 mt16" style="border-top:1px solid var(--bd);padding-top:14px"><div class="f1"><div class="isoflab">Liberado por (PCP)</div><div style="border-top:1px solid var(--ink);margin-top:26px;font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div><div class="f1"><div class="isoflab">Recebido por (Produção)</div><div style="border-top:1px solid var(--ink);margin-top:26px;font-size:10px;color:var(--mut);padding-top:2px">Assinatura / Data</div></div></div>
 <div class="fx gap8 mt16 noprint"><button class="btsm" onClick="{{printOs}}">🖨 Imprimir</button><button class="btsm" onClick="{{closeProgPrint}}" style="margin-left:auto">Fechar</button></div>
@@ -2666,9 +2674,10 @@ class Component extends DCLogic {
     const progPeds=pedsUnid.filter(p=>progRefDate(p)===s.progDate&&(s.progMaqFilter==='ALL'||p.maquina===s.progMaqFilter));
     const progByMaq={};
     for(const p of progPeds){ (progByMaq[p.maquina]=progByMaq[p.maquina]||[]).push(p); }
-    const progMaqs=Object.keys(progByMaq).map(mid=>{
-      const mq=db.maquinas.find(m=>m.id===mid)||{};
-      const itens=progByMaq[mid].sort((a,b)=>(+a.ordem||99)-(+b.ordem||99)||a.id.localeCompare(b.id)).map((p,idx)=>{
+    const progMaqsList=db.maquinas.filter(m=>s.progMaqFilter==='ALL'||m.id===s.progMaqFilter);
+    const progMaqs=progMaqsList.map(mq=>{
+      const mid=mq.id;
+      const itens=(progByMaq[mid]||[]).sort((a,b)=>(+a.ordem||99)-(+b.ordem||99)||a.id.localeCompare(b.id)).map((p,idx)=>{
         const pr=db.produtos.find(x=>x.id===p.produto)||{};
         const cl=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—';
         return{id:p.id,ordem:(+p.ordem&&p.ordem!==99)?p.ordem:idx+1,nrCliente:p.nrCliente,cliente:cl,produto:(pr.nome||'—').slice(0,30),
@@ -2676,7 +2685,7 @@ class Component extends DCLogic {
           vel:pr.velAlvo?pr.velAlvo+' pç/min':'—',pesoMin:pr.pesoMin?pr.pesoMin+' kg':'—',
           pesoPad:(pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)?((pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)+' kg'):'—',
           pesoMax:pr.pesoMax?pr.pesoMax+' kg':'—',qtd:this.fmtN(p.qtd)+' '+p.unid};});
-      return{maq:mq.nome||mid,n:itens.length,tot:this.fmtN(progByMaq[mid].reduce((x,p)=>x+(+p.qtd||0),0)),itens};
+      return{maq:mq.nome||mid,n:itens.length,tot:this.fmtN((progByMaq[mid]||[]).reduce((x,p)=>x+(+p.qtd||0),0)),itens,vazia:itens.length===0};
     });
     // ---- Gantt de máquinas — janela = filtro de data selecionado no topo ----
     const DAY=86400000;
@@ -2781,9 +2790,9 @@ class Component extends DCLogic {
       solK,solRows,solVazio:solRows.length===0,solAct:this.solAct,
       openSolic:this.openSolic,closeSolic:this.closeSolic,sendSolic:this.sendSolic,solicOpen:s.solicOpen,fSolic:s.forms.solic,
       simDragStart:this.simDragStart,simDragOver:this.simDragOver,simDragLeave:this.simDragLeave,simDrop:this.simDrop,simReset:this.simReset,
-      progDateV:s.progDate,onProgDate:this.onProgDate,moveOrdem:this.moveOrdem,progMaqs,progVazio:progMaqs.length===0,
+      progDateV:s.progDate,onProgDate:this.onProgDate,moveOrdem:this.moveOrdem,progMaqs,progVazio:progMaqs.every(m=>m.vazia),
       progMaqFilterV:s.progMaqFilter,onProgMaqFilter:this.onProgMaqFilter,openProgPrint:this.openProgPrint,closeProgPrint:this.closeProgPrint,
-      progPrintOpen:s.progPrintOpen,progPrint:{empresa:'TUBONORD',data:this.fmtD(s.progDate),emitido:this.fmtD(hoje),maqs:progMaqs,vazio:progMaqs.length===0},
+      progPrintOpen:s.progPrintOpen,progPrint:{empresa:'TUBONORD',data:this.fmtD(s.progDate),emitido:this.fmtD(hoje),maqs:progMaqs,vazio:progMaqs.every(m=>m.vazia)},
       vDash:s.view==='dash',vProd:s.view==='prod',vPar:s.view==='par',vManut:s.view==='manut',vPcp:s.view==='pcp',vRh:s.view==='rh',vCad:s.view==='cad'&&u.perfil==='Administrador',vIa:s.view==='ia',vMan:s.view==='man',
       cDash:s.view==='dash'?'nion':'',cProd:s.view==='prod'?'nion':'',cPar:s.view==='par'?'nion':'',cManut:s.view==='manut'?'nion':'',cPcp:s.view==='pcp'?'nion':'',cRh:s.view==='rh'?'nion':'',cCad:s.view==='cad'?'nion':'',cIa:s.view==='ia'?'nion':'',cMan:s.view==='man'?'nion':'',
       manIndic:this.manualIndic(),manAbas:this.manualAbas(),
