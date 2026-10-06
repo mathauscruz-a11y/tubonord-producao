@@ -1255,6 +1255,8 @@ class Component extends DCLogic {
         if(hr>=0){
           const hm=headerMap(rows[hr]);
           const machMap={'TUBETEIRA 03':'TUB03','TUBETEIRA 07':'TUB07','TUBETEIRA 08':'TUB08','CONICALEIRA 02':'CONE02'};
+          // máquinas cadastradas em Cadastros → Máquinas também entram na importação (pelo nome, ex.: "Arruela 01")
+          for(const m of (db.maquinas||[])){ const k=norm(m.nome).toUpperCase(); if(k && !(k in machMap)) machMap[k]=m.id; }
           const motivoNomes=['1. Setup','2. Troca de Matriz','3. Troca de Facas','4. Limpeza','5. Problemas Corte',
             '6. Problemas Matéria Prima','7. Falta de Material','8. Manutenção - Mecânica | Programada',
             '8. Manutenção - Mecânica | Não Programada','9. Manutenção - Elétrica | Programada',
@@ -1273,7 +1275,7 @@ class Component extends DCLogic {
           for(let r=hr+1;r<rows.length;r++){
             const row=rows[r]; if(!row) continue;
             const machRaw=norm(cMaq!=null?row[cMaq]:null);
-            const mach=machMap[machRaw]; if(!mach){ if(machRaw && row[cData] instanceof Date){ descartadasMaq[machRaw]=(descartadasMaq[machRaw]||0)+1; } continue; }
+            const mach=machMap[machRaw.toUpperCase()]; if(!mach){ if(machRaw && row[cData] instanceof Date){ descartadasMaq[machRaw]=(descartadasMaq[machRaw]||0)+1; } continue; }
             const dcell=cData!=null?row[cData]:null;
             if(!(dcell instanceof Date) || isNaN(dcell)) continue;
             const dataIso=dcell.toISOString().slice(0,10);
@@ -1408,7 +1410,7 @@ class Component extends DCLogic {
       this.logAudit(db,'importacao','criado','F-23/PCP','Importação de planilha por '+quemImp+' — '+apontamentosNovos.length+' apontamentos'+(pedidosNovos?', '+pedidosNovos.length+' pedidos':''));
       this.persist(db);
       this.setState({importBusy:false, importMsgErr:false,
-        importMsg:'Importado: '+apontamentosNovos.length+' apontamentos'+(pedidosNovos?', '+pedidosNovos.length+' pedidos':'')+'.'+(Object.keys(descartadasMaq).length?(' ATENÇÃO: linhas ignoradas por máquina não cadastrada — '+Object.entries(descartadasMaq).map(([k,v])=>k+': '+v).join('; ')+'. Cadastre a máquina para incluí-las.'):''),
+        importMsg:'Importado: '+apontamentosNovos.length+' apontamentos'+(pedidosNovos?', '+pedidosNovos.length+' pedidos':'')+'.'+(Object.keys(descartadasMaq).length?(' ATENÇÃO: linhas ignoradas por máquina não cadastrada — '+Object.entries(descartadasMaq).map(([k,v])=>k+': '+v).join('; ')+'. Cadastre a máquina em Cadastros → Máquinas (mesmo nome da planilha) e importe de novo para incluí-las.'):''),
         importF23File:null, importPcpFile:null});
     }catch(err){
       console.error(err);
