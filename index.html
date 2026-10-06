@@ -1054,6 +1054,8 @@ class Component extends DCLogic {
     if(!db) return db;
     const arrays=['pedidos','apontamentos','osList','ausencias','clientes','produtos','maquinas','operadores','usuarios','motivosParada','itensEquip','motivosOS','unidades','turnos','metasMensais','componentes','paradas'];
     for(const k of arrays){ if(!Array.isArray(db[k])) db[k]=[]; }
+    // cadastro padrão da Arruela 01 (aparece na F-23 desde 09/2026): garante a máquina em qualquer base carregada, sem duplicar
+    if(!db.maquinas.some(m=>String(m.nome||'').trim().toUpperCase()==='ARRUELA 01' || m.id==='ARR01')) db.maquinas.push({id:'ARR01',nome:'Arruela 01',unidade:'NORD',setor:'Produção',tipo:''});
     return db;
   }
   syncPull = async (isFirst)=>{
@@ -1881,7 +1883,7 @@ class Component extends DCLogic {
         fields:[{name:'nome',label:'Nome',type:'text'},{name:'unidade',label:'Unidade',options:[{v:'NORD',l:'Tubonord'}]},{name:'setor',label:'Setor',type:'text'},{name:'tipo',label:'Tipo',options:['Tubeteira','Conicaleira','Flexográfica','Recortadeira','Acabamento'].map(v=>({v,l:v}))}],
         make:f=>({nome:f.nome,unidade:f.unidade||'NORD',setor:f.setor||'Produção',tipo:f.tipo||'Tubeteira'}),idp:'MQ'},
       produtos:{label:'Produtos',key:'produtos',cols:['ID','Produto','Cliente','Ø×Comp (mm)','Parede','Peso Pad.','Mín–Máx','Vel. Alvo'],cells:p=>[p.id,p.nome,(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—',(p.diamMm||0)+'×'+(p.compMm||0),(p.paredeMm||0)+' mm',(p.pesoPadrao!=null?p.pesoPadrao:p.pesoIdeal)+' kg',(p.pesoMin||0)+'–'+(p.pesoMax||0),p.velAlvo+' '+p.unid],
-        fields:[{name:'nome',label:'Nome do produto',type:'text'},{name:'cliente',label:'Cliente',options:db.clientes.map(c=>({v:c.id,l:c.nome}))},{name:'maquinaTipo',label:'Tipo de máquina',options:['Tubeteira','Conicaleira','Flexográfica','Recortadeira','Acabamento'].map(v=>({v,l:v}))},{name:'diamMm',label:'Diâmetro Ø (mm)',type:'number'},{name:'compMm',label:'Comprimento (mm)',type:'number'},{name:'paredeMm',label:'Parede (mm)',type:'number'},{name:'pesoPadrao',label:'Peso padrão (kg/pç)',type:'number'},{name:'pesoMin',label:'Peso mínimo (kg)',type:'number'},{name:'pesoMax',label:'Peso máximo (kg)',type:'number'},{name:'velAlvo',label:'Velocidade alvo (pç/min)',type:'number'}],
+        fields:[{name:'nome',label:'Nome do produto',type:'text'},{name:'cliente',label:'Cliente',options:db.clientes.map(c=>({v:c.id,l:c.nome}))},{name:'maquinaTipo',label:'Tipo de máquina',options:['Tubeteira','Conicaleira','Flexográfica','Recortadeira','Acabamento'].map(v=>({v,l:v}))},{name:'diamMm',label:'Diâmetro Ø (mm)',type:'number'},{name:'compMm',label:'Comprimento (mm)',type:'number'},{name:'paredeMm',label:'Parede (mm)',type:'number'},{name:'pesoPadrao',label:'Peso padrão (kg/pç)',type:'number'},{name:'pesoMin',label:'Peso mínimo (kg)',type:'number'},{name:'pesoMax',label:'Peso máximo (kg)',type:'number'},{name:'velAlvo',label:'Velocidade alvo (m/min)',type:'number'}],
         make:f=>({nome:f.nome,cliente:f.cliente,maquinaTipo:f.maquinaTipo||'Tubeteira',diamMm:+f.diamMm||0,compMm:+f.compMm||0,paredeMm:+f.paredeMm||0,pesoIdeal:+f.pesoPadrao||+f.pesoIdeal||0,pesoPadrao:+f.pesoPadrao||0,pesoMin:+f.pesoMin||0,pesoMax:+f.pesoMax||0,velAlvo:+f.velAlvo||0,unid:'pç/min'}),idp:'P'},
       clientes:{label:'Clientes',key:'clientes',cols:['ID','Nome','Cidade - UF'],cells:c=>[c.id,c.nome,c.cidade],
         fields:[{name:'nome',label:'Nome',type:'text'},{name:'cidade',label:'Cidade - UF',type:'text'}],
@@ -2441,15 +2443,16 @@ class Component extends DCLogic {
       const parMin=parMinByAp[a.id]||0;
       const bruto=this.tempoBruto(a);
       const operMin=Math.max(1,bruto-parMin);
-      const vReal=(+a.qtdPc||0)/operMin;
-      const vAlvo=pr.velAlvo||0;
+      const vReal=(+a.qtdPc||0)/operMin; // pç/min
+      const vRealM=pr.compMm?vReal*(pr.compMm/1000):0; // m/min (mesma unidade da meta do PCP)
+      const vAlvo=(pr.velAlvo&&!pr.velAlvoEstimado&&(pr.unid||'').toLowerCase()!=='kg')?pr.velAlvo:0;
       const fmtHM=m=>{const h=Math.floor(m/60);return (h?h+'h':'')+(m%60)+'m';};
       const iniLbl=this.fmtD(a.dataInicio||a.data)+(a.horaInicio?' '+a.horaInicio:'');
       const fimLbl=(a.dataFim&&a.dataFim!==(a.dataInicio||a.data)?this.fmtD(a.dataFim)+' ':'')+(a.horaFim||'—');
       const rastro=a.editadoPor?('Editado por '+a.editadoPor+(a.editadoEm?' em '+this.fmtD(a.editadoEm.slice(0,10)):'')):(a.criadoPor?('Criado por '+a.criadoPor+(a.criadoEm?' em '+this.fmtD(a.criadoEm.slice(0,10)):'')):'sem rastro (dado importado da planilha)');
       return{id:a.id,inicio:iniLbl,fim:fimLbl,maq:mq.nome||a.maquina,turno:a.turno,op:op.nome?op.nome.split(' ')[0]:'—',prod:(pr.nome||'—').slice(0,28),rastro,
         bruto:fmtHM(bruto),rodando:fmtHM(Math.max(0,bruto-parMin)),
-        velReal:vReal.toFixed(1)+' pç/min',velCls:vAlvo?(vReal>=vAlvo*0.85?'kok':'kbad'):'',
+        velReal:vRealM?vRealM.toFixed(1)+' m/min':vReal.toFixed(1)+' pç/min',velCls:(vAlvo&&vRealM)?(vRealM>=vAlvo*0.85?'kok':'kbad'):'',
         qtd:this.fmtN(a.qtdPc),kg:this.fmtN(a.qtdKg),refugo:a.refugoKg,paradaMin:parMin};});
     // cálculos ao vivo do formulário de produção
     let velAtingida='—',tempoBrutoSel='—',tempoRodandoSel='—';
@@ -2462,9 +2465,12 @@ class Component extends DCLogic {
       tempoBrutoSel=fmtHM(bruto);
       tempoRodandoSel=fmtHM(Math.max(0,bruto-pMin))+(bruto?' · '+Math.max(0,Math.round((bruto-pMin)/bruto*100))+'% disp.'+(pMin>bruto?' ⚠ paradas somam mais que o tempo bruto do turno':''):'');
       if(+fp.qtdPc>0){
-        const v=(+fp.qtdPc)/oMin;
-        velAtingida=v.toFixed(1)+' pç/min';
-        if(prodSel&&prodSel.velAlvo) velAtingida+=' ('+Math.round(v/prodSel.velAlvo*100)+'% da meta)';
+        const v=(+fp.qtdPc)/oMin; // pç/min
+        const vm=(prodSel&&prodSel.compMm)?v*prodSel.compMm/1000:0; // m/min
+        const alvoOk=prodSel&&prodSel.velAlvo&&!prodSel.velAlvoEstimado&&(prodSel.unid||'').toLowerCase()!=='kg';
+        velAtingida=vm?vm.toFixed(1)+' m/min':v.toFixed(1)+' pç/min';
+        if(alvoOk&&vm) velAtingida+=' ('+Math.round(vm/prodSel.velAlvo*100)+'% da meta)';
+        else if(vm) velAtingida+=' · '+v.toFixed(1)+' pç/min (sem meta confiável)';
       }
     }
     // paradas view
@@ -2701,7 +2707,7 @@ class Component extends DCLogic {
         const cl=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—';
         return{id:p.id,ordem:(+p.ordem&&p.ordem!==99)?p.ordem:idx+1,nrCliente:p.nrCliente,cliente:cl,produto:(pr.nome||'—').slice(0,30),
           dim:pr.diamMm?('Ø'+pr.diamMm+'×'+pr.compMm):'—',parede:pr.paredeMm?pr.paredeMm+'mm':'—',
-          vel:pr.velAlvo?pr.velAlvo+' pç/min':'—',pesoMin:pr.pesoMin?pr.pesoMin+' kg':'—',
+          vel:(pr.velAlvo&&!pr.velAlvoEstimado)?pr.velAlvo+' m/min':'—',pesoMin:pr.pesoMin?pr.pesoMin+' kg':'—',
           pesoPad:(pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)?((pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)+' kg'):'—',
           pesoMax:pr.pesoMax?pr.pesoMax+' kg':'—',qtd:this.fmtN(p.qtd)+' '+p.unid};});
       return{maq:mq.nome||mid,n:itens.length,tot:this.fmtN((progByMaq[mid]||[]).reduce((x,p)=>x+(+p.qtd||0),0)),itens,vazia:itens.length===0,comDados:itens.length>0};
