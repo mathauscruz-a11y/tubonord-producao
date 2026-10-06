@@ -1717,7 +1717,7 @@ class Component extends DCLogic {
     const ped=this.state.db.pedidos.find(p=>p.id===id);
     const forms={...this.state.forms};
     forms.prod={...forms.prod, pedidoBusca:typed, pedido: ped?id:''};
-    if(ped){ forms.prod.produto=ped.produto; forms.prod.produtoBusca=''; if(ped.maquina) forms.prod.maquina=ped.maquina; }
+    if(ped){ forms.prod.produto=ped.produto; forms.prod.produtoBusca=null; if(ped.maquina) forms.prod.maquina=ped.maquina; }
     this.setState({forms});
   };
   onSearchProduto = (e)=>{
@@ -2707,9 +2707,9 @@ class Component extends DCLogic {
         const cl=(db.clientes.find(c=>c.id===p.cliente)||{}).nome||'—';
         return{id:p.id,ordem:(+p.ordem&&p.ordem!==99)?p.ordem:idx+1,nrCliente:p.nrCliente,cliente:cl,produto:(pr.nome||'—').slice(0,30),
           dim:pr.diamMm?('Ø'+pr.diamMm+'×'+pr.compMm):'—',parede:pr.paredeMm?pr.paredeMm+'mm':'—',
-          vel:(pr.velAlvo&&!pr.velAlvoEstimado)?pr.velAlvo+' m/min':'—',pesoMin:pr.pesoMin?pr.pesoMin+' kg':'—',
-          pesoPad:(pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)?((pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)+' kg'):'—',
-          pesoMax:pr.pesoMax?pr.pesoMax+' kg':'—',qtd:this.fmtN(p.qtd)+' '+p.unid};});
+          vel:(pr.velAlvo&&!pr.velAlvoEstimado)?pr.velAlvo+' m/min':'—',pesoMin:pr.pesoMin?(+(+pr.pesoMin).toFixed(4))+' kg':'—',
+          pesoPad:(pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)?((+(+(pr.pesoPadrao!=null?pr.pesoPadrao:pr.pesoIdeal)).toFixed(4))+' kg'):'—',
+          pesoMax:pr.pesoMax?(+(+pr.pesoMax).toFixed(4))+' kg':'—',qtd:this.fmtN(p.qtd)+' '+p.unid};});
       return{maq:mq.nome||mid,n:itens.length,tot:this.fmtN((progByMaq[mid]||[]).reduce((x,p)=>x+(+p.qtd||0),0)),itens,vazia:itens.length===0,comDados:itens.length>0};
     });
     // ---- Gantt de máquinas — janela = filtro de data selecionado no topo ----
@@ -2867,7 +2867,7 @@ class Component extends DCLogic {
           refugo:this.fmtN(mAps.reduce((x,a)=>x+(+a.refugoKg||0),0)),paradas:this.fmtN((m.raw.tParNP+m.raw.tParPR)/60),oee:Math.round(m.raw.oee*100)};
       }),
       canVerValor,canPrintOs,noPrintOs:!canPrintOs,
-      metaProdSel:prodSel?((prodSel.velAlvo&&!prodSel.velAlvoEstimado&&(prodSel.unid||'').toLowerCase()!=='kg')?(prodSel.velAlvo+' m/min'):'sem meta confiável')+' · '+prodSel.pesoIdeal+' kg/pç'+(prodSel.compMm?' · Compr.: '+(prodSel.compMm/1000).toFixed(3)+'m':'')+(prodSel.diamMm?' · Diâm.: '+prodSel.diamMm+'mm':''):'—',
+      metaProdSel:prodSel?((prodSel.velAlvo&&!prodSel.velAlvoEstimado&&(prodSel.unid||'').toLowerCase()!=='kg')?(prodSel.velAlvo+' m/min'):'sem meta confiável')+' · '+(+(+prodSel.pesoIdeal).toFixed(4))+' kg/pç'+(prodSel.compMm?' · Compr.: '+(prodSel.compMm/1000).toFixed(3)+'m':'')+(prodSel.diamMm?' · Diâm.: '+prodSel.diamMm+'mm':''):'—',
       fProdQtdKgCalc:(prodSel&&fProd.qtdPc)?('calculado: '+((+fProd.qtdPc)*prodSel.pesoIdeal).toFixed(1)+' kg'):'calculado automaticamente',
       fPar,parEditing:!!fPar.editId,parFormTit:fPar.editId?'Editar Parada':'Registrar Parada',parSaveLbl:fPar.editId?'Salvar alterações':'Registrar parada',
       parRows,parCount:pars.length,parK,apLinkOpts,
