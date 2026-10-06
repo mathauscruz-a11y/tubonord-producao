@@ -229,6 +229,10 @@ select.sel[multiple]{height:80px}
 .mobLogout{display:none}
 .mobFilterBtn{display:none}
 .hamburger{display:none}
+.infob{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--mut);color:var(--mut);font:italic 700 10px Georgia,serif;background:#fff;cursor:pointer;margin-left:6px;padding:0;line-height:1;vertical-align:middle;text-transform:none}
+.infob:hover{border-color:var(--ac);color:var(--ac)}
+.infosec{margin-top:10px;font-size:13px;line-height:1.5}
+.infolab{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ac);margin-bottom:2px}
 .navbackdrop{display:none}
 .tbarFilters{display:contents}
 @media print{.side,.tbar,.noprint{display:none !important}.app{display:block}.modal{position:static;background:none;padding:0}.mbox{max-height:none;box-shadow:none}}
@@ -287,6 +291,14 @@ select.sel[multiple]{height:80px}
 <sc-if value="{{showApp}}" hint-placeholder-val="{{true}}">
 <div class="app">
 <div class="navbackdrop {{navBackdropCls}}" onClick="{{closeMobNav}}"></div>
+<sc-if value="{{infoOpen}}" hint-placeholder-val="{{false}}">
+<div class="modal noprint" onClick="{{closeInfo}}"><div class="mbox" onClick="{{stop}}" style="max-width:460px">
+<div class="ptit">{{infoT}} <button class="btsm" style="margin-left:auto" onClick="{{closeInfo}}">✕</button></div>
+<div class="infosec"><div class="infolab">Como é calculado</div><div>{{infoF}}</div></div>
+<div class="infosec"><div class="infolab">De onde vêm as informações</div><div>{{infoD}}</div></div>
+<div class="infosec"><div class="infolab">Por que é importante</div><div>{{infoI}}</div></div>
+</div></div>
+</sc-if>
 <aside class="side noprint {{navOpenCls}}">
 <div class="logos"><img class="logoimg" src="assets/logo-tubonord.png" alt="Tubonord"><div class="grupo upper fw6">SISTEMA DE GESTÃO INDUSTRIAL</div></div>
 <div class="nitem {{cDash}}" onClick="{{nav.dash}}"><svg class="nico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>Dashboard</div>
@@ -323,24 +335,24 @@ select.sel[multiple]{height:80px}
 
 <sc-if value="{{vDash}}" hint-placeholder-val="{{true}}">
 <div class="cards">
-<div class="card"><div class="klab">OEE Global</div><div class="kval {{kpi.oeeCls}}">{{kpi.oee}}%</div><div class="ksub">Meta: {{metaOeeV}}%</div></div>
-<div class="card"><div class="klab">Disponibilidade</div><div class="kval">{{kpi.disp}}%</div><div class="ksub">Perf. {{kpi.perf}}% · Qual. {{kpi.qual}}%</div></div>
-<div class="card"><div class="klab">MTTR Corretiva</div><div class="kval">{{kpi.mttr}}h</div><div class="ksub">Meta ≤ 2h</div></div>
-<div class="card"><div class="klab">MTBF</div><div class="kval">{{kpi.mtbf}}h</div><div class="ksub">{{kpi.nFalhas}} falhas no período</div></div>
-<div class="card"><div class="klab">Absenteísmo</div><div class="kval {{kpi.absCls}}">{{kpi.abs}}%</div><div class="ksub">Meta ≤ 3%</div></div>
-<div class="card"><div class="klab">Produção</div><div class="kval">{{kpi.prodKg}}</div><div class="ksub">{{kpi.prodPc}} peças</div></div>
-<div class="card"><div class="klab">Horas Paradas</div><div class="kval">{{kpi.hParadas}}h</div><div class="ksub">{{kpi.nParadas}} eventos</div></div>
-<div class="card"><div class="klab">Tempo de Setup</div><div class="kval">{{kpi.setupH}}h</div><div class="ksub">{{kpi.setupPct}}% do tempo programado</div></div>
-<div class="card"><div class="klab">OS Abertas</div><div class="kval {{kpi.osCls}}">{{kpi.osAbertas}}</div><div class="ksub">{{kpi.osFechadas}} fechadas no período</div></div>
-<div class="card"><div class="klab">Refugo</div><div class="kval">{{kpi.refugo}}%</div><div class="ksub">{{kpi.refugoKg}} kg — apara {{kpi.refugoApara}} / tubo {{kpi.refugoTubo}}</div></div>
-<div class="card"><div class="klab">Alterações de Programação</div><div class="kval {{solK.cls}}">{{solK.total}} / {{solK.aprov}}</div><div class="ksub">solicitadas / aprovadas · {{solK.taxa}}%</div></div>
-<div class="card"><div class="klab">Carteira — Conclusão</div><div class="kval {{stK.taxaCls}}">{{stK.concPct}}%</div><div class="ksub">{{stK.concluido}} concl. · {{stK.aberto}} abertos · {{stK.naoConc}} não concl.</div></div>
-<div class="card"><div class="klab">Carteira — Entrega</div><div class="kval {{stK.entrCls}}">{{stK.entrPct}}%</div><div class="ksub">{{stK.pe}} entregues · {{stK.pne}} aguardando</div></div>
+<div class="card"><div class="klab">OEE Global<button class="infob" data-k="oee" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval {{kpi.oeeCls}}">{{kpi.oee}}%</div><div class="ksub">Meta: {{metaOeeV}}%</div></div>
+<div class="card"><div class="klab">Disponibilidade<button class="infob" data-k="disp" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval">{{kpi.disp}}%</div><div class="ksub">Perf. {{kpi.perf}}% · Qual. {{kpi.qual}}%</div></div>
+<div class="card"><div class="klab">MTTR Corretiva<button class="infob" data-k="mttr" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval">{{kpi.mttr}}h</div><div class="ksub">Meta ≤ 2h</div></div>
+<div class="card"><div class="klab">MTBF<button class="infob" data-k="mtbf" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval">{{kpi.mtbf}}h</div><div class="ksub">{{kpi.nFalhas}} falhas no período</div></div>
+<div class="card"><div class="klab">Absenteísmo<button class="infob" data-k="abs" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval {{kpi.absCls}}">{{kpi.abs}}%</div><div class="ksub">Meta ≤ 3%</div></div>
+<div class="card"><div class="klab">Produção<button class="infob" data-k="prod" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval">{{kpi.prodKg}}</div><div class="ksub">{{kpi.prodPc}} peças · líquido {{kpi.prodKgLiq}} kg</div></div>
+<div class="card"><div class="klab">Horas Paradas<button class="infob" data-k="hparadas" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval">{{kpi.hParadas}}h</div><div class="ksub">{{kpi.nParadas}} eventos</div></div>
+<div class="card"><div class="klab">Tempo de Setup<button class="infob" data-k="setup" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval">{{kpi.setupH}}h</div><div class="ksub">{{kpi.setupPct}}% do tempo programado</div></div>
+<div class="card"><div class="klab">OS Abertas<button class="infob" data-k="os" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval {{kpi.osCls}}">{{kpi.osAbertas}}</div><div class="ksub">{{kpi.osFechadas}} fechadas no período</div></div>
+<div class="card"><div class="klab">Refugo<button class="infob" data-k="refugo" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval">{{kpi.refugo}}%</div><div class="ksub">{{kpi.refugoKg}} kg — apara {{kpi.refugoApara}} / tubo {{kpi.refugoTubo}}</div></div>
+<div class="card"><div class="klab">Alterações de Programação<button class="infob" data-k="alter" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval {{solK.cls}}">{{solK.total}} / {{solK.aprov}}</div><div class="ksub">solicitadas / aprovadas · {{solK.taxa}}%</div></div>
+<div class="card"><div class="klab">Carteira — Conclusão<button class="infob" data-k="concl" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval {{stK.taxaCls}}">{{stK.concPct}}%</div><div class="ksub">{{stK.concluido}} concl. · {{stK.aberto}} abertos · {{stK.naoConc}} não concl.</div></div>
+<div class="card"><div class="klab">Carteira — Entrega<button class="infob" data-k="entr" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="kval {{stK.entrCls}}">{{stK.entrPct}}%</div><div class="ksub">{{stK.pe}} entregues · {{stK.pne}} aguardando</div></div>
 </div>
-<div class="panel" id="p-maquinas"><div class="ptit">Desempenho por Máquina</div><div class="scroll"><table class="tbl"><thead><tr><th></th><th>Máquina</th><th>Unidade</th><th>OEE</th><th></th><th>Disp.</th><th>Perf.</th><th>Qual.</th><th>MTTR</th><th>MTBF</th><th>Produção</th><th>Paradas</th></tr></thead><tbody>
+<div class="panel" id="p-maquinas"><div class="ptit">Desempenho por Máquina<button class="infob" data-k="maquinas" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button></div><div class="scroll"><table class="tbl"><thead><tr><th></th><th>Máquina</th><th>Unidade</th><th>OEE</th><th></th><th>Disp.</th><th>Perf.</th><th>Qual.</th><th>MTTR</th><th>MTBF</th><th>Produção</th><th>Paradas</th></tr></thead><tbody>
 <sc-for list="{{maqRows}}" as="m" hint-placeholder-count="6"><tr><td><span class="dot {{m.dotCls}}"></span></td><td class="fw6">{{m.nome}}</td><td class="mini">{{m.unid}}</td><td class="num">{{m.oee}}%</td><td><div class="obar"><div class="ofill {{m.barCls}}" style="{{m.barStyle}}"></div></div></td><td class="num">{{m.disp}}%</td><td class="num">{{m.perf}}%</td><td class="num">{{m.qual}}%</td><td class="num">{{m.mttr}}</td><td class="num">{{m.mtbf}}</td><td class="num">{{m.prod}} pç</td><td class="num">{{m.paradas}}h</td></tr></sc-for>
 </tbody></table></div></div>
-<div class="panel" id="p-velocidade"><div class="ptit">Velocidade Atingida × Velocidade Alvo <span class="mini fw5">por máquina — % de aderência à velocidade nominal do produto (m/min)</span></div>
+<div class="panel" id="p-velocidade"><div class="ptit">Velocidade Atingida × Velocidade Alvo<button class="infob" data-k="velocidade" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">por máquina — % de aderência à velocidade nominal do produto (m/min)</span></div>
 <sc-for list="{{velRows}}" as="v" hint-placeholder-count="4">
 <sc-if value="{{v.vazio}}" hint-placeholder-val="{{false}}">
 <div class="mb8"><div class="fw6">{{v.nome}}</div><div class="mini" style="color:var(--mut)">Sem Velocidade Alvo real cadastrada no PCP (m/min) para comparar — não estimamos meta. Taxa real de produção: <b>{{v.taxaPcMin}}</b></div></div>
@@ -353,33 +365,33 @@ select.sel[multiple]{height:80px}
 </sc-if>
 </sc-for>
 </div>
-<div class="panel" id="p-operador"><div class="ptit">Performance por Operador <span class="mini fw5">— produção, refugo e eficiência (produzido ÷ produzido+refugo) no período filtrado</span></div>
-<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Operador</th><th>Produção (pç)</th><th>Produção (kg)</th><th>Refugo Apara</th><th>Refugo Tubo</th><th>Refugo Total</th><th>% Refugo</th><th>Eficiência</th><th>Apontamentos</th></tr></thead><tbody>
-<sc-for list="{{operRows}}" as="o" hint-placeholder-count="6"><tr><td class="fw6">{{o.nome}}</td><td class="num">{{o.qtdPc}}</td><td class="num">{{o.qtdKg}}</td><td class="num">{{o.refugoApara}} kg</td><td class="num">{{o.refugoTubo}} kg</td><td class="num">{{o.refugoTotal}} kg</td><td class="num {{o.refugoCls}}">{{o.pctRefugo}}%</td><td><div class="fx gap8 ac"><div class="pbtrack" style="width:80px"><div class="pbfill" style="{{o.eficienciaStyle}}"></div></div><span class="mini fw6">{{o.eficiencia}}%</span></div></td><td class="num">{{o.nAp}}</td></tr></sc-for>
+<div class="panel" id="p-operador"><div class="ptit">Performance por Operador<button class="infob" data-k="operador" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">— produção bruta/líquida, refugo e eficiência ((bruto − refugo) ÷ bruto) no período filtrado</span></div>
+<div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Operador</th><th>Produção (pç)</th><th>Produção bruta (kg)</th><th>Produção líquida (kg)</th><th>Refugo Apara</th><th>Refugo Tubo</th><th>Refugo Total</th><th>% Refugo</th><th>Eficiência</th><th>Apontamentos</th></tr></thead><tbody>
+<sc-for list="{{operRows}}" as="o" hint-placeholder-count="6"><tr><td class="fw6">{{o.nome}}</td><td class="num">{{o.qtdPc}}</td><td class="num">{{o.qtdKg}}</td><td class="num">{{o.qtdKgLiq}}</td><td class="num">{{o.refugoApara}} kg</td><td class="num">{{o.refugoTubo}} kg</td><td class="num">{{o.refugoTotal}} kg</td><td class="num {{o.refugoCls}}">{{o.pctRefugo}}%</td><td><div class="fx gap8 ac"><div class="pbtrack" style="width:80px"><div class="pbfill" style="{{o.eficienciaStyle}}"></div></div><span class="mini fw6">{{o.eficiencia}}%</span></div></td><td class="num">{{o.nAp}}</td></tr></sc-for>
 </tbody></table></div>
 </div>
 <div class="duo">
-<div class="panel"><div class="ptit">Pareto de Paradas <span class="mini fw5">(minutos no período · % do tempo total: produzido + parado)</span></div>
+<div class="panel"><div class="ptit">Pareto de Paradas<button class="infob" data-k="paretopar" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">(minutos no período · % do tempo total: produzido + parado)</span></div>
 <sc-for list="{{pareto}}" as="p" hint-placeholder-count="5"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.min}} min <span class="mini">({{p.pct}}%)</span></div></div></sc-for>
 </div>
-<div class="panel"><div class="ptit">OEE Semanal <span class="mini fw5">(tendência)</span></div>
+<div class="panel"><div class="ptit">OEE Semanal<button class="infob" data-k="oeesem" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">(tendência)</span></div>
 <div class="trend posrel">
 <sc-for list="{{trend}}" as="t" hint-placeholder-count="6"><div class="tcol"><div class="tval">{{t.val}}%</div><div class="tbarv" style="{{t.style}}"></div><div class="tlab">{{t.label}}</div></div></sc-for>
 </div>
 </div>
 </div>
 <div class="duo">
-<div class="panel"><div class="ptit">Pareto de Desperdício por Máquina <span class="mini fw5">(kg no período · % do total processado: produzido + refugo, por máquina)</span></div>
+<div class="panel"><div class="ptit">Pareto de Desperdício por Máquina<button class="infob" data-k="paretodesp" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">(kg no período · % do peso produzido bruto da máquina)</span></div>
 <sc-for list="{{paretoRefugo}}" as="p" hint-placeholder-count="4"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.kg}} kg <span class="mini">({{p.pct}}%)</span></div></div></sc-for>
 </div>
-<div class="panel"><div class="ptit">Desperdício Semanal <span class="mini fw5">(% do peso produzido — tendência)</span></div>
+<div class="panel"><div class="ptit">Desperdício Semanal<button class="infob" data-k="despsem" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">(% do peso produzido — tendência)</span></div>
 <div class="trend posrel">
 <sc-for list="{{trendRefugo}}" as="t" hint-placeholder-count="6"><div class="tcol"><div class="tval">{{t.val}}%</div><div class="tbarv" style="{{t.style}}"></div><div class="tlab">{{t.label}}</div></div></sc-for>
 </div>
 </div>
 </div>
 <div class="duo">
-<div class="panel"><div class="ptit">Top 5 Paradas por Máquina <span class="mini fw5">— mês de {{mesRefLabel}} · % do tempo total da máquina no mês</span></div>
+<div class="panel"><div class="ptit">Top 5 Paradas por Máquina<button class="infob" data-k="top5mes" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">— mês de {{mesRefLabel}} · % do tempo total da máquina no mês</span></div>
 <sc-for list="{{topParadasMes}}" as="mq" hint-placeholder-count="4">
 <div class="mt12"><div class="fw6 mini upper" style="color:var(--mut);margin-bottom:6px">{{mq.maquina}} <span class="fw5">— {{mq.totalMin}} min</span></div>
 <sc-if value="{{mq.vazio}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut)">Sem paradas no período.</div></sc-if>
@@ -387,7 +399,7 @@ select.sel[multiple]{height:80px}
 </div>
 </sc-for>
 </div>
-<div class="panel"><div class="ptit">Top 5 Paradas por Máquina <span class="mini fw5">— ano de {{anoRefLabel}} · % do tempo total da máquina no ano</span></div>
+<div class="panel"><div class="ptit">Top 5 Paradas por Máquina<button class="infob" data-k="top5ano" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">— ano de {{anoRefLabel}} · % do tempo total da máquina no ano</span></div>
 <sc-for list="{{topParadasAno}}" as="mq" hint-placeholder-count="4">
 <div class="mt12"><div class="fw6 mini upper" style="color:var(--mut);margin-bottom:6px">{{mq.maquina}} <span class="fw5">— {{mq.totalMin}} min</span></div>
 <sc-if value="{{mq.vazio}}" hint-placeholder-val="{{false}}"><div class="mini" style="color:var(--mut)">Sem paradas no período.</div></sc-if>
@@ -396,7 +408,7 @@ select.sel[multiple]{height:80px}
 </sc-for>
 </div>
 </div>
-<div class="panel" id="p-detalhamento"><div class="ptit"><button class="chevbtn" data-k="detalhamento" onClick="{{togglePanel}}">{{detalhamentoChev}}</button>Detalhamento de Produção e Paradas <span class="mini fw5">visão linha a linha (tipo planilha F-23) · {{detTableResumo}}</span></div>
+<div class="panel" id="p-detalhamento"><div class="ptit"><button class="chevbtn" data-k="detalhamento" onClick="{{togglePanel}}">{{detalhamentoChev}}</button>Detalhamento de Produção e Paradas<button class="infob" data-k="detalhe" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">visão linha a linha (tipo planilha F-23) · {{detTableResumo}}</span></div>
 <sc-if value="{{detalhamentoOpen}}" hint-placeholder-val="{{false}}">
 <div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Data</th><th>Máquina</th><th>Turno</th><th>Operador</th><th>Produção</th><th>Tempo Turno</th><th>Refugo</th><th>Paradas (motivo · min)</th></tr></thead><tbody>
 <sc-for list="{{detTable}}" as="d" hint-placeholder-count="8"><tr><td>{{d.data}}</td><td class="fw6">{{d.maquina}}</td><td>{{d.turno}}</td><td>{{d.operador}}</td><td class="num">{{d.qtd}}</td><td class="num">{{d.tempoTurno}}</td><td class="num">{{d.refugo}}</td><td class="mini">{{d.paradas}}</td></tr></sc-for>
@@ -404,17 +416,17 @@ select.sel[multiple]{height:80px}
 </sc-if>
 </div>
 <div class="duo">
-<div class="panel"><div class="ptit">Produção Diária <span class="mini fw5">(kg)</span></div>
+<div class="panel"><div class="ptit">Produção Diária<button class="infob" data-k="prodkg" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">(kg)</span></div>
 <div class="dbars"><sc-for list="{{prodDia}}" as="d" hint-placeholder-count="10"><div class="dbar" style="{{d.style}}" title="{{d.tip}}"></div></sc-for></div>
 <div class="dlegend"><span>{{prodDiaIni}}</span><span>pico: {{prodDiaMax}} kg</span><span>{{prodDiaFim}}</span></div>
 </div>
-<div class="panel"><div class="ptit">Produção Diária <span class="mini fw5">(peças)</span></div>
+<div class="panel"><div class="ptit">Produção Diária<button class="infob" data-k="prodpc" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">(peças)</span></div>
 <div class="dbars"><sc-for list="{{prodDiaPc}}" as="d" hint-placeholder-count="10"><div class="dbar" style="{{d.style}}" title="{{d.tip}}"></div></sc-for></div>
 <div class="dlegend"><span>{{prodDiaIni}}</span><span>pico: {{prodDiaMaxPc}} pç</span><span>{{prodDiaFim}}</span></div>
 </div>
 </div>
 <div class="duo">
-<div class="panel"><div class="ptit">Mapa de Pedidos por Estado <span class="mini fw5">(carteira atual)</span></div>
+<div class="panel"><div class="ptit">Mapa de Pedidos por Estado<button class="infob" data-k="mapa" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">(carteira atual)</span></div>
 <div class="maprow">
 <svg class="mapsvg" viewBox="0 0 210 210">
 <path d="M21,48 20,24 36,21 54,16 71,1 92,17 102,14 114,5 122,18 117,30 133,31 150,39 164,42 181,46 198,55 200,65 189,83 179,93 179,108 175,121 169,136 163,144 149,146 138,152 130,162 129,172 112,190 105,199 84,181 92,170 93,165 99,158 100,149 95,149 82,139 82,129 83,119 71,110 69,97 52,91 44,86 44,77 23,83 6,73 1,64 6,53 Z" fill="#e4eaef" stroke="#b9c6d0" stroke-width="1.5" stroke-linejoin="round"></path>
@@ -426,14 +438,14 @@ select.sel[multiple]{height:80px}
 </div>
 </div>
 <div class="duo">
-<div class="panel"><div class="ptit">Aderência à Programação <span class="mini fw5">— data planejada × data real de início</span></div>
+<div class="panel"><div class="ptit">Aderência à Programação<button class="infob" data-k="aderprog" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">— data planejada × data real de início</span></div>
 <div class="fx gap24 ac">
 <div style="text-align:center"><div class="kval {{ader.cls}}" style="font-size:52px">{{ader.pct}}%</div><div class="mini">{{ader.noPrazo}} de {{ader.total}} pedidos no prazo</div></div>
 <div class="f1"><sc-for list="{{aderWk}}" as="w" hint-placeholder-count="4"><div class="pbrow" style="grid-template-columns:70px 1fr 90px"><div class="mini">{{w.label}}</div><div class="pbtrack"><div class="pbfill" style="{{w.style}}"></div></div><div class="pbv">{{w.pct}}% ({{w.n}})</div></div></sc-for>
 <sc-if value="{{ader.vazio}}" hint-placeholder-val="{{false}}"><div class="mini" style="padding:8px 0">Informe a "Data Programada na Produção" nos pedidos (aba PCP) para acompanhar a aderência.</div></sc-if></div>
 </div>
 </div>
-<div class="panel"><div class="ptit">Aderência de Entrega <span class="mini fw5">— entrega prevista × entrega final</span></div>
+<div class="panel"><div class="ptit">Aderência de Entrega<button class="infob" data-k="aderentr" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">— entrega prevista × entrega final</span></div>
 <div class="fx gap24 ac" style="height:100%">
 <div style="text-align:center"><div class="kval {{entr.cls}}" style="font-size:52px">{{entr.pct}}%</div><div class="mini">{{entr.noPrazo}} de {{entr.total}} entregas no prazo</div></div>
 <div class="f1"><div class="pbrow" style="grid-template-columns:110px 1fr 46px"><div class="mini">No prazo</div><div class="pbtrack"><div class="pbfill" style="{{entr.styleOk}}"></div></div><div class="pbv">{{entr.noPrazo}}</div></div>
@@ -442,19 +454,19 @@ select.sel[multiple]{height:80px}
 </div>
 </div>
 </div>
-<div class="panel"><div class="ptit">⚠ Principais Alertas <button class="btsm" onClick="{{nav.ia}}" style="margin-left:auto">Ver análise completa do Agente IA →</button></div>
+<div class="panel"><div class="ptit">⚠ Principais Alertas<button class="infob" data-k="alertas" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <button class="btsm" onClick="{{nav.ia}}" style="margin-left:auto">Ver análise completa do Agente IA →</button></div>
 <div class="insrow"><sc-for list="{{insTop}}" as="i" hint-placeholder-count="3"><div class="ins"><span class="insico {{i.sev}}"></span><div><div class="instit">{{i.titulo}}</div><div class="instxt">{{i.texto}}</div></div></div></sc-for></div>
 </div>
 <sc-if value="{{atrasadosTotal}}" hint-placeholder-val="{{false}}">
 <div class="duo">
-<div class="panel"><div class="ptit"><button class="chevbtn" data-k="atrasados" onClick="{{togglePanel}}">{{atrasadosChev}}</button>Pedidos com Entrega Atrasada <span class="mini fw5">— {{atrasadosTotal}} pedido(s), carteira completa</span></div>
+<div class="panel"><div class="ptit"><button class="chevbtn" data-k="atrasados" onClick="{{togglePanel}}">{{atrasadosChev}}</button>Pedidos com Entrega Atrasada<button class="infob" data-k="atrasados" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">— {{atrasadosTotal}} pedido(s), carteira completa</span></div>
 <sc-if value="{{atrasadosOpen}}" hint-placeholder-val="{{true}}">
 <div class="scroll scrollcap"><table class="tbl"><thead><tr><th>Pedido</th><th>Cliente</th><th>Entrega Prev.</th><th>Dias em atraso</th></tr></thead><tbody>
 <sc-for list="{{atrasadosLista}}" as="a" hint-placeholder-count="8"><tr><td class="fw6">{{a.id}}</td><td>{{a.cliente}}</td><td>{{a.entrega}}</td><td class="num stAtras fw6">{{a.dias}}</td></tr></sc-for>
 </tbody></table></div>
 </sc-if>
 </div>
-<div class="panel"><div class="ptit">Pareto de Atrasos por Cliente <span class="mini fw5">(nº de pedidos · % do total atrasado)</span></div>
+<div class="panel"><div class="ptit">Pareto de Atrasos por Cliente<button class="infob" data-k="paretoatraso" onClick="{{openInfo}}" title="Como é calculado e por que importa">i</button> <span class="mini fw5">(nº de pedidos · % do total atrasado)</span></div>
 <sc-for list="{{atrasadosPareto}}" as="p" hint-placeholder-count="6"><div class="pbrow"><div>{{p.nome}}</div><div class="pbtrack"><div class="pbfill" style="{{p.style}}"></div></div><div class="pbv">{{p.n}} <span class="mini">({{p.pct}}%)</span></div></div></sc-for>
 </div>
 </div>
@@ -973,7 +985,7 @@ class Component extends DCLogic {
       panelOpen:{carteira:false, metas:false, atrasados:true, detalhamento:false, auditoria:false},
       pedCardFilter:[], pedColFilters:{},
       importF23File:null, importPcpFile:null, importF23Name:'Nenhum arquivo selecionado', importPcpName:'Nenhum arquivo selecionado', importBusy:false, importMsg:'', importMsgErr:false,
-      mobFiltersOpen:false, mobNavOpen:false, pedOpenFilterCol:null, pedStatusPopoverOpen:false,
+      mobFiltersOpen:false, mobNavOpen:false, infoKey:null, pedOpenFilterCol:null, pedStatusPopoverOpen:false,
       forms:{ prod:this.blankProd(), os:this.blankOs(), par:this.blankPar(),
         ped:this.blankPed(), aus:this.blankAus(),
         fech:{reparoMin:'',custo:'',pecas:'',causa:'',servico:'',horaInicio:'',horaFim:'',temAuxiliar:'nao',materialCusto:''}, osm:{}, solic:{motivo:''}, cad:{}, custosManut:{}, auditFiltro:{} }
@@ -1142,6 +1154,9 @@ class Component extends DCLogic {
   togglePanel = (e)=>{ const k=e.currentTarget.dataset.k; this.setState({panelOpen:{...this.state.panelOpen,[k]:!this.state.panelOpen[k]}}); };
   toggleMobFilters = ()=>this.setState({mobFiltersOpen:!this.state.mobFiltersOpen});
   toggleMobNav = ()=>this.setState({mobNavOpen:!this.state.mobNavOpen});
+  openInfo = (e)=>this.setState({infoKey:e.currentTarget.dataset.k});
+  closeInfo = ()=>this.setState({infoKey:null});
+  infoDefs(){ return {"oee": {"t": "OEE Global", "f": "OEE = Disponibilidade × Performance × Qualidade.", "d": "Apontamentos da F-23 (tempos, paradas, peças, kg e refugo) e velocidade alvo e comprimento do PCP.", "i": "Resume em um número quanto da capacidade da máquina virou produto bom. Meta: 75%."}, "disp": {"t": "Disponibilidade", "f": "(Tempo programado − paradas) ÷ tempo programado. Tempo programado = tempo do turno menos as paradas de correção (alimentação, horário especial).", "d": "Horários e paradas dos apontamentos (F-23).", "i": "Mostra quanto tempo a máquina ficou disponível para produzir. As perdas vêm de setup, manutenção e falta de material."}, "mttr": {"t": "MTTR Corretiva", "f": "Soma do tempo de reparo das OS corretivas fechadas ÷ número dessas OS, em horas.", "d": "Ordens de Serviço (hora início/fim do reparo) e paradas de manutenção da F-23.", "i": "Mede a rapidez da manutenção em devolver a máquina à produção. Meta: até 2 h."}, "mtbf": {"t": "MTBF", "f": "Horas em operação ÷ número de falhas corretivas no período.", "d": "Horas operadas dos apontamentos e OS corretivas.", "i": "Quanto maior, mais tempo a máquina roda entre quebras. Indica a confiabilidade do equipamento."}, "abs": {"t": "Absenteísmo", "f": "Dias de ausência ÷ (número de operadores × dias úteis do período) × 100.", "d": "Registros da tela RH / Ausências.", "i": "Ausências desorganizam turnos e aumentam o custo. Meta: até 3%."}, "prod": {"t": "Produção", "f": "Bruta = soma dos kg e das peças dos apontamentos. Líquida = bruta − refugo total.", "d": "Colunas Quantidade Produzida (pc/kg) e Desperdício da F-23. O kg da F-23 é bruto: já inclui o refugo.", "i": "É a base de entrega, custo e dos percentuais de refugo. Confira sempre bruto × líquido."}, "hparadas": {"t": "Horas Paradas", "f": "Soma dos minutos de paradas (exceto correção) ÷ 60. Eventos = número de registros de parada.", "d": "Paradas dos apontamentos e da tela Paradas.", "i": "Dimensiona o tempo perdido e mostra onde atacar (veja o Pareto de Paradas)."}, "setup": {"t": "Tempo de Setup", "f": "Minutos de paradas do motivo Setup ÷ 60. O percentual divide pelo tempo programado.", "d": "Motivo \"1. Setup\" dos apontamentos.", "i": "Setup longo reduz a capacidade produtiva. É a base das ações de troca rápida."}, "os": {"t": "OS Abertas", "f": "Abertas = OS ainda não fechadas (Aberta, Aprovada, Em Execução). Fechadas = OS concluídas no período.", "d": "Tela Manutenção.", "i": "Mostra a fila da manutenção e se o fluxo aprovação, execução e fechamento está andando."}, "refugo": {"t": "Refugo", "f": "Refugo % = refugo total (apara + tubo) ÷ kg produzido bruto × 100.", "d": "Colunas Desperdício Papel/Tubo e Quantidade Produzida (kg) da F-23.", "i": "Refugo é matéria-prima e tempo perdidos. Acompanhe a evolução semana a semana."}, "alter": {"t": "Alterações de Programação", "f": "Solicitadas / aprovadas: pedidos de alteração feitos no simulador e quantos o Coordenador aprovou.", "d": "Solicitações do Simulador de Programação (PCP).", "i": "Muitas alterações indicam programação instável e risco para a entrega."}, "concl": {"t": "Carteira — Conclusão", "f": "Concluídos ÷ carteira ativa (pedidos não cancelados) × 100.", "d": "Status do pedido (coluna Y do PCP) cruzado com a produção apontada: 90% ou mais da quantidade produzida = concluído.", "i": "Mostra quanto da carteira já foi produzido."}, "entr": {"t": "Carteira — Entrega", "f": "Pedidos \"Pronto e Entregue\" ÷ pedidos concluídos × 100.", "d": "Status do pedido no PCP.", "i": "Revela produto pronto aguardando expedição."}, "maquinas": {"t": "Desempenho por Máquina", "f": "Cada linha usa as fórmulas dos cards (OEE, Disp., Perf., Qual., MTTR, MTBF) aplicadas só àquela máquina.", "d": "Apontamentos, paradas e OS dentro dos filtros.", "i": "Compara as máquinas e mostra qual fator (disponibilidade, ritmo ou qualidade) mais limita cada uma."}, "velocidade": {"t": "Velocidade Atingida × Alvo", "f": "Atingida (m/min) = metros produzidos (peças × comprimento) ÷ tempo rodando. % = atingida ÷ velocidade alvo.", "d": "Comprimento e Velocidade Alvo (m/min) do PCP. Produtos em kg e metas estimadas ficam de fora.", "i": "Mostra se a máquina roda no ritmo planejado. Onde o PCP não tem meta (Conicaleira), aparece só a taxa real."}, "operador": {"t": "Performance por Operador", "f": "Eficiência = (kg bruto − refugo) ÷ kg bruto × 100. % Refugo = refugo ÷ kg bruto.", "d": "Apontamentos por operador (F-23).", "i": "Orienta treinamento e acompanhamento. Compare operadores que trabalham no mesmo tipo de máquina."}, "paretopar": {"t": "Pareto de Paradas", "f": "Soma de minutos por motivo, em ordem decrescente. O % usa o tempo total (produzido + parado).", "d": "Paradas dos apontamentos.", "i": "Poucas causas respondem pela maior parte da perda: comece pelas primeiras."}, "oeesem": {"t": "OEE Semanal", "f": "OEE calculado para cada semana do período.", "d": "Mesmos dados do card OEE.", "i": "Mostra a tendência e se as ações estão funcionando. Barra verde = meta atingida."}, "paretodesp": {"t": "Pareto de Desperdício", "f": "Refugo (kg) por máquina. O % divide pelo kg produzido bruto da própria máquina.", "d": "Colunas de Desperdício e Quantidade Produzida (kg) da F-23.", "i": "Aponta onde mais se desperdiça material."}, "despsem": {"t": "Desperdício Semanal", "f": "Refugo ÷ kg produzido bruto, por semana. Verde até 3%, amarelo até 6%, vermelho acima.", "d": "Mesmos dados do card Refugo.", "i": "Mostra se o desperdício está subindo ou caindo."}, "top5mes": {"t": "Top 5 Paradas — mês", "f": "Para cada máquina, as 5 paradas com mais minutos no mês de referência (fim do período). % = minutos ÷ tempo total da máquina no mês.", "d": "Paradas dos apontamentos.", "i": "Define o foco mensal de cada máquina."}, "top5ano": {"t": "Top 5 Paradas — ano", "f": "Igual ao painel mensal, considerando o ano de referência.", "d": "Paradas dos apontamentos.", "i": "Separa perdas crônicas de perdas pontuais."}, "detalhe": {"t": "Detalhamento de Produção e Paradas", "f": "Uma linha por apontamento: máquina, turno, operador, produção, tempo, refugo e paradas.", "d": "Apontamentos dentro dos filtros.", "i": "Permite conferir o dado de origem de qualquer indicador."}, "prodkg": {"t": "Produção Diária (kg)", "f": "Soma diária dos kg brutos dos apontamentos.", "d": "Quantidade Produzida (kg) da F-23.", "i": "Mostra o ritmo e a regularidade da produção."}, "prodpc": {"t": "Produção Diária (peças)", "f": "Soma diária das peças dos apontamentos.", "d": "Quantidade Produzida (pc) da F-23.", "i": "Mostra o ritmo e a regularidade da produção em unidades."}, "mapa": {"t": "Mapa de Pedidos por Estado", "f": "Número de pedidos da carteira atual agrupados pela UF do cliente.", "d": "Cliente do pedido (PCP).", "i": "Mostra onde estão os clientes e ajuda a planejar a logística."}, "aderprog": {"t": "Aderência à Programação", "f": "Pedidos cujo início real foi até a Data Planejada de Produção ÷ pedidos com data planejada no período.", "d": "Data Planejada de Produção (PCP) e primeiro apontamento do pedido.", "i": "Mede a disciplina de cumprir o que foi programado."}, "aderentr": {"t": "Aderência de Entrega", "f": "Pedidos com entrega final até a data prevista ÷ pedidos avaliados (entrega prevista no período).", "d": "Data de entrega do PCP e último apontamento do pedido.", "i": "Mede o cumprimento do prazo ao cliente."}, "alertas": {"t": "Principais Alertas", "f": "Regras automáticas sobre os dados do período (OEE crítico, maior parada, pedidos atrasados).", "d": "Indicadores do próprio Dashboard.", "i": "Aponta o que merece ação primeiro."}, "atrasados": {"t": "Pedidos com Entrega Atrasada", "f": "Pedidos não entregues cuja data de entrega prevista já passou.", "d": "Data de entrega e status do PCP.", "i": "Lista a prioridade da programação e dos contatos com o cliente."}, "paretoatraso": {"t": "Pareto de Atrasos por Cliente", "f": "Número de pedidos atrasados por cliente, em ordem decrescente.", "d": "Pedidos atrasados.", "i": "Mostra quais clientes concentram os atrasos."}}; }
   closeMobNav = ()=>this.setState({mobNavOpen:false});
   loadXlsxLib = ()=>{
     if(typeof XLSX!=='undefined') return Promise.resolve();
@@ -1230,7 +1245,7 @@ class Component extends DCLogic {
       // ---------- F-23 ----------
       const knownKeyPrefixes=['TUB03-','TUB07-','TUB08-','CONE02-','CONE-'];
       const withMachPrefix=(mach,rawKey)=>{ const hasPrefix=knownKeyPrefixes.some(p=>rawKey.startsWith(p)); return hasPrefix?rawKey:(mach+'-'+rawKey); };
-      let apontamentosNovos=[];
+      let apontamentosNovos=[]; const descartadasMaq={};
       if(importF23File){
         const buf=await importF23File.arrayBuffer();
         const wb=XLSX.read(buf,{type:'array',cellDates:true});
@@ -1254,9 +1269,11 @@ class Component extends DCLogic {
                 cQtdKg=hm['Quantidade Produzida (kg)'], cDesp=hm['Desperdício Total'], cDespApara=hm['Desperdício Papel (kg)'], cDespTubo=hm['Desperdício Tubo (kg)'],
                 cHoraIni=hm['Hora Inicial'], cHoraFim=hm['Hora Final'];
           let apid=1;
+          const numF=(v)=>{ if(typeof v==='number') return v; if(v==null||v==='') return 0; const f=parseFloat(String(v).replace(',','.')); return isNaN(f)?0:f; };
           for(let r=hr+1;r<rows.length;r++){
             const row=rows[r]; if(!row) continue;
-            const mach=machMap[norm(cMaq!=null?row[cMaq]:null)]; if(!mach) continue;
+            const machRaw=norm(cMaq!=null?row[cMaq]:null);
+            const mach=machMap[machRaw]; if(!mach){ if(machRaw && row[cData] instanceof Date){ descartadasMaq[machRaw]=(descartadasMaq[machRaw]||0)+1; } continue; }
             const dcell=cData!=null?row[cData]:null;
             if(!(dcell instanceof Date) || isNaN(dcell)) continue;
             const dataIso=dcell.toISOString().slice(0,10);
@@ -1268,11 +1285,11 @@ class Component extends DCLogic {
             apontamentosNovos.push({ id:'AP'+String(apid++).padStart(5,'0'), data:dataIso, dataInicio:dataIso, dataFim:dataIso,
               horaInicio:horaIni, horaFim:horaFim, maquina:mach, turno:norm(cEquipe!=null?row[cEquipe]:null)||'A',
               operadorRaw:norm(cOper!=null?row[cOper]:null)||null, pedidoCKey:keyComPrefixo?(mach+'||'+keyComPrefixo):null,
-              qtdPc: cQtdPc!=null?(typeof row[cQtdPc]==='number'?row[cQtdPc]:(parseFloat(row[cQtdPc])||0)):0,
-              qtdKg: cQtdKg!=null && typeof row[cQtdKg]==='number'?Math.round(row[cQtdKg]*100)/100:0,
-              refugoKg: cDesp!=null && typeof row[cDesp]==='number'?Math.round(row[cDesp]*100)/100:0,
-              refugoAparaKg: cDespApara!=null && typeof row[cDespApara]==='number'?Math.round(row[cDespApara]*100)/100:0,
-              refugoTuboKg: cDespTubo!=null && typeof row[cDespTubo]==='number'?Math.round(row[cDespTubo]*100)/100:0,
+              qtdPc: cQtdPc!=null?numF(row[cQtdPc]):0,
+              qtdKg: cQtdKg!=null?Math.round(numF(row[cQtdKg])*100)/100:0,
+              refugoKg: cDesp!=null?Math.round(numF(row[cDesp])*100)/100:0,
+              refugoAparaKg: cDespApara!=null?Math.round(numF(row[cDespApara])*100)/100:0,
+              refugoTuboKg: cDespTubo!=null?Math.round(numF(row[cDespTubo])*100)/100:0,
               tempoTurnoMin: cTempoMin!=null && typeof row[cTempoMin]==='number'?Math.round(row[cTempoMin]*10)/10:0,
               paradas });
           }
@@ -1391,7 +1408,7 @@ class Component extends DCLogic {
       this.logAudit(db,'importacao','criado','F-23/PCP','Importação de planilha por '+quemImp+' — '+apontamentosNovos.length+' apontamentos'+(pedidosNovos?', '+pedidosNovos.length+' pedidos':''));
       this.persist(db);
       this.setState({importBusy:false, importMsgErr:false,
-        importMsg:'Importado: '+apontamentosNovos.length+' apontamentos'+(pedidosNovos?', '+pedidosNovos.length+' pedidos':'')+'.',
+        importMsg:'Importado: '+apontamentosNovos.length+' apontamentos'+(pedidosNovos?', '+pedidosNovos.length+' pedidos':'')+'.'+(Object.keys(descartadasMaq).length?(' ATENÇÃO: linhas ignoradas por máquina não cadastrada — '+Object.entries(descartadasMaq).map(([k,v])=>k+': '+v).join('; ')+'. Cadastre a máquina para incluí-las.'):''),
         importF23File:null, importPcpFile:null});
     }catch(err){
       console.error(err);
@@ -2133,7 +2150,7 @@ class Component extends DCLogic {
     const tempoTotalBruto=aps.reduce((x,a)=>x+(+a.tempoTurnoMin||0),0);
     const tempoTotalRef=Math.max(1,tempoTotalBruto-corTotal);
     const pareto=Object.entries(parMap).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([nome,min])=>nome+' '+Math.round(min)+'min ('+(min/tempoTotalRef*100).toFixed(1)+'%)');
-    const refugoPct=(g.kg+g.ref)?(g.ref/(g.kg+g.ref)*100).toFixed(1):'0';
+    const refugoPct=g.kg?(g.ref/g.kg*100).toFixed(1):'0'; // kg produzido é BRUTO (inclui refugo)
     return 'Período analisado: '+this.fmtD(s.dataIni)+' a '+this.fmtD(s.dataFim)+'.\n'
       +'OEE global: '+Math.round(g.oee*100)+'% | Disp '+Math.round(g.disp*100)+'% | Perf '+Math.round(g.perf*100)+'% | Qual '+Math.round(g.qual*100)+'%\n'
       +'MTTR: '+g.mttr.toFixed(1)+'h | MTBF: '+Math.round(g.mtbf)+'h | Falhas corretivas: '+g.nFalhas+'\n'
@@ -2230,10 +2247,11 @@ class Component extends DCLogic {
     const operRows=Object.entries(operMap).sort((a,b)=>b[1].qtdKg-a[1].qtdKg).map(([opId,om])=>{
       const op=db.operadores.find(x=>x.id===opId);
       const refugoTotal=om.refugoApara+om.refugoTubo;
-      const base=om.qtdKg+refugoTotal;
+      const base=om.qtdKg; // kg produzido BRUTO (já inclui o refugo)
+      const liquido=Math.max(0,om.qtdKg-refugoTotal);
       const pctRefugo=base?(refugoTotal/base*100):0;
-      const eficiencia=base?(om.qtdKg/base*100):0; // eficiência = produzido líquido ÷ (produzido + refugo) — quanto do que passou pela máquina virou peça boa
-      return {nome:op?op.nome:opId,qtdPc:this.fmtN(om.qtdPc),qtdKg:this.fmtN(om.qtdKg),
+      const eficiencia=base?(liquido/base*100):0; // eficiência = (bruto − refugo) ÷ bruto — quanto do que foi produzido virou peça boa
+      return {nome:op?op.nome:opId,qtdPc:this.fmtN(om.qtdPc),qtdKg:this.fmtN(om.qtdKg),qtdKgLiq:this.fmtN(liquido),
         refugoApara:this.fmtN(om.refugoApara),refugoTubo:this.fmtN(om.refugoTubo),refugoTotal:this.fmtN(refugoTotal),
         pctRefugo:pctRefugo.toFixed(1),refugoCls:pctRefugo>10?'stAtras':pctRefugo>5?'stFila':'',nAp:om.nAp,
         eficiencia:eficiencia.toFixed(1),
@@ -2273,7 +2291,7 @@ class Component extends DCLogic {
       refMap[nome]=(refMap[nome]||0)+(+a.refugoKg||0); prodKgMap[nome]=(prodKgMap[nome]||0)+(+a.qtdKg||0); }
     const maxRef=Math.max(1,...Object.values(refMap));
     const paretoRefugo=Object.entries(refMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([nome,kg])=>{
-      const totMaq=kg+(prodKgMap[nome]||0);
+      const totMaq=(prodKgMap[nome]||0); // kg produzido bruto da máquina (já inclui o refugo)
       return {nome,kg:this.fmtN(kg),pct:totMaq?+(kg/totMaq*100).toFixed(1):0,style:{width:Math.max(2,Math.round(kg/maxRef*100))+'%',background:'var(--warn)'}};
     });
     // Top 5 paradas por máquina — mês e ano de referência (fim do período selecionado), respeitando filtro de máquina/turno/operador
@@ -2329,8 +2347,7 @@ class Component extends DCLogic {
       const i0=d0.toISOString().slice(0,10),i1=d1.toISOString().slice(0,10);
       const wa=aps.filter(a=>a.data>=i0&&a.data<i1);
       const wKg=wa.reduce((x,a)=>x+(+a.qtdKg||0),0), wRef=wa.reduce((x,a)=>x+(+a.refugoKg||0),0);
-      const wTot=wKg+wRef;
-      const v=wTot?+((wRef/wTot)*100).toFixed(1):0;
+      const v=wKg?+((wRef/wKg)*100).toFixed(1):0; // % do peso produzido bruto
       trendRefugo.push({label:this.fmtD(i0),val:v,style:{height:Math.max(3,Math.min(100,v*8))+'%',background:v<=3?'var(--ok)':v<=6?'var(--warn)':'var(--bad)'}});
     }
     // produção diária
@@ -2387,7 +2404,7 @@ class Component extends DCLogic {
       setupH:(g.setupMin/60).toFixed(1),setupPct:g.tProg?(g.setupMin/g.tProg*100).toFixed(1):'0',
       osAbertas:db.osList.filter(o=>o.status!=='Fechada').length,osCls:db.osList.filter(o=>o.status!=='Fechada').length>4?'kbad':'',
       osFechadas:osArr.filter(o=>o.status==='Fechada').length,
-      refugo:(g.kg+g.ref)?(g.ref/(g.kg+g.ref)*100).toFixed(1):'0',refugoKg:this.fmtN(g.ref),
+      refugo:g.kg?(g.ref/g.kg*100).toFixed(1):'0',refugoKg:this.fmtN(g.ref),prodKgLiq:this.fmtN(Math.max(0,g.kg-g.ref)),
       refugoApara:this.fmtN(aps.reduce((x,a)=>x+(+a.refugoAparaKg||0),0)),refugoTubo:this.fmtN(aps.reduce((x,a)=>x+(+a.refugoTuboKg||0),0)),
     };
     const maqRows=maqStats.map(m=>{const o=Math.round(m.raw.oee*100);return{
@@ -2898,7 +2915,7 @@ class Component extends DCLogic {
       showLoading:false,showLogin:false,showApp:true,
       isAdmin:u.perfil==='Administrador',doLogout:this.doLogout,
       toggleMobFilters:this.toggleMobFilters,mobFiltersCls:s.mobFiltersOpen?'mobOpen':'',
-      toggleMobNav:this.toggleMobNav,closeMobNav:this.closeMobNav,navOpenCls:s.mobNavOpen?'navOpen':'',navBackdropCls:s.mobNavOpen?'show':'',
+      toggleMobNav:this.toggleMobNav,closeMobNav:this.closeMobNav,openInfo:this.openInfo,closeInfo:this.closeInfo,infoOpen:!!(s.infoKey&&this.infoDefs()[s.infoKey]),infoT:s.infoKey&&this.infoDefs()[s.infoKey]?this.infoDefs()[s.infoKey].t:'',infoF:s.infoKey&&this.infoDefs()[s.infoKey]?this.infoDefs()[s.infoKey].f:'',infoD:s.infoKey&&this.infoDefs()[s.infoKey]?this.infoDefs()[s.infoKey].d:'',infoI:s.infoKey&&this.infoDefs()[s.infoKey]?this.infoDefs()[s.infoKey].i:'',navOpenCls:s.mobNavOpen?'navOpen':'',navBackdropCls:s.mobNavOpen?'show':'',
       syncOnline:s.syncStatus==='online', syncOffline:s.syncStatus==='offline',
       syncWho:s.syncUpdatedBy?('últ. atualização: '+s.syncUpdatedBy):'',
       onImportF23File:this.onImportF23File,onImportPcpFile:this.onImportPcpFile,processImport:this.processImport,
