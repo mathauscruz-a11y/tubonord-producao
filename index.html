@@ -219,7 +219,7 @@ select.sel[multiple]{height:80px}
 .loadwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px}
 .loginwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--side);padding:20px;box-sizing:border-box}
 .loginbox{background:#fff;border-radius:14px;padding:34px 30px;width:340px;max-width:100%;box-shadow:0 10px 40px rgba(0,0,0,.28);box-sizing:border-box}
-.loginlogo{width:140px;display:block;margin:0 auto 20px}
+.loginlogo{width:190px;display:block;margin:0 auto 20px;background:var(--side);border-radius:12px;padding:16px 22px;box-sizing:border-box}
 .logintit{font-size:18px;font-weight:700;text-align:center;margin-bottom:4px}
 .loginsub{font-size:12px;color:var(--mut);text-align:center;margin-bottom:22px}
 .loginerr{color:var(--bad);font-size:12px;margin-top:8px;text-align:center;font-weight:600}
@@ -532,8 +532,8 @@ select.sel[multiple]{height:80px}
 <sc-if value="{{vPar}}" hint-placeholder-val="{{false}}">
 <div class="cards" style="grid-template-columns:repeat(4,1fr)">
 <div class="card"><div class="klab">Total de Paradas</div><div class="kval">{{parK.n}}</div><div class="ksub">{{parK.h}}h no período</div></div>
-<div class="card"><div class="klab">Não Programadas</div><div class="kval kbad">{{parK.np}}h</div><div class="ksub">{{parK.npPct}}% do total</div></div>
-<div class="card"><div class="klab">Programadas</div><div class="kval">{{parK.pr}}h</div><div class="ksub">setup, limpeza, preventivas</div></div>
+<div class="card"><div class="klab">Programadas</div><div class="kval">{{parK.np}}h</div><div class="ksub">{{parK.npPct}}% do total · setup, trocas, preventivas</div></div>
+<div class="card"><div class="klab">Não Programadas</div><div class="kval kbad">{{parK.pr}}h</div><div class="ksub">{{parK.prPct}}% do total · quebras e faltas</div></div>
 <div class="card"><div class="klab">Paradas de Manutenção</div><div class="kval kwarn">{{parK.man}}</div><div class="ksub">{{parK.manOs}} geraram OS automática</div></div>
 </div>
 <div class="panel" id="p-parada-form"><div class="ptit">{{parFormTit}} <span class="mini fw5">— paradas de manutenção geram OS automaticamente</span>
@@ -1895,8 +1895,8 @@ class Component extends DCLogic {
       turnos:{label:'Turnos',key:'turnos',cols:['ID','Nome','Início','Fim','Horas'],cells:t=>[t.id,t.nome,t.inicio,t.fim,String(t.horas)],
         fields:[{name:'nome',label:'Nome',type:'text'},{name:'inicio',label:'Início',type:'time'},{name:'fim',label:'Fim',type:'time'}],
         make:f=>({nome:f.nome,inicio:f.inicio||'06:00',fim:f.fim||'14:00',horas:8}),idp:'T'},
-      motivosParada:{label:'Motivos de Parada',key:'motivosParada',cols:['ID','Motivo','Classificação'],cells:m=>[m.id,m.nome,m.tipo==='NP'?'Não Programada':m.tipo==='PR'?'Programada':'Correção (não conta)'],
-        fields:[{name:'nome',label:'Motivo',type:'text'},{name:'tipo',label:'Classificação',options:[{v:'NP',l:'Não Programada'},{v:'PR',l:'Programada'},{v:'COR',l:'Correção (não conta)'}]}],
+      motivosParada:{label:'Motivos de Parada',key:'motivosParada',cols:['ID','Motivo','Classificação'],cells:m=>[m.id,m.nome,m.tipo==='NP'?'Programada':m.tipo==='PR'?'Não Programada':'Correção (não conta)'],
+        fields:[{name:'nome',label:'Motivo',type:'text'},{name:'tipo',label:'Classificação',options:[{v:'NP',l:'Programada'},{v:'PR',l:'Não Programada'},{v:'COR',l:'Correção (não conta)'}]}],
         make:f=>({nome:f.nome,tipo:f.tipo||'NP'}),idp:'M'},
       componentes:{label:'Componentes de Máquinas',key:'componentes',cols:['ID','Componente','Máquina','Criticidade'],cells:c=>[c.id,c.nome,(db.maquinas.find(m=>m.id===c.maquina)||{}).nome||c.maquina,c.criticidade==='A'?'A - Crítico':c.criticidade==='B'?'B - Importante':'C - Normal'],
         fields:[{name:'nome',label:'Nome do componente',type:'text'},{name:'maquina',label:'Máquina',options:db.maquinas.map(m=>({v:m.id,l:m.nome}))},{name:'criticidade',label:'Criticidade',options:[{v:'A',l:'A - Crítico'},{v:'B',l:'B - Importante'},{v:'C',l:'C - Normal'}]}],
@@ -2486,13 +2486,13 @@ class Component extends DCLogic {
           const pr=db.produtos.find(x=>x.id===a.produto)||{};
           vinculo=a.id+(ped?' · '+ped.id:'')+' · '+(pr.nome||'').slice(0,22); } else vinculo=p.apId; }
       return{id:p.id,data:this.fmtD(p.data),maq:mq.nome||p.maquina,turno:p.turno||'—',op:op.nome?op.nome.split(' ')[0]:'—',
-        motivo:mot.nome||p.motivo,tipo:mot.tipo==='NP'?'Não Prog.':mot.tipo==='PR'?'Programada':'Correção',
+        motivo:mot.nome||p.motivo,tipo:mot.tipo==='NP'?'Programada':mot.tipo==='PR'?'Não Prog.':'Correção',
         tipoCls:mot.tipo==='NP'?'stNP':mot.tipo==='PR'?'stPR':'stCOR',min:p.min,vinculo,obsTxt:(p.obs||'—').slice(0,30),os:p.osId||'—'};});
     let parNp=0,parPr=0,parMan=0,parManOs=0;
     for(const p of pars){ const m=this.motivoDe(p.motivo); if(!m||m.tipo==='COR')continue;
       if(m.tipo==='NP')parNp+=p.min; else parPr+=p.min;
       if(m.manut){ parMan++; if(p.osId)parManOs++; } }
-    const parK={n:pars.length,h:this.fmtN((parNp+parPr)/60),np:this.fmtN(parNp/60),npPct:parNp+parPr?Math.round(parNp/(parNp+parPr)*100):0,pr:this.fmtN(parPr/60),man:parMan,manOs:parManOs};
+    const parK={n:pars.length,h:this.fmtN((parNp+parPr)/60),np:this.fmtN(parNp/60),npPct:parNp+parPr?Math.round(parNp/(parNp+parPr)*100):0,prPct:parNp+parPr?Math.round(parPr/(parNp+parPr)*100):0,pr:this.fmtN(parPr/60),man:parMan,manOs:parManOs};
     const apLinkOpts=[...db.apontamentos].filter(a=>!s.forms.par.maquina||a.maquina===s.forms.par.maquina).sort((a,b)=>b.data.localeCompare(a.data)).slice(0,30).map(a=>{
       const pr=db.produtos.find(x=>x.id===a.produto)||{};
       return{id:a.id,label:a.id+' · '+this.fmtD(a.data)+' T'+a.turno+' · '+(pr.nome||'').slice(0,28)+(a.pedido?' · '+a.pedido:'')};});
